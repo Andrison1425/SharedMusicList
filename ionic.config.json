@@ -1,0 +1,7 @@
+{
+  "name": "puzer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
