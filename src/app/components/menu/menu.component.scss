@@ -1,0 +1,42 @@
+$width-img:150px;
+
+.loc_img-perfil {
+  width: $width-img;
+  height: $width-img;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+ion-header {
+  display: flex;
+  justify-content: center;
+}
+
+ion-toolbar {
+  padding: 1rem;
+  height: auto;
+}
+
+ion-item {
+  cursor: pointer;
+}
+
+.cont-info-sec {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+
+  ion-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+.loc__perfil-item {
+  --background: transparent;
+  --border-color: transparent;
+}
+
+.row-profile {
+  position: relative;
+  margin-top: 2rem;
+}

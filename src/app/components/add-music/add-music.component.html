@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title slot="start">{{music? 'Editar' : 'Agregar'}} canción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding" color="primary">
+  <form [formGroup]="addMusicForm">
+    <ion-list slot="content" color="primary">
+      <br>
+      <ion-item color="primary">
+        <div>
+          <ion-label>
+            Título de la canción:
+          </ion-label>
+          <ion-input formControlName="title" type="text" maxlength="60" placeholder="Escribe aquí"></ion-input>
+        </div>
+      </ion-item>
+      <ion-item color="primary">
+        <div>
+          <ion-label>
+            Nombre del artista:
+          </ion-label>
+          <ion-input formControlName="artist" type="text" maxlength="40" placeholder="Escribe aquí"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item color="primary" *ngIf="!musicData">
+        <div class="cont-music-file" color="tertiary" (click)="uploadMusic()">
+          Agregar archivo de música
+        </div>
+      </ion-item>
+      <ion-item color="primary" *ngIf="musicData">
+        <app-audio [audioData]="musicData"></app-audio>
+        <ion-icon name="trash" slot="end" color="tertiary" (click)="musicData = null"></ion-icon>
+      </ion-item>
+
+      <ion-item color="primary">
+        <ion-row>
+          <ion-col class="ion-no-padding">
+            <ion-button fill="clear" color="success" (click)="addMusic()">
+              <ion-icon name="add" slot="start"></ion-icon>
+              <div>Agregar</div>
+            </ion-button>
+          </ion-col>
+          <ion-col class="ion-no-padding" size="6">
+            <ion-button fill="clear" color="medium" (click)="closeModal()">
+              <ion-icon name="close" slot="start"></ion-icon>
+              <div>Cancelar</div>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>
+
+<input type="file" (change)="fileChanged($event)" accept="audio/*" #fileInput  />

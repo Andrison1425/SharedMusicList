@@ -1,0 +1,54 @@
+<ion-menu side="start" menuId="home-menu" contentId="home-content">
+  <ion-header>
+    <ion-toolbar
+      color="secondary"
+      [routerLink]="Routes.Profile"
+    >
+      <ion-row class="ion-justify-content-center row-profile">
+        <img
+          src="../../../assets/img/person.jpg"
+          alt="Imagen de perfil"
+          class="loc_img-perfil"
+        >
+      </ion-row>
+      <ion-text
+        class="ion-text-center "
+      >
+        <h6 class="ion-no-margin">{{user?.userName}}</h6>
+        <h3></h3>
+      </ion-text>
+
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content
+    color="light"
+    padding
+  >
+    <ion-list>
+      <ion-item [routerLink]="Routes.Profile">
+        <ion-icon
+          color="primary"
+          name="person-sharp"
+          slot="start"
+        ></ion-icon>
+        <span color="dark">Mi perfil</span>
+      </ion-item>
+      <ion-item routerLink="/chat/notification">
+        <ion-icon
+          color="primary"
+          name="notifications-sharp"
+          slot="start"
+        ></ion-icon>
+        <span color="dark">Mis radios</span>
+      </ion-item>
+      <ion-item  routerLink="/setting">
+        <ion-icon
+          color="primary"
+          slot="start"
+          name="settings-sharp"></ion-icon>
+        <span color="dark">Configuración</span>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>

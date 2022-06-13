@@ -1,0 +1,172 @@
+body {
+  background: #F0F0F0 !important;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-primary);
+  font-weight: 700;
+}
+
+ion-content {
+  --background: transparent;
+  max-width: 640px;
+  display: flex;
+  justify-content: center;
+}
+
+ion-label {
+  color: gray;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+.auth__enlace {
+  display: block;
+}
+
+ion-button {
+  height: 3rem;
+}
+
+.ion-page {
+  align-items: center;
+}
+
+.auth__icon-continue {
+  margin: 2px 0 0 5px;
+}
+
+.text-animation {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+
+  div {
+    overflow-y: hidden;
+    height: 120px;
+    transition: all 0.3s linear;
+  }
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--black);
+  text-align: center;
+}
+
+.mx {
+  --padding-end: 40px;
+  --padding-start: 40px;
+}
+
+.h-0 {
+  height: 0px !important;
+}
+
+.h-120 {
+  height: 120px;
+}
+
+.d-none {
+  display: none;
+}
+
+a {
+  text-decoration: underline;
+  font-weight: 400;
+  color: #707070;
+}
+
+.loc__num-btn {
+  font-size: 17px;
+  text-decoration: underline;
+  font-weight: 400;
+  color: #707070;
+  cursor: pointer;
+  text-align: center;
+}
+
+small {
+  display: block;
+  margin-top: 30px;
+  color: #707070;
+  text-align: center;
+
+  a {
+    font-size: 15px;
+  }
+}
+
+.cont-img {
+  border-radius: 50%;
+  position: relative;
+  background: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  ion-icon {
+    position: absolute;
+    margin: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--ion-color-secondary);
+    color: gray;
+  }
+}
+
+.d-center {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.loc__title-register {
+  margin: 65px 0;
+}
+
+.loc__register-input {
+  background-color: var(--white);
+  border-radius: 5px;
+  width: 100%;
+  border: none;
+  padding: 1rem;
+}
+
+.loc__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  grid-template-rows: repeat(3, 1fr);
+  justify-items: center;
+  grid-row-gap: 1rem;
+  margin: 40px 0;
+
+  div {
+    width: 94px;
+    height: 94px;
+    border: solid 1px gray;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #fff;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.loc__avatar-selected {
+  border-color: blue;
+  box-shadow: blue 0px 0px 7px 1px;
+}

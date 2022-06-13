@@ -1,4 +1,6 @@
+import { LocalDbService } from './services/local-db.service';
 import { Component } from '@angular/core';
+import { StatusBar } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor(
+    private localDbService: LocalDbService
+  ) {
+    StatusBar.setBackgroundColor({color: '#390D02'});
+    localDbService.initializeLocalDb();
+  }
 }

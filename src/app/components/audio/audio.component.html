@@ -1,0 +1,27 @@
+<div class="loc__controls">
+  <ion-button slot="start" class="ion-no-padding" (click)="tooglePlayer()">
+    <ion-icon
+      name="play"
+      slot="icon-only"
+      *ngIf="pause"
+    ></ion-icon>
+    <ion-icon
+      name="pause"
+      slot="icon-only"
+      *ngIf="!pause"
+    ></ion-icon>
+  </ion-button>
+
+  <ion-range
+    #range
+    min="0"
+    max="100"
+    disabled="false"
+    [(ngModel)]="progress"
+    (touchend)="seek()"
+    (touchstart)="setPause()"
+    (mouseup)="seek()"
+    (mousedown)="setPause()"
+  ></ion-range>
+</div>
+<!-- <p class="duration">{{audio.duration}}</p> -->

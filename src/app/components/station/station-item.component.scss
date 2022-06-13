@@ -1,0 +1,67 @@
+small{
+  color: var(--ion-color-tertiary);
+}
+
+ion-label{
+  margin: 0;
+}
+
+ion-button{
+  font-size: 11px;
+}
+
+ion-card{
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+ion-card-content > span{
+  max-height: 145px;
+}
+
+.cont-info-sec {
+  display: flex;
+  justify-content: space-between;
+  width: 75%;
+
+  small{
+    display: flex;
+    align-items: center;
+  }
+}
+
+.cont-author{
+  color: var(--ion-color-success);
+}
+
+.percentage {
+  width: 100%;
+  height: 1px;
+  background-color: var(--ion-color-danger);
+
+  div {
+    width: 75%;
+    height: 1px;
+    background-color: var(--ion-color-success);
+  }
+}
+
+.playing-info {
+  justify-content: space-between;
+}
+
+.music-info {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  h4 {
+    color: var(--ion-color-medium);
+    display: inline;
+  }
+}
+
+rect {
+  fill: var(--ion-color-tertiary);
+}

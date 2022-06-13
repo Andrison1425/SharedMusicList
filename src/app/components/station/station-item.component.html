@@ -1,0 +1,104 @@
+<ion-card>
+  <ion-item color="primary" lines="none">
+    <ion-thumbnail slot="start">
+      <img src="../../assets/radio-img/rock.png">
+    </ion-thumbnail>
+    <ion-label>
+      {{station?.name}}
+      <br/>
+      <h4 class="cont-author">
+        <ion-icon name="person"></ion-icon>
+        {{station?.author.userName}}
+      </h4>
+    </ion-label>
+    <ion-icon name="play" slot="end" color="tertiary"></ion-icon>
+  </ion-item>
+
+  <ion-row>
+    <ion-col class="ion-no-padding" size="5">
+      <span>
+        <ion-button fill="clear" color="medium">
+          <ion-icon name="thumbs-up" slot="start"></ion-icon>
+          <div>340</div>
+        </ion-button>
+        <ion-button fill="clear" color="medium">
+          <ion-icon name="thumbs-down" slot="start"></ion-icon>
+          <div>137</div>
+        </ion-button>
+        <div class="percentage">
+          <div></div>
+        </div>
+      </span>
+    </ion-col>
+    <ion-col class="ion-no-padding">
+      <ion-button fill="clear" color="medium">
+        <ion-icon name="headset" slot="start"></ion-icon>
+        <div>17 oyendo</div>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+  <ion-card-content>
+    <span>
+      {{station?.description}}
+    </span>
+  </ion-card-content>
+
+  <ion-row *ngIf="!playing">
+    <ion-col class="ion-no-padding" size="3">
+      <ion-button fill="clear" color="medium">
+        <ion-icon name="pencil" slot="start"></ion-icon>
+        <div>Editar</div>
+      </ion-button>
+    </ion-col>
+    <ion-col class="ion-no-padding">
+      <ion-button fill="clear" color="medium" (click)="delete()">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        <div>Eliminar</div>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+  <ion-item *ngIf="playing" color="primary" class="playing-info">
+    <div>
+      Reproduciendo
+      <br>
+      <ion-label color="tertiary" class="music-info">
+        {{station?.musics[0].title}}
+        <h4>
+          - {{station?.musics[0].artist}}
+        </h4>
+      </ion-label>
+    </div>
+
+    <div class="loader loader--style4" title="3" slot="end">
+      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           width="24px" height="24px" viewBox="0 0 24 24" style="enable-background:new 0 0 50 50;" xml:space="preserve"
+      >
+        <rect x="0" y="0" width="4" height="7" fill="#333">
+          <animateTransform
+            attributeType="xml"
+            attributeName="transform" type="scale"
+            values="1,1; 1,3; 1,1"
+            begin="0s" dur="0.6s" repeatCount="indefinite" />
+        </rect>
+
+        <rect x="10" y="0" width="4" height="7" fill="#333">
+          <animateTransform
+            attributeType="xml"
+            attributeName="transform" type="scale"
+            values="1,1; 1,3; 1,1"
+            begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+        </rect>
+        <rect x="20" y="0" width="4" height="7" fill="#333">
+          <animateTransform
+            attributeType="xml"
+            attributeName="transform" type="scale"
+            values="1,1; 1,3; 1,1"
+            begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+        </rect>
+      </svg>
+    </div>
+  </ion-item>
+</ion-card>
+<audio [src]="musics[0]"></audio>

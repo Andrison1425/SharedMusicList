@@ -1,0 +1,45 @@
+.cont-delete-all-btn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+ion-textarea {
+  height: 5rem;
+}
+
+ion-card {
+  box-shadow: none;
+  margin: 7px 0;
+  width: 100%;
+}
+
+.add-music-btn {
+  justify-content: center;
+  align-items: center;
+  border: dashed 1px white;
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  width: calc(100% - 30px);
+  box-sizing: border-box;
+  margin: 10px 0 10px 15px;
+  padding: 0px 0;
+  height: 2.5rem;
+}
+
+.cont-music-file {
+  border-radius: 5px;
+  margin: 5px 0;
+  padding: 0.3rem;
+  border: 1px solid rgba(101, 109, 119, .16);
+  border-left: 0.25rem solid var(--ion-color-tertiary);
+  box-shadow: #242f3e0a 0 2px 4px 0;
+}
+
+ion-reorder-group > ion-item {
+  border-bottom: solid 1px var(--ion-color-medium);
+}
+
+.mr-15 {
+  margin-right: 15px;
+}

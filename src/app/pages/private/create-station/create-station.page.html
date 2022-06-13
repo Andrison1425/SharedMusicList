@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-back-button
+      slot="start"
+      [defaultHref]="'radio/'+Routes.Profile"
+      text=""
+      mode="md"
+    ></ion-back-button>
+    <ion-title slot="start" class="ion-no-padding">{{station? 'Crear': 'Editar'}} estación</ion-title>
+    <ion-button slot="end" mode="md" color="success" class="mr-15" (click)="createStation()">
+      {{station? 'Crear': 'Editar'}}
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding" color="primary">
+  <form [formGroup]="stationForm">
+      <ion-item color="primary">
+        <ion-input formControlName="name" type="text" maxlength="40" placeholder="Escribe aquí"></ion-input>
+      </ion-item>
+      <ion-item color="primary">
+        <ion-textarea
+          placeholder="Describe tu estación de radio"
+          maxlength="450"
+          rows="5"
+          formControlName="description"
+        ></ion-textarea>
+      </ion-item>
+    </form>
+
+  <span class="cont-delete-all-btn">
+    <ion-button
+      color="warning"
+      fill="outline"
+      slot="end"
+      size="small"
+      class="ion-float-right mr-15"
+    >Eliminar todo</ion-button>
+  </span>
+
+  <ion-button color="primary" expand="full" class="add-music-btn" (click)="openModal()">
+    <ion-label>Agregar canción</ion-label>
+    <ion-icon name="add" slot="end"></ion-icon>
+  </ion-button>
+
+  <ion-reorder-group disabled="false" (ionItemReorder)="doReorder($event)">
+    <ion-item color="primary" *ngFor="let music of musicArr; let i = index">
+      <ion-card color="primary">
+        <ion-card-content class="ion-no-padding">
+          <div>
+            <ion-label>
+              {{music.title}}
+            </ion-label>
+          </div>
+          <div>
+            <ion-label>
+              {{music.artist}}
+            </ion-label>
+          </div>
+          <div class="cont-music-file" color="tertiary">
+            <app-audio [audioData]="music.localData"></app-audio>
+          </div>
+        </ion-card-content>
+        <ion-row>
+          <ion-col class="ion-no-padding" size="6">
+            <ion-button fill="clear" color="medium" (click)="openModal(music, i)">
+              <ion-icon name="pencil" slot="start"></ion-icon>
+              <div>Editar</div>
+            </ion-button>
+          </ion-col>
+          <ion-col class="ion-no-padding">
+            <ion-button fill="clear" color="medium" (click)="deleteMusic(i)">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              <div>Eliminar</div>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+      <ion-reorder slot="end"></ion-reorder>
+    </ion-item>
+  </ion-reorder-group>
+
+</ion-content>
+
+

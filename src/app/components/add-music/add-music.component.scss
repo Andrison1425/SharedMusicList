@@ -1,0 +1,22 @@
+ion-list {
+  background: transparent;
+
+  ion-item {
+    margin-bottom: 15px;
+
+    app-audio {
+      width: 100%;
+    }
+  }
+}
+
+.cont-music-file {
+  border-left: 0.25rem solid var(--ion-color-success);
+  border-right: 0.25rem solid var(--ion-color-success);
+  padding: 0.3rem;
+  border-radius: 5px;
+}
+
+input[type="file"] {
+  visibility: hidden;
+}

@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-back-button
+      slot="start"
+      [defaultHref]="Routes.Home"
+      text=""
+      mode="md"
+    ></ion-back-button>
+  </ion-toolbar>
+  <ion-toolbar color="secondary">
+    <div class="loc__header">
+      <img
+        src="../../../assets/img/person.jpg"
+        alt="Imágen de perfil"
+        class="no-disponible"
+      >
+      <div class="cont-primary-info">
+        <h3>{{user?.userName}}</h3>
+        <div class="cont-country">
+          <img src="../../../assets/img/argentina.png" alt="">
+          Argentina
+        </div>
+        <div class="cont-reactions">
+          <span id="likes">
+            <ion-icon name="thumbs-up"></ion-icon>
+            350
+          </span>
+          <span>
+            <ion-icon name="thumbs-down"></ion-icon>
+            178
+          </span>
+        </div>
+      </div>
+    </div>
+  </ion-toolbar>
+
+  <ion-button
+    class="loc__btn-edit"
+    color="medium"
+  >
+    <ion-icon name="pencil" slot="icon-only"></ion-icon>
+  </ion-button>
+</ion-header>
+
+<ion-content fullscreen color="primary">
+  <ion-toolbar mode="ios" color="primary">
+    <ion-segment value="all" mode="ios">
+      <ion-segment-button value="all">
+        <ion-label>Emisoras</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="favorites">
+        <ion-label>Acerca de</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+  <ion-list class="loc__cont-des">
+    <ion-button expand="block" color="medium" [routerLink]="'/radio/'+Routes.CreateStation">
+      <ion-icon name="add" slot="start"></ion-icon>
+      <div>Crear emisora</div>
+    </ion-button>
+
+    <app-station-item *ngFor="let station of stations" [station]="station" [playing]="false"></app-station-item>
+  </ion-list>
+
+</ion-content>

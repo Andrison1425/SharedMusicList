@@ -1,0 +1,41 @@
+<ion-content
+  fullscreen
+  class="ion-padding mx"
+  color="primary"
+>
+
+  <div class="fondo">
+    <div></div>
+  </div>
+
+  <div class="cont-form">
+
+    <div class="cont-photo">
+      <img src="../../../../assets/img/person.jpg" alt="perfil">
+      <ion-button color="medium">
+        <ion-icon name="camera" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <form [formGroup]="userDataForm">
+      <ion-input placeholder="Ingresa tu nombre de usuario" formControlName="userName" maxlength="20"></ion-input>
+    </form>
+
+    <ion-button shape="round" color="tertiary" expand="full" class="continue-btn" (click)="completeUserRegister()">
+      Continuar
+    </ion-button>
+  </div>
+
+  <span class="d-center">
+    <small>
+      Al continuar aceptas nuestra
+      <a href="https://docs.google.com/document/d/1XHJjxROjaA0F-ZO1wfhMDtM6noHxYip2F9bjKsXfFFc/edit?usp=sharing">
+        Política de privacidad
+      </a> y
+      <a href="https://docs.google.com/document/d/1viKxFqQvhvprZBB812ha-0FAmTL2KgRo3FbRPU_e8Dw/edit?usp=sharing">
+        Condiciones de uso
+      </a>
+    </small>
+  </span>
+
+</ion-content>

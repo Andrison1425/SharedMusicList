@@ -1,0 +1,27 @@
+import { AddMusicComponent } from './../../../components/add-music/add-music.component';
+import { AudioComponent } from './../../../components/audio/audio.component';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
+import { CreateStationPageRoutingModule } from './create-station-routing.module';
+
+import { CreateStationPage } from './create-station.page';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ReactiveFormsModule,
+    CreateStationPageRoutingModule
+  ],
+  declarations: [
+    CreateStationPage,
+    AudioComponent,
+    AddMusicComponent
+  ]
+})
+export class CreateStationPageModule {}

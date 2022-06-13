@@ -1,0 +1,106 @@
+
+ion-button{
+  --background: transparent;
+  --box-shadow:none;
+}
+
+ion-content{
+  --background: var(--ion-toolbar-background);
+}
+
+ion-list {
+  background-color: transparent;
+
+  ion-icon{
+    margin-right: 3px;
+  }
+
+  >ion-button{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+.loc__cont-info{
+  width: 100%;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  >*{
+    width: 100%;
+  }
+}
+
+.loc__btn-edit{
+  border-radius: 50%;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  margin-bottom: -25px;
+  margin-right: 0px;
+  z-index: 10;
+  position: absolute;
+  right: 1.5rem;
+}
+
+.loc__header{
+  position: relative;
+  padding: 0rem 0.5rem 1rem 1rem;
+  display: flex;
+  background-color: var(--ion-toolbar-background);
+  color:  var(--black);
+
+  >img{
+    min-height: 3rem;
+    width: 5rem;
+    height: 5rem;
+    position: relative;
+  }
+
+}
+
+.cont-primary-info{
+  padding: 0 10px 0 7px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  h3{
+    margin: 0;
+    font-size: 21px;
+    font-weight: 400;
+  }
+}
+
+.cont-reactions {
+  display: flex;
+
+  span{
+    margin-right: 9px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.cont-country {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+
+  img {
+    width: 1.5rem;
+    height: 1rem;
+    border-radius: 3px;
+    margin-right: 5px;
+  }
+}
+
+.no-disponible::before{
+  content:' ';
+  background-image: url(../../../../assets/img/person.jpg);
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+}

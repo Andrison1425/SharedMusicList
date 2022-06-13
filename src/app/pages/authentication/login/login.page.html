@@ -1,0 +1,46 @@
+
+<!-- <ion-content class="ion-padding" *ngIf="continuePhone">
+   <firebase-ui [language] = "language" (signInSuccessWithAuthResult)="checkUserState($event)"></firebase-ui>
+
+</ion-content> -->
+
+<ion-content
+  fullscreen
+  class="ion-padding mx"
+  color="primary"
+>
+
+  <div class="fondo">
+    <div></div>
+  </div>
+
+  <div class="text-animation">
+    <div class="js-animation">
+      <h1>Crea tu propia emisora o eschucha la de otros</h1>
+      <h1 class="d-none">Escucha música sin límites</h1>
+      <h1 class="d-none">Descarga listas de reproducciones</h1>
+      <h1 class="d-none">Descubre a nuevos artistas</h1>
+    </div>
+  </div>
+
+  <ion-button shape="round" color="tertiary" expand="full" class="continue-btn" (click)="skipRegister()">
+    Continuar sin registrarme
+  </ion-button>
+
+  <span class="d-center">
+    <h6 class="loc__num-btn">Continuar con número de teléfono</h6>
+  </span>
+
+  <span class="d-center">
+    <small>
+      Al continuar aceptas nuestra
+      <a href="https://docs.google.com/document/d/1XHJjxROjaA0F-ZO1wfhMDtM6noHxYip2F9bjKsXfFFc/edit?usp=sharing">
+        Política de privacidad
+      </a> y
+      <a href="https://docs.google.com/document/d/1viKxFqQvhvprZBB812ha-0FAmTL2KgRo3FbRPU_e8Dw/edit?usp=sharing">
+        Condiciones de uso
+      </a>
+    </small>
+  </span>
+
+</ion-content>

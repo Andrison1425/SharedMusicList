@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-back-button
+      slot="start"
+      [defaultHref]="Routes.Home"
+      text=""
+      mode="md"
+    ></ion-back-button>
+    <ion-title>Escuchando</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen color="primary">
+  <app-station-item *ngIf="station" [station]="station" [playing]="true"></app-station-item>
+
+</ion-content>
