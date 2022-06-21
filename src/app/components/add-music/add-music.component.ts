@@ -15,6 +15,7 @@ export class AddMusicComponent implements OnInit {
   musicData: string;
   music: IMusic;
   pos: number;
+  duration: number;
   @ViewChild('fileInput', { static: false }) fileInput;
 
   addMusicForm = this.fb.group({
@@ -50,7 +51,9 @@ export class AddMusicComponent implements OnInit {
         artist: this.artist.value,
         downloadUrl: '',
         localData: this.musicData,
-        id: 0
+        id: 0,
+        duration: this.duration,
+        stationId: ''
       };
 
       this.modalController.dismiss({
@@ -82,6 +85,10 @@ export class AddMusicComponent implements OnInit {
     }
 
     return true;
+  }
+
+  onDuration(duration: number) {
+    this.duration = duration;
   }
 
   closeModal() {

@@ -1,0 +1,37 @@
+<div class="cont" *ngIf="music">
+  <div class="cont-range">
+    <ion-range
+      #range
+      min="0"
+      max="100"
+      disabled="false"
+      [(ngModel)]="progress"
+      (touchend)="seek()"
+      (touchstart)="pause()"
+      (mouseup)="seek()"
+      (mousedown)="pause()"
+    ></ion-range>
+  </div>
+  <div class="cont-music-info">
+    <div class="duration">
+      <span>0:00</span>
+      <span>{{music?.duration * 1000 | date:'mm:ss':'UTC' || '0:00'}}</span>
+    </div>
+    <div class="controls">
+      <ion-label class="music-info" (click)="goStation()">
+        {{music.title + ' - ' + music.artist}}
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="previous()">
+          <ion-icon name="play-back"></ion-icon>
+        </ion-button>
+        <ion-button (click)="musicState === musicStateEnum.Playing? pause(): play(music)">
+          <ion-icon [name]="musicState === musicStateEnum.Playing? 'pause': 'play'"></ion-icon>
+        </ion-button>
+        <ion-button (click)="next()">
+          <ion-icon name="play-forward"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+ion-range {
+  flex: 1;
+  --bar-background: #fff;
+  --bar-background-active: var(--ion-color-tertiary);
+  --knob-background: var(--ion-color-tertiary);
+  padding: 0;
+}
+
+.cont {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+
+  .cont-music-info {
+    background-color: var(--ion-color-secondary);
+    z-index: 2;
+    padding: 0.5rem;
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      >ion-label {
+        flex: 1;
+      }
+    }
+  }
+
+  .cont-range {
+    margin-bottom: -20px;
+  }
+}
+
+.duration {
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+}

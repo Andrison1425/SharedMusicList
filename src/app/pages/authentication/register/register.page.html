@@ -11,8 +11,8 @@
   <div class="cont-form">
 
     <div class="cont-photo">
-      <img src="../../../../assets/img/person.jpg" alt="perfil">
-      <ion-button color="medium">
+      <img [src]="profileImgPath" alt="perfil">
+      <ion-button color="medium" (click)="presentActionSheet()">
         <ion-icon name="camera" slot="icon-only"></ion-icon>
       </ion-button>
     </div>

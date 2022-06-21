@@ -1,3 +1,8 @@
+import { Folder } from './../../../enums/folder.enum';
+import { FileSystemService } from './../../../services/file-system.service';
+import { CameraSource } from '@capacitor/camera';
+import { ImageService } from './../../../services/image.service';
+import { StationService } from './../../../services/station.service';
 import { Router } from '@angular/router';
 import { LocalDbService } from './../../../services/local-db.service';
 import { MusicService } from './../../../services/music.service';
@@ -8,10 +13,11 @@ import { IStation } from './../../../interfaces/station.interface';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
 import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
-import { ModalController, IonAccordionGroup, ItemReorderEventDetail } from '@ionic/angular';
+import { ModalController, IonAccordionGroup, ItemReorderEventDetail, ActionSheetController } from '@ionic/angular';
 import { Route } from 'src/app/enums/route.enum';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import uniqid from 'uniqid';
+import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-create-station',
@@ -23,6 +29,7 @@ export class CreateStationPage implements OnInit {
   Routes = Route;
   musicArr: IMusic[] = [];
   @Input() station?: IStation;
+  imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('accordionForm', { static: false }) accordionForm: IonAccordionGroup;
 
   stationForm = this.fb.group({
@@ -38,8 +45,12 @@ export class CreateStationPage implements OnInit {
     private fb: FormBuilder,
     private loadingService: LoadingService,
     private musicService: MusicService,
+    private stationService: StationService,
     private localDbService: LocalDbService,
-    private router: Router
+    private router: Router,
+    private actionSheetController: ActionSheetController,
+    private imageService: ImageService,
+    private fileSystemService: FileSystemService
   ) { }
 
   ngOnInit() {
@@ -61,7 +72,8 @@ export class CreateStationPage implements OnInit {
       component: AddMusicComponent,
       componentProps: {
         music,
-        pos
+        pos,
+
       }
     });
 
@@ -96,6 +108,7 @@ export class CreateStationPage implements OnInit {
           const ref = await this.musicService.uploadMusic(music, stationID);
           music.downloadUrl = ref;
           music.id = index;
+          music.stationId= stationID;
         } catch (error) {
           this.loadingService.dismiss();
           this.toastService.presentToast('Error de conexión', Colors.DANGER, 5000);
@@ -106,23 +119,75 @@ export class CreateStationPage implements OnInit {
       const user = await this.localDbService.getLocalUser();
 
       const station: IStation = {
+        id: stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
         inReproduction: 3,
         author: {
           id: user.id,
-          userName: user.userName,
-          phofileImage: {
-            compressImage: ''
-          }
+          userName: user.userName
         },
-        musics: this.musicArr
+        musics: this.musicArr,
+        views: 0,
+        reactions: {
+          idUsersAndReaction: {},
+          numDislikes: 0,
+          numLikes: 0
+        },
+        timestamp: serverTimestamp() as Timestamp,
+        image: await this.uploadImage(this.imageStation, stationID)
       };
 
-      await this.musicService.createStation(station, stationID);
+      await this.stationService.createStation(station, stationID);
       this.loadingService.dismiss();
       this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
       this.router.navigate(['radio/station/' + stationID]);
+    }
+  }
+
+  async presentImageActionSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'my-custom-class',
+      buttons: [
+        {
+          text: 'Cámara',
+          icon: 'camera-sharp',
+          handler: () =>
+            this.imageService.selectAndCroppImage(CameraSource.Camera)
+              .then(resp => {this.imageStation = resp})
+        },
+        {
+          text: 'Galería',
+          icon: 'image-sharp',
+          handler: () =>
+            this.imageService.selectAndCroppImage(CameraSource.Photos)
+              .then(resp => {this.imageStation = resp})
+        },
+        {
+          text: 'Quitar imágen',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.imageStation = '../../../../assets/img/no-image.png';
+          }
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async uploadImage(image: string, stationId: string) {
+    if (this.imageStation === '../../../../assets/img/no-image.png') {
+      return {
+        compress: '',
+        path: '',
+        localPath: ''
+      }
+    } else {
+      const fileName = new Date().getTime() + '.jpeg';
+      const localPath = await this.fileSystemService.writeFile(image, fileName, Folder.StationImage);
+      const imageData = await this.imageService.uploadStationImage(image, stationId);
+      return {...imageData, localPath};
     }
   }
 
@@ -149,4 +214,5 @@ export class CreateStationPage implements OnInit {
 
     return true;
   }
+
 }

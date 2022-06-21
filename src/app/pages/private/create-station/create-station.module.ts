@@ -1,5 +1,5 @@
+import { GlobalComponentsModule } from './../../../components/global-components.module';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
-import { AudioComponent } from './../../../components/audio/audio.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,11 +16,11 @@ import { CreateStationPage } from './create-station.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    CreateStationPageRoutingModule
+    CreateStationPageRoutingModule,
+    GlobalComponentsModule
   ],
   declarations: [
     CreateStationPage,
-    AudioComponent,
     AddMusicComponent
   ]
 })

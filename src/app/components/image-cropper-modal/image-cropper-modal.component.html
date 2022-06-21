@@ -1,0 +1,21 @@
+<ion-content fullscreen>
+  <image-cropper
+    [imageBase64]="base64Image"
+    [maintainAspectRatio]="true"
+    [aspectRatio]="4 / 4"
+    format="jpeg"
+    (imageCropped)="imageCropped($event)"
+  ></image-cropper>
+
+  <ion-item class="close-fake" lines="none" text-center>
+    <ion-button (click)="close()" class="loc__close" slot="end">
+      Cancelar
+    </ion-button>
+
+    <ion-button (click)="save()" color="secondary" slot="end">
+      Aceptar
+    </ion-button>
+  </ion-item>
+
+</ion-content>
+

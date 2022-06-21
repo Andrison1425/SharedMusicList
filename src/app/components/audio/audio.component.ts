@@ -1,7 +1,6 @@
 import { Howl } from 'howler';
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { IonRange } from '@ionic/angular';
-import { SafeUrl, SafeResourceUrl } from '@angular/platform-browser';
 import { Capacitor } from '@capacitor/core';
 
 @Component({
@@ -12,11 +11,12 @@ import { Capacitor } from '@capacitor/core';
 export class AudioComponent implements OnInit, OnDestroy {
 
   @Input() audioData: string;
+  @Output() duration = new EventEmitter<number>();
   progress = 0;
   player: Howl;
   pause = true;
-  @ViewChild('range') range: IonRange;
   interval: NodeJS.Timeout;
+  @ViewChild('range') range: IonRange;
 
   constructor() { /* */}
 
@@ -41,6 +41,9 @@ export class AudioComponent implements OnInit, OnDestroy {
       onend: () => {
         this.pause = true;
         clearInterval(this.interval);
+      },
+      onload: () => {
+        this.duration.emit(this.player.duration());
       }
     });
   }

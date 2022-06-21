@@ -1,3 +1,7 @@
+import { LocalDbService } from './../../../services/local-db.service';
+import { IStation } from './../../../interfaces/station.interface';
+import { StationService } from './../../../services/station.service';
+import { StationOrderBy } from './../../../enums/station-order-by.enum';
 import { Component, OnInit } from '@angular/core';
 //import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
@@ -17,15 +21,20 @@ import { MenuController } from '@ionic/angular';
 export class HomePage implements OnInit {
 
   srcAudio = '';
-  player: any;
   musicCont = 0;
-  mediaTimer: any;
+  activeTab = 'FAVORITES';
+  stations: IStation[] = [];
+  favoriteStations: IStation[] = [];
+  stationOrderBy = StationOrderBy;
+  orderBy: StationOrderBy = StationOrderBy.Likes;
 
   constructor(
     private backgroundMode: BackgroundMode,
     private http: HttpClient,
     private media: Media,
-    private menu: MenuController
+    private menu: MenuController,
+    private stationService: StationService,
+    private localDbService: LocalDbService
   ) {}
 
   async ngOnInit() {
@@ -95,10 +104,40 @@ export class HomePage implements OnInit {
 
     // });
 
-  }
+    this.localDbService.getLocalUser()
+      .then(user => {
+        this.localDbService.getFavoriteStations(user.id)
+          .then(stations => {
+            this.favoriteStations = stations;
+          })
+      })
+
+      this.stationService.getStations(this.stationOrderBy.Likes)
+        .then(resp => {
+          this.stations = resp;
+          console.log(resp);
+        })
+        .catch((e) => console.log(e));
+    }
 
   openMenu() {
     this.menu.open('home-menu');
   }
 
+  segmentChanged(ev) {
+    if (ev.detail.value === 'EXPLORE') {
+      this.activeTab = 'EXPLORE';
+    }else {
+      this.activeTab = 'FAVORITES';
+    }
+  }
+
+  setOrderBy() {
+    this.stationService.getStations(this.orderBy)
+      .then(resp => {
+        this.stations = resp;
+        console.log(resp);
+      })
+      .catch((e) => console.log(e));
+  }
 }

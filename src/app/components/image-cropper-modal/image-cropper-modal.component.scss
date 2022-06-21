@@ -1,0 +1,23 @@
+.close-fake{
+  --background:transparent;
+  z-index: 9;
+  position: absolute;
+  bottom: 0;
+  margin-top:20px;
+  width: 100%;
+}
+
+ion-content{
+  padding-top: 1rem;
+  --background:rgb(26, 26, 26);
+}
+
+.loc__close{
+  color:#fff;
+  --background: transparent;
+  --box-shadow:none;
+}
+
+ion-item ion-button{
+  font-size: 1rem;
+}

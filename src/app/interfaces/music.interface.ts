@@ -4,4 +4,6 @@ export interface IMusic {
   downloadUrl: string;
   localData?: string;
   id: number;
+  duration?: number;
+  stationId: string;
 }

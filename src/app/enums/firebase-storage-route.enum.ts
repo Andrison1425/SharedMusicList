@@ -1,3 +1,4 @@
 export enum FirebaseStorageRoute {
-  Musics = 'musics/'
+  Musics = 'musics/',
+  UserImages = 'images/'
 }

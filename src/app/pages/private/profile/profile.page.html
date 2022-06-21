@@ -6,28 +6,28 @@
       text=""
       mode="md"
     ></ion-back-button>
+    <ion-title class="ion-no-padding">{{userID? 'Perfil de': 'Mi perfil'}}</ion-title>
   </ion-toolbar>
   <ion-toolbar color="secondary">
     <div class="loc__header">
       <img
-        src="../../../assets/img/person.jpg"
+        [src]="imgPath"
         alt="Imágen de perfil"
         class="no-disponible"
       >
       <div class="cont-primary-info">
         <h3>{{user?.userName}}</h3>
         <div class="cont-country">
-          <img src="../../../assets/img/argentina.png" alt="">
-          Argentina
+          {{user?.location.country}}
         </div>
         <div class="cont-reactions">
           <span id="likes">
             <ion-icon name="thumbs-up"></ion-icon>
-            350
+            {{reactionsCount.likes}}
           </span>
           <span>
             <ion-icon name="thumbs-down"></ion-icon>
-            178
+            {{reactionsCount.dislikes}}
           </span>
         </div>
       </div>
@@ -37,12 +37,14 @@
   <ion-button
     class="loc__btn-edit"
     color="medium"
+    (click)="editActionSheet()"
+    *ngIf="!userID"
   >
     <ion-icon name="pencil" slot="icon-only"></ion-icon>
   </ion-button>
 </ion-header>
 
-<ion-content fullscreen color="primary">
+<ion-content fullscreen color="primary" *ngIf="user">
   <ion-toolbar mode="ios" color="primary">
     <ion-segment value="all" mode="ios">
       <ion-segment-button value="all">
@@ -55,12 +57,20 @@
   </ion-toolbar>
 
   <ion-list class="loc__cont-des">
-    <ion-button expand="block" color="medium" [routerLink]="'/radio/'+Routes.CreateStation">
+    <ion-button expand="block" color="medium" [routerLink]="'/radio/'+Routes.CreateStation" *ngIf="!userID">
       <ion-icon name="add" slot="start"></ion-icon>
       <div>Crear emisora</div>
     </ion-button>
 
-    <app-station-item *ngFor="let station of stations" [station]="station" [playing]="false"></app-station-item>
+    <div *ngIf="stations.length === 0" class="no-list-message">
+      Sin listas de reproducción
+    </div>
+
+    <app-station-item *ngFor="let station of stations" [station]="station" [playing]="false" (deleteStation)="onDeleteStation($event)"></app-station-item>
   </ion-list>
 
+</ion-content>
+
+<ion-content fullscreen color="primary" *ngIf="!user" class="center">
+  <app-skeleton></app-skeleton>
 </ion-content>

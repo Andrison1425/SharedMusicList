@@ -104,3 +104,16 @@ ion-list {
   width: 100%;
   background-size: cover;
 }
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-list-message {
+  flex: 1;
+  height: 100%;
+  text-align: center;
+  padding-top: 4rem;
+}

@@ -77,13 +77,29 @@ export class LocalDbService {
     return station;
   }
 
-  async getAllStation() {
+  async getMyStations(userId: string) {
     const stations: IStation[] = [];
     await this.stationDb.iterate((values: IStation, key) => {
-      stations.push({
-        id: key,
-        ...values
-      });
+      if (values.author.id === userId) {
+        stations.push({
+          id: key,
+          ...values
+        });
+      }
+    });
+
+    return stations;
+  }
+
+  async getFavoriteStations(userId: string) {
+    const stations: IStation[] = [];
+    await this.stationDb.iterate((values: IStation, key) => {
+      if (values.author.id !== userId) {
+        stations.push({
+          id: key,
+          ...values
+        });
+      }
     });
 
     return stations;

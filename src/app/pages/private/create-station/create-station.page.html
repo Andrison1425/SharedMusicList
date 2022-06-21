@@ -6,27 +6,36 @@
       text=""
       mode="md"
     ></ion-back-button>
-    <ion-title slot="start" class="ion-no-padding">{{station? 'Crear': 'Editar'}} estación</ion-title>
+    <ion-title slot="start" class="ion-no-padding">{{station? 'Editar': 'Crear'}} estación</ion-title>
     <ion-button slot="end" mode="md" color="success" class="mr-15" (click)="createStation()">
-      {{station? 'Crear': 'Editar'}}
+      {{station? 'Editar': 'Crear'}}
     </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-no-padding" color="primary">
   <form [formGroup]="stationForm">
-      <ion-item color="primary">
-        <ion-input formControlName="name" type="text" maxlength="40" placeholder="Escribe aquí"></ion-input>
-      </ion-item>
-      <ion-item color="primary">
-        <ion-textarea
-          placeholder="Describe tu estación de radio"
-          maxlength="450"
-          rows="5"
-          formControlName="description"
-        ></ion-textarea>
-      </ion-item>
-    </form>
+    <ion-label>
+      Imágen de la lista
+    </ion-label>
+    <div class="cont-image">
+      <img [src]="imageStation" alt="">
+      <ion-button color="medium" (click)="presentImageActionSheet()">
+        <ion-icon name="camera" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+    <ion-item color="primary">
+      <ion-input formControlName="name" type="text" maxlength="40" placeholder="Nombre de la lista"></ion-input>
+    </ion-item>
+    <ion-item color="primary">
+      <ion-textarea
+        placeholder="Describe tu lista de reproducción"
+        maxlength="450"
+        rows="5"
+        formControlName="description"
+      ></ion-textarea>
+    </ion-item>
+  </form>
 
   <span class="cont-delete-all-btn">
     <ion-button

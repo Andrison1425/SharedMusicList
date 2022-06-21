@@ -1,8 +1,9 @@
+import { IStation } from './../interfaces/station.interface';
 import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IUser } from './../interfaces/user.interface';
 import { LocalDbService } from './local-db.service';
 import { Injectable } from '@angular/core';
-import { collection, doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +31,37 @@ export class UserService {
     });
   }
 
-  updateUser(user: IUser) {
-    this.localDbService.setUserData(user.id, user);
+  addFavoriteStation(station: IStation) {
+    const id = this.localDbService.user.id;
+    const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id );
+    updateDoc(docRef, {
+      favoriteStations: arrayUnion(station.id)
+    }).then(() => {
+      this.localDbService.setStation(station.id, station);
+      this.syncUser();
+    });
   }
 
+  syncUser() {
+    const id = this.localDbService.user.id;
+    const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
+    getDoc(docRef)
+      .then(resp => {
+        this.localDbService.setUserData(id, resp.data());
+      })
+  }
+
+  async getUser(id: string) {
+    const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
+    const userData = await getDoc(docRef);
+    return userData.data();
+  }
+
+  async updateUser(id: string, updateData: Partial<IUser>) {
+    const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
+    await updateDoc(docRef, updateData);
+    const localUserData = await this.localDbService.getLocalUser();
+    const updatedUser = await  this.localDbService.setUserData(id, {...localUserData, ...updateData});
+    return updatedUser;
+  }
 }
