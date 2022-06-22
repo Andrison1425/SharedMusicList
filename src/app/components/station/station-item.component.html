@@ -1,7 +1,7 @@
 <ion-card>
   <ion-item color="primary" lines="none">
     <ion-thumbnail slot="start" (click)="goStation(station.id)">
-      <img [src]="this.station.image.localPath || this.station.image.compress || '../../../assets/img/no-image.png'">
+      <img [src]="this.station.image.compress || '../../../assets/img/no-image.png'">
     </ion-thumbnail>
     <ion-label>
       <span (click)="goStation(station.id)">

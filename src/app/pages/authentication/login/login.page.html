@@ -1,13 +1,20 @@
+<ion-header *ngIf="continueWithPhone">
+  <ion-toolbar color="secondary">
+    <ion-button (click)="continueWithPhone = false" color="secondary">
+      <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
 
-<!-- <ion-content class="ion-padding" *ngIf="continuePhone">
-   <firebase-ui [language] = "language" (signInSuccessWithAuthResult)="checkUserState($event)"></firebase-ui>
-
-</ion-content> -->
+<ion-content class="ion-padding" *ngIf="continueWithPhone">
+   <firebase-ui [language] = "'es'" (signInSuccessWithAuthResult)="checkUserState($event)"></firebase-ui>
+</ion-content>
 
 <ion-content
   fullscreen
   class="ion-padding mx"
   color="primary"
+  *ngIf="!continueWithPhone"
 >
 
   <div class="fondo">
@@ -27,7 +34,7 @@
     Continuar sin registrarme
   </ion-button>
 
-  <span class="d-center">
+  <span class="d-center" (click)="continueWithPhone = true">
     <h6 class="loc__num-btn">Continuar con número de teléfono</h6>
   </span>
 

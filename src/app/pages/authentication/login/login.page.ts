@@ -1,3 +1,5 @@
+import { LocalDbService } from './../../../services/local-db.service';
+import { UserService } from './../../../services/user.service';
 import { ToastService } from '../../../services/toast.service';
 import { LoadingService } from '../../../services/loading.service';
 import { Component, OnInit } from '@angular/core';
@@ -5,6 +7,7 @@ import { Router } from '@angular/router';
 import { Colors } from 'src/app/enums/color.enum';
 import { signInAnonymously, Auth } from '@angular/fire/auth';
 import { Route } from 'src/app/enums/route.enum';
+import { FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular-i18n';
 
 @Component({
   selector: 'app-login',
@@ -14,12 +17,15 @@ import { Route } from 'src/app/enums/route.enum';
 export class LoginPage implements OnInit {
 
   private animationInterval: NodeJS.Timeout;
+  continueWithPhone: boolean;
 
   constructor(
     private loadingService: LoadingService,
     private router: Router,
     private toastService: ToastService,
-    private auth: Auth
+    private auth: Auth,
+    private userService: UserService,
+    private localDbService: LocalDbService
   ) { /**/}
 
   ngOnInit() {
@@ -56,4 +62,23 @@ export class LoginPage implements OnInit {
       });
   }
 
+  checkUserState(data: FirebaseUISignInSuccessWithAuthResult){
+    this.loadingService.present();
+    this.userService.getUser(data.authResult.user.uid)
+      .then(user => {
+        this.loadingService.dismiss();
+
+        if (!user){
+          this.router.navigate([Route.Register]);
+        }else{
+          this.localDbService.setUserData(user.id, user)
+            .then(() => this.router.navigate(['radio/']));
+        }
+        this.loadingService.dismiss();
+      })
+      .catch(() => {
+        this.loadingService.dismiss();
+          this.toastService.presentToast('Ha ocurrido un error', Colors.DANGER, 2500);
+      });
+  }
 }
