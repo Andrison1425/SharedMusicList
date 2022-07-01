@@ -14,17 +14,17 @@
   <app-station-item *ngIf="station" [station]="station" [playing]="true"></app-station-item>
 
   <ion-toolbar mode="ios" color="primary">
-    <ion-segment value="all" mode="ios">
-      <ion-segment-button value="all">
+    <ion-segment value="TRACKS" mode="ios" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="TRACKS">
         <ion-label>Canciones</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="favorites">
+      <ion-segment-button value="COMMENTS">
         <ion-label>Comentarios</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 
-  <ion-list>
+  <ion-list *ngIf="activeTab === 'TRACKS'">
     <ion-item *ngFor="let music of station?.musics; trackBy: trackByFn" color="primary">
       <div>
         {{music.title}}
@@ -51,7 +51,92 @@
       ></ion-icon>
     </ion-item>
   </ion-list>
+
+  <ion-list *ngIf="activeTab === 'COMMENTS'">
+    <div *ngIf="comments.length === 0" class="no-list-message">
+      Sin comentarios
+    </div>
+
+    <div class="cont-comment" *ngFor="let comment of comments">
+      <ion-item lines="none" color="primary">
+        <ion-label class="ion-text-wrap">
+          <strong>{{comment.userName}}</strong>
+          {{comment.comment}}<br />
+          <small>
+            {{comment.timestamp | timestamp}}
+            <ion-button fill="clear" color="tertiary" (click)="addReplyComment(comment, comment.id)">
+              Responder
+            </ion-button>
+          </small>
+        </ion-label>
+      </ion-item>
+      <div class="cont-replies">
+        <ion-item lines="none" color="primary" *ngFor="let reply of replyComments[comment.id]">
+          <ion-label class="ion-text-wrap ion-no-margin">
+            <strong>{{reply.userName}}</strong>
+            {{reply.comment}}<br />
+            <small>
+              {{reply.timestamp | timestamp}}
+              <ion-button fill="clear" color="tertiary" (click)="addReplyComment(reply, comment.id, true)">
+                Responder
+              </ion-button>
+            </small>
+          </ion-label>
+        </ion-item>
+      </div>
+    </div>
+  </ion-list>
+
+  <ion-footer *ngIf="activeTab === 'COMMENTS'">
+    <div *ngIf="replyComment">
+      <div class="loc__reply">
+        <ion-icon name="arrow-redo"></ion-icon>
+        <span class="truncar">
+          <p class="userName">
+            {{replyComment.userName}}
+          </p>
+          <span>
+            {{replyComment.comment}}
+          </span>
+        </span>
+        <div class="loc__delete-reply" (click)="deleteReply()">
+          <ion-icon name="close"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+
+    <form [formGroup]="commentsForm" class="d-contents">
+      <ion-toolbar class="loc_toolbar d-flex" color="primary">
+        <ion-textarea
+          placeholder="Escribe aquí"
+          formControlName="comment"
+          auto-grow="true"
+          spellcheck="true"
+          rows="1"
+          maxlength="1000"
+          autocapitalize
+          #textarea
+        ></ion-textarea>
+
+        <ion-buttons
+          slot="end"
+          class="loc__btns-footer"
+          *ngIf="!commentsForm.invalid"
+        >
+          <ion-icon
+            name="send"
+            color="tertiary"
+            class="loc_icon-footer"
+            (click)="addComment()"
+          ></ion-icon>
+        </ion-buttons>
+
+      </ion-toolbar>
+    </form>
+  </ion-footer>
 </ion-content>
+
 
 <ng-template #playingAnimation>
   <div class="loader loader--style4" title="3" slot="end">

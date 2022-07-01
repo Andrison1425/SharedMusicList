@@ -7,11 +7,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { HttpClientModule } from '@angular/common/http';
-import { Media } from '@awesome-cordova-plugins/media/ngx';
-import { ForegroundService } from '@awesome-cordova-plugins/foreground-service/ngx';
 import { environment } from 'src/environments/environment.prod';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
@@ -38,10 +35,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    NativeAudio,
     BackgroundMode,
-    Media,
-    ForegroundService
   ],
   bootstrap: [AppComponent],
 })

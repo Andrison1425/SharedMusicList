@@ -7,15 +7,19 @@ import { LoadingController } from '@ionic/angular';
 export class LoadingService {
 
   isLoading = false;
+  loader: HTMLIonLoadingElement;
 
-  constructor(public loadingController: LoadingController) { }
+  constructor(
+    private loadingController: LoadingController
+  ) { }
 
   async present(message = '') {
     this.isLoading = true;
     return await this.loadingController.create({
-      message
+      message,
     })
       .then(resp => {
+        this.loader = resp;
         resp.present().then(() => {
           if (!this.isLoading) {
             resp.dismiss();
@@ -27,5 +31,11 @@ export class LoadingService {
   async dismiss() {
     this.isLoading = false;
     return await this.loadingController.dismiss();
+  }
+
+  setContent(text: string) {
+    if (this.loader) {
+      this.loader.message = text;
+    }
   }
 }

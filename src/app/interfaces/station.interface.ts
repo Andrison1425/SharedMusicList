@@ -1,3 +1,4 @@
+import { IComment } from './comment.interface';
 import { Timestamp } from '@angular/fire/firestore';
 import { IMusic } from './music.interface';
 
@@ -22,5 +23,6 @@ export interface IStation {
     localPath: string,
     path: string,
     compress: string
-  }
+  },
+  comments: IComment[]
 }

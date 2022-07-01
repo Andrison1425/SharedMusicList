@@ -46,20 +46,20 @@
 
 <ion-content fullscreen color="primary" *ngIf="user">
   <ion-toolbar mode="ios" color="primary">
-    <ion-segment value="all" mode="ios">
-      <ion-segment-button value="all">
-        <ion-label>Emisoras</ion-label>
+    <ion-segment value="LISTS" mode="ios" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="LISTS">
+        <ion-label>Listas</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="favorites">
+      <ion-segment-button value="ABOUT">
         <ion-label>Acerca de</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 
-  <ion-list class="loc__cont-des">
+  <ion-list class="loc__cont-des" *ngIf="activeTab === 'LISTS'">
     <ion-button expand="block" color="medium" [routerLink]="'/radio/'+Routes.CreateStation" *ngIf="!userID">
       <ion-icon name="add" slot="start"></ion-icon>
-      <div>Crear emisora</div>
+      <div>Crear lista</div>
     </ion-button>
 
     <div *ngIf="stations.length === 0" class="no-list-message">
@@ -67,6 +67,20 @@
     </div>
 
     <app-station-item *ngFor="let station of stations" [station]="station" [playing]="false" (deleteStation)="onDeleteStation($event)"></app-station-item>
+  </ion-list>
+
+  <ion-list class="loc__cont-des" *ngIf="activeTab === 'ABOUT'">
+    <ion-item lines="none" color="primary">
+      <ion-label>
+        Se unió el 24 de febrero del 2021
+      </ion-label>
+    </ion-item>
+    <ion-item lines="none" color="primary">
+      <ion-label>
+        <ion-icon name="trending-up"></ion-icon>
+        15 Reproducciones
+      </ion-label>
+    </ion-item>
   </ion-list>
 
 </ion-content>

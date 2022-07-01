@@ -53,7 +53,9 @@ export class StationItemComponent implements OnInit {
       this.musicPlaying = this.musicService.musicPlaying;
       this.musicService.musicPlayingInfo()
         .subscribe(resp => {
-          this.musicPlaying = resp.music;
+          if (resp.music) {
+            this.musicPlaying = resp.music;
+          }
         });
 
       this.stationService.addView(this.station.id);
@@ -63,6 +65,7 @@ export class StationItemComponent implements OnInit {
       .then(user => {
         this.user = user;
 
+        //Check if the user reacted on this list
         for (const key of Object.keys(this.station.reactions.idUsersAndReaction)) {
           if (key === this.user.id) {
             this.reaction = this.station.reactions.idUsersAndReaction[key];
@@ -83,6 +86,7 @@ export class StationItemComponent implements OnInit {
 
       });
 
+    //Porcentage of like
     if (this.station.reactions.numLikes) {
       this.percentageReaction =
         ((this.station.reactions.numDislikes + this.station.reactions.numLikes) * 100) / this.station.reactions.numLikes;

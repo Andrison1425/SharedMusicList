@@ -1,3 +1,4 @@
+import { Timestamp } from '@angular/fire/firestore';
 import * as imageConversion from 'image-conversion';
 
 export async function compressUriImage(uri: string): Promise<string> {
@@ -22,3 +23,19 @@ const getFileReader = (): FileReader => {
   const zoneOriginalInstance = (fileReader)['__zone_symbol__originalInstance'];
   return zoneOriginalInstance || fileReader;
 };
+
+export const getFakeTimestamp = () => {
+  return {
+    seconds: 0,
+    nanoseconds: 0,
+    toDate: () => new Date(),
+    toMillis: () => 0,
+    isEqual: (other: Timestamp) => true,
+    toString: () => '',
+    toJSON: () => { return {
+        seconds: 0,
+        nanoseconds: 0
+    }},
+    valueOf: () => ''
+  }
+}

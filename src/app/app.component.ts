@@ -1,3 +1,4 @@
+import { BackgroundModeService } from './services/background-mode.service';
 import { LocalDbService } from './services/local-db.service';
 import { Component } from '@angular/core';
 import { StatusBar } from '@capacitor/status-bar';
@@ -9,9 +10,11 @@ import { StatusBar } from '@capacitor/status-bar';
 })
 export class AppComponent {
   constructor(
-    private localDbService: LocalDbService
+    localDbService: LocalDbService,
+    backgroundModeService: BackgroundModeService
   ) {
     StatusBar.setBackgroundColor({color: '#390D02'});
     localDbService.initializeLocalDb();
+    backgroundModeService.initialize();
   }
 }

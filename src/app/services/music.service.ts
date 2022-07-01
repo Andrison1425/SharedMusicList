@@ -135,4 +135,12 @@ export class MusicService {
     }
     this.play();
   }
+
+  close() {
+    this.player.stop();
+    this.musicPlayingInfo$.next({
+      music: null,
+      state: null
+    });
+  }
 }

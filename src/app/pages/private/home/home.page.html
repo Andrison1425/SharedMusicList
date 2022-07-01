@@ -41,9 +41,6 @@
         <ion-select-option [value]="stationOrderBy.Views">Vistas</ion-select-option>
       </ion-select>
   </ion-item>
-    <app-station-item *ngFor="let station of stations" [station]="station" [adminStation]="false"></app-station-item>
-  <ion-list>
-
-
-  </ion-list>
+  <app-skeleton *ngIf="!stations"></app-skeleton>
+  <app-station-item *ngFor="let station of stations" [station]="station" [adminStation]="false"></app-station-item>
 </ion-content>

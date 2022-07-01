@@ -26,5 +26,9 @@
 	{
 		"pkg": "capacitor-music-controls-plugin",
 		"classpath": "com.ingageco.capacitormusiccontrols.CapacitorMusicControls"
+	},
+	{
+		"pkg": "capacitor-v3-music-controls",
+		"classpath": "com.ingageco.capacitormusiccontrols.CapacitorMusicControls"
 	}
 ]

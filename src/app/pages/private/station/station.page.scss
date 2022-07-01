@@ -1,38 +1,45 @@
-
-ion-button{
+ion-button {
   --background: transparent;
-  --box-shadow:none;
+  --box-shadow: none;
+  font-size: 12px;
 }
 
-ion-content{
+ion-content {
   --background: var(--ion-toolbar-background);
 }
 
 ion-list {
   background-color: transparent;
 
-  ion-icon{
+  ion-icon {
     margin-right: 3px;
   }
 
-  >ion-button{
+  >ion-button {
     margin-left: 10px;
     margin-right: 10px;
+    margin: 0;
   }
 }
 
-.loc__cont-info{
+small {
+  display: flex;
+  align-items: center;
+}
+
+.loc__cont-info {
   width: 100%;
   justify-content: flex-start;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  >*{
+
+  >* {
     width: 100%;
   }
 }
 
-.loc__btn-edit{
+.loc__btn-edit {
   border-radius: 50%;
   overflow: hidden;
   width: 50px;
@@ -45,14 +52,14 @@ ion-list {
   right: 1.5rem;
 }
 
-.loc__header{
+.loc__header {
   position: relative;
   padding: 0rem 0.5rem 1rem 1rem;
   display: flex;
   background-color: var(--ion-toolbar-background);
-  color:  var(--black);
+  color: var(--black);
 
-  >img{
+  >img {
     min-height: 3rem;
     width: 5rem;
     height: 5rem;
@@ -61,14 +68,14 @@ ion-list {
 
 }
 
-.cont-primary-info{
+.cont-primary-info {
   padding: 0 10px 0 7px;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  h3{
+  h3 {
     margin: 0;
     font-size: 21px;
     font-weight: 400;
@@ -78,7 +85,7 @@ ion-list {
 .cont-reactions {
   display: flex;
 
-  span{
+  span {
     margin-right: 9px;
     color: var(--ion-color-medium);
   }
@@ -97,10 +104,66 @@ ion-list {
   }
 }
 
-.no-disponible::before{
-  content:' ';
+.no-disponible::before {
+  content: ' ';
   background-image: url(../../../../assets/img/person.jpg);
   height: 100%;
   width: 100%;
   background-size: cover;
+}
+
+ion-textarea {
+  background: var(--ion-color-primary);
+}
+
+ion-footer {
+  position: sticky;
+  bottom: 0;
+}
+
+strong {
+  color: var(--ion-color-tertiary);
+}
+
+.loc__reply {
+  padding-left: 0.5rem;
+}
+
+.loc_icon-footer,
+.loc__reply ion-icon {
+  font-size: 25px;
+}
+
+.loc_icon-footer {
+  margin-right: 7px;
+}
+
+.loc__reply {
+  border-bottom: 1px solid #d9d9d9;
+  padding: 7px 0.5rem;
+  display: flex;
+  align-items: center;
+  background-color: var(--ion-color-secondary);
+
+  >span {
+    margin: 0 9px;
+    font-size: 13px;
+    flex: 1;
+    padding-left: 8px;
+  }
+
+  .userName {
+    width: 100%;
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.loc__delete-reply {
+  color: gray;
+  display: flex;
+}
+
+.cont-replies {
+  padding-left: 1rem;
 }

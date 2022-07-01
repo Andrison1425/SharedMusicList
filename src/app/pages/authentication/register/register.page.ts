@@ -22,7 +22,7 @@ import { compressUriImage } from 'src/app/utils/utils';
 })
 export class RegisterPage implements OnInit {
 
-  profileImgPath = '../../../../assets/img/person.jpg';
+  profileImgPath = '';
 
   userDataForm: FormGroup = this.fb.group({
     userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -90,6 +90,8 @@ export class RegisterPage implements OnInit {
               this.toastService.presentToast('Error al tratar de guardar la imágen', Colors.DANGER, 5000);
             });
         }
+      } else {
+        this.createUser(user);
       }
     }
   }
@@ -130,7 +132,7 @@ export class RegisterPage implements OnInit {
           icon: 'trash',
           handler: () => {
             this.compressImg = '';
-            this.profileImgPath = '../../../../assets/img/person.jpg';
+            this.profileImgPath = '';
           }
         }
       ]
@@ -145,12 +147,12 @@ export class RegisterPage implements OnInit {
 
   formValidate() {
     if (this.userName?.errors?.required) {
-      this.toastService.presentToast('El nombre de usuario es obligatorio', Colors.DANGER);
+      this.toastService.presentToast('El nombre de usuario es obligatorio.', Colors.DANGER);
       return false;
     }
 
     if (this.userName?.errors?.minlength) {
-      this.toastService.presentToast('El nombre de usuario debe de ser de 3 caracteres mínimo', Colors.DANGER, 5000);
+      this.toastService.presentToast('El nombre de usuario debe de ser de 3 caracteres mínimo.', Colors.DANGER, 5000);
       return false;
     }
 

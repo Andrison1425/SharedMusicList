@@ -75,4 +75,8 @@ export class MusicPlayerComponent implements OnInit {
   goStation() {
     this.router.navigate(['radio/station/' + this.music.stationId]);
   }
+
+  close() {
+    this.musicService.close();
+  }
 }

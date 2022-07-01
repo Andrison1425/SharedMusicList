@@ -30,6 +30,7 @@ export class ProfilePage implements OnInit {
   isModalCreateStatioOpen = false;
   stations: IStation[] = [];
   imgPath = '../../../assets/img/person.jpg';
+  activeTab = 'LISTS';
 
   constructor(
     private localDbService: LocalDbService,
@@ -194,6 +195,14 @@ export class ProfilePage implements OnInit {
     const localImg = await this.fileSystemService.writeFile(image, fileName, Folder.ProfileImage);
     this.imageService.uploadProfileImage(image, this.user.id, localImg);
     this.imgPath = image;
+  }
+
+  segmentChanged(ev) {
+    if (ev.detail.value === 'ABOUT') {
+      this.activeTab = 'ABOUT';
+    }else {
+      this.activeTab = 'LISTS';
+    }
   }
 
 }

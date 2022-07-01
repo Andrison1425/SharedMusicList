@@ -99,7 +99,7 @@ export class CreateStationPage implements OnInit {
   async createStation() {
     if(this.stationFormValidate()) {
 
-      this.loadingService.present('Subiendo canciones...');
+      this.loadingService.present('Subiendo canciones 1/' + this.musicArr.length);
       const stationID = uniqid();
 
       for (let index = 0; index < this.musicArr.length; index++) {
@@ -109,12 +109,14 @@ export class CreateStationPage implements OnInit {
           music.downloadUrl = ref;
           music.id = index;
           music.stationId= stationID;
+          this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);
         } catch (error) {
           this.loadingService.dismiss();
           this.toastService.presentToast('Error de conexión', Colors.DANGER, 5000);
           break;
         }
       }
+      this.loadingService.setContent('Creando la lista...');
 
       const user = await this.localDbService.getLocalUser();
 
@@ -135,6 +137,7 @@ export class CreateStationPage implements OnInit {
           numLikes: 0
         },
         timestamp: serverTimestamp() as Timestamp,
+        comments: [],
         image: await this.uploadImage(this.imageStation, stationID)
       };
 
