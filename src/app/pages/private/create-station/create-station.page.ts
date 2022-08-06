@@ -3,7 +3,7 @@ import { FileSystemService } from './../../../services/file-system.service';
 import { CameraSource } from '@capacitor/camera';
 import { ImageService } from './../../../services/image.service';
 import { StationService } from './../../../services/station.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LocalDbService } from './../../../services/local-db.service';
 import { MusicService } from './../../../services/music.service';
 import { LoadingService } from './../../../services/loading.service';
@@ -15,8 +15,8 @@ import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
 import { ModalController, IonAccordionGroup, ItemReorderEventDetail, ActionSheetController } from '@ionic/angular';
 import { Route } from 'src/app/enums/route.enum';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import uniqid from 'uniqid';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import * as uniqid from 'uniqid';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
 
 @Component({
@@ -28,7 +28,8 @@ export class CreateStationPage implements OnInit {
 
   Routes = Route;
   musicArr: IMusic[] = [];
-  @Input() station?: IStation;
+  station: IStation;
+  stationID: string;
   imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('accordionForm', { static: false }) accordionForm: IonAccordionGroup;
 
@@ -50,14 +51,21 @@ export class CreateStationPage implements OnInit {
     private router: Router,
     private actionSheetController: ActionSheetController,
     private imageService: ImageService,
-    private fileSystemService: FileSystemService
+    private fileSystemService: FileSystemService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    if(this.station) {
-      this.stationName.setValue(this.station.name);
-      this.stationDescription.setValue(this.station.description);
-      this.musicArr = this.station.musics;
+    this.stationID = this.route.snapshot.paramMap.get('id');
+    console.log(this.stationID)
+    if(this.stationID) {
+      this.localDbService.getStation(this.stationID)
+        .then(resp => {
+          this.station = resp;
+          this.stationName.setValue(this.station.name);
+          this.stationDescription.setValue(this.station.description);
+          this.musicArr = this.station.musics;
+        });
     }
   }
 
@@ -66,14 +74,12 @@ export class CreateStationPage implements OnInit {
     evType.detail.complete();
   }
 
-
   async openModal(music?: IMusic, pos?: number) {
     const modal = await this.modalController.create({
       component: AddMusicComponent,
       componentProps: {
         music,
-        pos,
-
+        pos
       }
     });
 
@@ -100,14 +106,21 @@ export class CreateStationPage implements OnInit {
     if(this.stationFormValidate()) {
 
       this.loadingService.present('Subiendo canciones 1/' + this.musicArr.length);
-      const stationID = uniqid();
+      const stationID = this.station?.id || uniqid();
 
       for (let index = 0; index < this.musicArr.length; index++) {
         const music = this.musicArr[index];
+
+        if (music.id) {
+          this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);
+          continue;
+        }
+
         try {
-          const ref = await this.musicService.uploadMusic(music, stationID);
-          music.downloadUrl = ref;
-          music.id = index;
+          const {downloadUrl, localPath} = await this.musicService.uploadMusic(music, stationID, this.stationName.value);
+          music.downloadUrl = downloadUrl;
+          music.localPath = localPath;
+          music.id = uniqid();
           music.stationId= stationID;
           this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);
         } catch (error) {
@@ -116,12 +129,12 @@ export class CreateStationPage implements OnInit {
           break;
         }
       }
-      this.loadingService.setContent('Creando la lista...');
+      this.loadingService.setContent(this.station?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
 
       const user = await this.localDbService.getLocalUser();
 
       const station: IStation = {
-        id: stationID,
+        id: this.station?.id || stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
         inReproduction: 3,
@@ -129,6 +142,7 @@ export class CreateStationPage implements OnInit {
           id: user.id,
           userName: user.userName
         },
+        image: await this.uploadImage(this.imageStation, stationID),
         musics: this.musicArr,
         views: 0,
         reactions: {
@@ -137,14 +151,19 @@ export class CreateStationPage implements OnInit {
           numLikes: 0
         },
         timestamp: serverTimestamp() as Timestamp,
-        comments: [],
-        image: await this.uploadImage(this.imageStation, stationID)
+        comments: []
       };
 
-      await this.stationService.createStation(station, stationID);
-      this.loadingService.dismiss();
-      this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
-      this.router.navigate(['radio/station/' + stationID]);
+      this.stationService.createOrUpdateStation(station, stationID, (this.station? true: false))
+        .then(() => {
+          this.loadingService.dismiss();
+          this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
+          this.router.navigate(['radio/station/' + stationID]);
+        })
+        .catch(() => {
+          this.loadingService.dismiss();
+          this.toastService.presentToast('Error al tratar de crear la estación', Colors.DANGER);
+        })
     }
   }
 

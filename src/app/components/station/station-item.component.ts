@@ -13,6 +13,7 @@ import { AlertController } from '@ionic/angular';
 import { Colors } from 'src/app/enums/color.enum';
 import { IUser } from 'src/app/interfaces/user.interface';
 import { Reaction } from 'src/app/enums/reaction.enum';
+import { Share } from '@capacitor/share';
 
 @Component({
   selector: 'app-station-item',
@@ -42,7 +43,7 @@ export class StationItemComponent implements OnInit {
     private toastService: ToastService,
     private router: Router,
     private localDbService: LocalDbService,
-    private userService: UserService
+    private userService: UserService,
   ) {
   }
 
@@ -74,6 +75,7 @@ export class StationItemComponent implements OnInit {
 
         if (user.favoriteStations.includes(this.station.id)) {
           this.isFavoriteStation = true;
+          this.syncStation();
         }
 
         if (this.user.id === this.station.author.id) {
@@ -165,6 +167,7 @@ export class StationItemComponent implements OnInit {
   syncStation() {
     this.stationService.syncStation(this.station.id)
     .then(resp => {
+      console.log(resp)
       this.station = resp;
       if (this.station.reactions.numLikes) {
         this.percentageReaction =
@@ -180,4 +183,16 @@ export class StationItemComponent implements OnInit {
     });
   }
 
+  async share() {
+    await Share.share({
+      title: 'Compartir',
+      text: 'Comparte tu publicación',
+      url: 'https://play.google.com/store/apps/details?id=com.puzeos.puzeos',
+      dialogTitle: 'Compartir',
+    });
+  }
+
+  async edit() {
+    this.router.navigate(['/radio/create-station/' + this.station.id]);
+  }
 }

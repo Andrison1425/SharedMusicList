@@ -51,9 +51,12 @@ export class AddMusicComponent implements OnInit {
         artist: this.artist.value,
         downloadUrl: '',
         localData: this.musicData,
-        id: 0,
+        id: '',
         duration: this.duration,
-        stationId: ''
+        stationId: '',
+        local: {
+          isNew: false
+        }
       };
 
       this.modalController.dismiss({

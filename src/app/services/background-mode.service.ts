@@ -48,7 +48,6 @@ export class BackgroundModeService {
   }
 
   private createMusicControls() {
-    console.log('en creacion')
     CapacitorMusicControls.create({
       track       : this.music.title,
       artist      : this.music.artist,

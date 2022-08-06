@@ -23,7 +23,7 @@ export class StationPage implements OnInit {
   Routes = Route;
   station: IStation;
   stationID: string;
-  musicPlayingId: number;
+  musicPlayingId: string;
   musicState: MusicState;
   musicStateEnum = MusicState;
   comments: IComment[] = [];
@@ -31,6 +31,8 @@ export class StationPage implements OnInit {
   replyComment: IComment;
   activeTab: 'COMMENTS' | 'TRACKS' = 'TRACKS';
   user: IUser;
+  lastView: number;
+  isLocalStation = false;
 
   commentsForm: FormGroup = this.fb.group({
     comment: ['', [Validators.required, Validators.minLength(1)]]
@@ -43,15 +45,19 @@ export class StationPage implements OnInit {
     private musicService: MusicService,
     private stationService: StationService,
     private fb: FormBuilder,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) { }
 
   ngOnInit() {
     this.stationID = this.route.snapshot.paramMap.get('id');
+    this.lastView = Number(localStorage.getItem('lastView-' + this.stationID));
+    localStorage.setItem('lastView-' + this.stationID, String(new Date().valueOf()));
+
     this.localDbService.getStation(this.stationID)
       .then(resp => {
         if (resp) {
           this.station = resp;
+          this.isLocalStation = true;
           const commentsData = this.stationService.getComments(this.station);
           if (commentsData) {
             this.replyComments = commentsData.replyComments;
@@ -80,18 +86,6 @@ export class StationPage implements OnInit {
 
     this.localDbService.getLocalUser()
       .then(user => this.user = user);
-  }
-
-  play(music: IMusic) {
-    if (music.id === this.musicPlayingId) {
-      this.musicService.play(true, music.id);
-    } else {
-      this.musicService.play(false, music.id);
-    }
-  }
-
-  pause() {
-    this.musicService.pause();
   }
 
   trackByFn(index: number, music: IMusic) {

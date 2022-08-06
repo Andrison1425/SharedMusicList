@@ -66,7 +66,12 @@
       Sin listas de reproducción
     </div>
 
-    <app-station-item *ngFor="let station of stations" [station]="station" [playing]="false" (deleteStation)="onDeleteStation($event)"></app-station-item>
+    <app-station-item
+      *ngFor="let station of stations"
+      [station]="station"
+      [playing]="false"
+      (deleteStation)="onDeleteStation($event)"
+    ></app-station-item>
   </ion-list>
 
   <ion-list class="loc__cont-des" *ngIf="activeTab === 'ABOUT'">

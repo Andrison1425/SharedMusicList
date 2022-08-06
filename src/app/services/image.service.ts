@@ -7,7 +7,7 @@ import { Subject, Subscription } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ref, uploadString, getStorage } from '@angular/fire/storage';
-import uniqid from 'uniqid';
+import * as uniqid from 'uniqid';
 
 @Injectable({
   providedIn: 'root'

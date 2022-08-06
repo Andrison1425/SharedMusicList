@@ -9,6 +9,7 @@ import { StationPageRoutingModule } from './station-routing.module';
 
 import { StationPage } from './station.page';
 import { CustomPipesModule } from 'src/app/pipes/custom-pipes.module';
+import { TrackComponent } from 'src/app/components/track/track.component';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { CustomPipesModule } from 'src/app/pipes/custom-pipes.module';
     CustomPipesModule
   ],
   declarations: [
-    StationPage
+    StationPage,
+    TrackComponent
   ]
 })
 export class StationPageModule {}

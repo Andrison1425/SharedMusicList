@@ -1,3 +1,6 @@
+import { Capacitor } from '@capacitor/core';
+import { Folder } from './../enums/folder.enum';
+import { FileSystemService } from './file-system.service';
 import { MusicState } from './../enums/music-state.enum';
 import { Subject } from 'rxjs';
 import { Howler, Howl } from 'howler';
@@ -5,7 +8,7 @@ import { FirebaseStorageRoute } from './../enums/firebase-storage-route.enum';
 import { IMusic } from './../interfaces/music.interface';
 import { Injectable } from '@angular/core';
 import { ref, uploadString, getStorage, getDownloadURL } from '@angular/fire/storage';
-import uniqid from 'uniqid';
+import * as uniqid from 'uniqid';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +16,7 @@ import uniqid from 'uniqid';
 export class MusicService {
 
   player: Howler;
-  musicPlayingId = 0;
+  musicPlayingIndex = 0;
   musics: IMusic[] = [];
   musicsUrlDownload: string[] = [];
   musicPlaying: IMusic;
@@ -23,10 +26,11 @@ export class MusicService {
   private progress$ = new Subject<number>();
 
   constructor(
+    private fileSystemService: FileSystemService
   ) {/** */ }
 
-  async uploadMusic(music: IMusic, stationID: string) {
-    return new Promise<string>((resolve, rejeact) => {
+  async uploadMusic(music: IMusic, stationID: string, stationName: string) {
+    return new Promise<{ downloadUrl: string; localPath: string; }>((resolve, rejeact) => {
       (async () => {
         try {
           const locationRef = ref(
@@ -36,7 +40,8 @@ export class MusicService {
 
           const upload = await uploadString(locationRef, music.localData, 'data_url');
           const downloadUrl = await getDownloadURL(upload.ref);
-          resolve(downloadUrl);
+          const localPath = await this.fileSystemService.writeFile(music.localData, `${music.title + music.id}.mp3`, `${Folder.Tracks + stationName}/`)
+          resolve({downloadUrl, localPath});
         } catch (error) {
           console.log(error)
           rejeact(error);
@@ -49,26 +54,32 @@ export class MusicService {
     this.musics = musics;
     this.musicPlaying = musics[0];
     musics.forEach(music => {
-      this.musicsUrlDownload[music.id] = music.downloadUrl;
+      this.musicsUrlDownload[music.id] = Capacitor.convertFileSrc(music.localPath) || music.downloadUrl;
     });
   }
 
-  play(resume?: boolean, musicId?: number) {
+  play(resume?: boolean, musicId?: string) {
     if(resume) {
       this.player.play();
       this.musicPlayingInfo$.next({
-        music: this.musics[this.musicPlayingId],
+        music: this.musics[this.musicPlayingIndex],
         state: MusicState.Playing
       });
     } else {
       this.player?.stop();
 
       if (musicId !== undefined) {
-        this.musicPlayingId = musicId;
+        for (let index = 0; index < this.musics.length; index++) {
+          const element = this.musics[index];
+          if (element.id === musicId) {
+            this.musicPlayingIndex = index;
+            break;
+          }
+        }
       }
 
       this.player = new Howl({
-        src: [this.musicsUrlDownload[this.musicPlayingId]],
+        src: [this.musicsUrlDownload[this.musicPlayingIndex]],
         html5: true,
         onplay: () => {
           this.updateProgress();
@@ -82,9 +93,9 @@ export class MusicService {
       });
 
       this.player.play();
-      this.musicPlaying = this.musics[this.musicPlayingId];
+      this.musicPlaying = this.musics[this.musicPlayingIndex];
       this.musicPlayingInfo$.next({
-        music: this.musics[this.musicPlayingId],
+        music: this.musics[this.musicPlayingIndex],
         state: MusicState.Playing
       });
 
@@ -97,7 +108,7 @@ export class MusicService {
   pause() {
     this.player.pause();
     this.musicPlayingInfo$.next({
-      music: this.musics[this.musicPlayingId],
+      music: this.musics[this.musicPlayingIndex],
       state: MusicState.Pause
     });
   }
@@ -121,17 +132,17 @@ export class MusicService {
   }
 
   next() {
-    this.musicPlayingId++;
-    if (this.musicPlayingId === this.musics.length) {
-      this.musicPlayingId = 0;
+    this.musicPlayingIndex++;
+    if (this.musicPlayingIndex === this.musics.length) {
+      this.musicPlayingIndex = 0;
     }
     this.play();
   }
 
   previous() {
-    this.musicPlayingId--;
-    if (this.musicPlayingId === -1) {
-      this.musicPlayingId = this.musics.length - 1;
+    this.musicPlayingIndex--;
+    if (this.musicPlayingIndex === -1) {
+      this.musicPlayingIndex = this.musics.length - 1;
     }
     this.play();
   }

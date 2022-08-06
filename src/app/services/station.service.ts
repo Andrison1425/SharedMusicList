@@ -19,15 +19,26 @@ export class StationService {
     private firestore: Firestore
   ) { }
 
-  createStation(station: IStation, stationID: string) {
+  createOrUpdateStation(station: IStation, stationID: string, update?: boolean) {
     return new Promise<string>((resolve, rejeact) => {
       (async () => {
         try {
           const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + stationID);
-          await setDoc(docRef, {
-            ...station,
-            localData: ''
-          });
+
+          if (update) {
+            await updateDoc(docRef, {
+              name: station.name,
+              description: station.description,
+              image: station.image,
+              musics: station.musics,
+              localData: ''
+            });
+          } else {
+            await setDoc(docRef, {
+              ...station,
+              localData: ''
+            });
+          }
           await this.localDbService.setStation(stationID, station);
           resolve(stationID);
         } catch (error) {

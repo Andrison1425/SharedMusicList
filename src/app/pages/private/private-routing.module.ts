@@ -16,6 +16,10 @@ const routes: Routes = [
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule)
   },
   {
+    path: 'create-station/:id',
+    loadChildren: () => import('./create-station/create-station.module').then( m => m.CreateStationPageModule)
+  },
+  {
     path: 'create-station',
     loadChildren: () => import('./create-station/create-station.module').then( m => m.CreateStationPageModule)
   },
@@ -28,8 +32,6 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: ''
   },
-
-
 ];
 
 @NgModule({

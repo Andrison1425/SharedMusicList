@@ -25,31 +25,13 @@
   </ion-toolbar>
 
   <ion-list *ngIf="activeTab === 'TRACKS'">
-    <ion-item *ngFor="let music of station?.musics; trackBy: trackByFn" color="primary">
-      <div>
-        {{music.title}}
-        <br>
-        <ion-label color="tertiary" class="music-info">
-          {{music.artist}}
-        </ion-label>
-      </div>
-
-      <ion-icon
-        name="play"
-        slot="end"
-        color="tertiary"
-        (click)="play(music)"
-        *ngIf="musicPlayingId !== music.id || musicState === musicStateEnum.Pause"
-      ></ion-icon>
-
-      <ion-icon
-        name="pause"
-        slot="end"
-        color="tertiary"
-        *ngIf="musicPlayingId === music.id && musicState === musicStateEnum.Playing"
-        (click)="pause()"
-      ></ion-icon>
-    </ion-item>
+    <app-track
+      *ngFor="let music of station?.musics; trackBy: trackByFn"
+      [track]="music"
+      [musicPlayingId]="musicPlayingId"
+      [musicState]="musicState"
+      [lastStationView]="lastView"
+    ></app-track>
   </ion-list>
 
   <ion-list *ngIf="activeTab === 'COMMENTS'">

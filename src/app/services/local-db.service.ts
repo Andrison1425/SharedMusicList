@@ -59,11 +59,27 @@ export class LocalDbService {
     return this.userDb.setItem(id, user);
   }
 
-  setStation(id: string, station: IStation): Promise<IStation> {
+  async setStation(id: string, station: IStation): Promise<IStation> {
+    const localStation = await this.getStation(id);
+
+    if (localStation) {
+      const musicIds = localStation.musics.map(resp => resp.id);
+      console.log(station)
+      station.musics = station.musics.map(music => {
+        return {
+          ...music,
+          local: {
+            isNew: musicIds.includes(music.id)? false: true
+          }
+        }
+      });
+    }
+
     station = {
       ...station,
       id
     };
+
     this.stations$.next(station);
     return this.stationDb.setItem(id, station);
   }

@@ -13,7 +13,13 @@
         {{station?.author.userName}}
       </h4>
     </ion-label>
-    <ion-icon name="bookmark" slot="end" [color]="isFavoriteStation? 'tertiary': 'medium'" *ngIf="showFavoriteOption" (click)="addToFavorites()"></ion-icon>
+    <ion-icon
+      name="bookmark"
+      slot="end"
+      [color]="isFavoriteStation? 'tertiary': 'medium'"
+      *ngIf="showFavoriteOption"
+      (click)="addToFavorites()"
+    ></ion-icon>
   </ion-item>
 
   <ion-row>
@@ -35,7 +41,12 @@
     <ion-col class="ion-no-padding">
       <ion-button fill="clear" color="medium">
         <ion-icon name="headset" slot="start"></ion-icon>
-        <div>{{station.views}} vistas</div>
+        <div>{{station.views}} reproducciones</div>
+      </ion-button>
+    </ion-col>
+    <ion-col class="ion-no-padding" size="2">
+      <ion-button fill="clear" color="tertiary" (click)="share()">
+        <ion-icon name="share-social" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-col>
   </ion-row>
@@ -47,8 +58,11 @@
   </ion-card-content>
 
   <ion-row *ngIf="!playing && adminStation">
-    <ion-col class="ion-no-padding" size="3">
-      <ion-button fill="clear" color="medium">
+    <ion-col
+      class="ion-no-padding"
+      size="3"
+    >
+      <ion-button fill="clear" color="medium" (click)="edit()">
         <ion-icon name="pencil" slot="start"></ion-icon>
         <div>Editar</div>
       </ion-button>

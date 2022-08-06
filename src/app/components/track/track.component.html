@@ -1,0 +1,26 @@
+<ion-item color="primary">
+  <div>
+    {{track.title}}
+    <ion-badge color="danger" *ngIf="track.local.isNew">Nueva</ion-badge>
+    <br>
+    <ion-label color="tertiary" class="music-info">
+      {{track.artist}}
+    </ion-label>
+  </div>
+
+  <ion-icon
+    name="play"
+    slot="end"
+    color="tertiary"
+    (click)="play(track)"
+    *ngIf="musicPlayingId !== track.id || musicState === musicStateEnum.Pause"
+  ></ion-icon>
+
+  <ion-icon
+    name="pause"
+    slot="end"
+    color="tertiary"
+    *ngIf="musicPlayingId === track.id && musicState === musicStateEnum.Playing"
+    (click)="pause()"
+  ></ion-icon>
+</ion-item>
