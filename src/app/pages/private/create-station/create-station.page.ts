@@ -13,11 +13,12 @@ import { IStation } from './../../../interfaces/station.interface';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
 import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
-import { ModalController, IonAccordionGroup, ItemReorderEventDetail, ActionSheetController } from '@ionic/angular';
+import { ModalController, ItemReorderEventDetail, ActionSheetController, IonInput } from '@ionic/angular';
 import { Route } from 'src/app/enums/route.enum';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import * as uniqid from 'uniqid';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
+import * as Tagify from '@yaireo/tagify'
 
 @Component({
   selector: 'app-create-station',
@@ -30,8 +31,9 @@ export class CreateStationPage implements OnInit {
   musicArr: IMusic[] = [];
   station: IStation;
   stationID: string;
+  tagify: Tagify;
   imageStation = '../../../../assets/img/no-image.png';
-  @ViewChild('accordionForm', { static: false }) accordionForm: IonAccordionGroup;
+  @ViewChild('tagInput', { static: false }) tagInput: IonInput;
 
   stationForm = this.fb.group({
     name: ['', [Validators.required, Validators.min(5)]],
@@ -57,7 +59,7 @@ export class CreateStationPage implements OnInit {
 
   ngOnInit() {
     this.stationID = this.route.snapshot.paramMap.get('id');
-    console.log(this.stationID)
+
     if(this.stationID) {
       this.localDbService.getStation(this.stationID)
         .then(resp => {
@@ -67,6 +69,13 @@ export class CreateStationPage implements OnInit {
           this.musicArr = this.station.musics;
         });
     }
+
+    const interval = setInterval(() => {
+      if (this.tagInput) {
+        this.createTagify();
+        clearInterval(interval)
+      }
+    }, 200)
   }
 
   doReorder(ev: Event) {
@@ -151,16 +160,18 @@ export class CreateStationPage implements OnInit {
           numLikes: 0
         },
         timestamp: serverTimestamp() as Timestamp,
-        comments: []
+        comments: [],
+        tags: this.getTags()
       };
 
       this.stationService.createOrUpdateStation(station, stationID, (this.station? true: false))
         .then(() => {
           this.loadingService.dismiss();
           this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
-          this.router.navigate(['radio/station/' + stationID]);
+          this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e)
           this.loadingService.dismiss();
           this.toastService.presentToast('Error al tratar de crear la estación', Colors.DANGER);
         })
@@ -215,26 +226,48 @@ export class CreateStationPage implements OnInit {
 
   stationFormValidate() {
     if(this.stationName?.errors?.required) {
-      this.toastService.presentToast('El nombre de la estación es obligatorio', Colors.DANGER);
+      this.toastService.presentToast('El nombre de la lista es obligatorio', Colors.DANGER);
       return false;
     }
 
     if(this.stationName?.errors?.minlength){
-      this.toastService.presentToast('El nombre de la canción debe de ser de 5 caracter mínimo', Colors.DANGER, 5000);
+      this.toastService.presentToast('El nombre de la lista debe de ser de mínimo 5 caracteres', Colors.DANGER, 4000);
       return false;
     }
 
     if(this.stationDescription?.errors?.minlength){
-      this.toastService.presentToast('La descripción de la estación es obligatorio', Colors.DANGER, 5000);
+      this.toastService.presentToast('La descripción de la lista es obligatoria', Colors.DANGER, 4000);
       return false;
     }
 
     if(this.stationDescription?.errors?.minlength){
-      this.toastService.presentToast('La descripción de la canción debe de ser de 5 caracter mínimo', Colors.DANGER, 5000);
+      this.toastService.presentToast('La descripción de la lista debe de ser de mínimo 5 caracteres', Colors.DANGER, 4000);
+      return false;
+    }
+
+    if(this.getTags().length === 0){
+      this.toastService.presentToast('Agrega al menos una etiqueta', Colors.DANGER, 4000);
+      return false;
+    }
+
+    if(this.musicArr.length === 0){
+      this.toastService.presentToast('Agrega al menos una canción', Colors.DANGER, 4000);
       return false;
     }
 
     return true;
   }
 
+  createTagify() {
+    if (!this.tagify) {
+      this.tagInput.getInputElement()
+        .then(input => {
+          this.tagify = new Tagify(input)
+        })
+    }
+  }
+
+  getTags() {
+    return this.tagify.value.map(tag => tag.value)
+  }
 }

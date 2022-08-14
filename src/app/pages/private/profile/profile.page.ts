@@ -10,8 +10,9 @@ import { ActivatedRoute } from '@angular/router';
 import { IStation } from './../../../interfaces/station.interface';
 import { LocalDbService } from './../../../services/local-db.service';
 import { IUser } from './../../../interfaces/user.interface';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Route } from 'src/app/enums/route.enum';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 
 @Component({
   selector: 'app-profile',
@@ -31,6 +32,7 @@ export class ProfilePage implements OnInit {
   stations: IStation[] = [];
   imgPath = '../../../assets/img/person.jpg';
   activeTab = 'LISTS';
+
 
   constructor(
     private localDbService: LocalDbService,
@@ -205,4 +207,7 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  getCountryFlag(countryCode: string) {
+    return getUnicodeFlagIcon(countryCode || 'US');
+  }
 }

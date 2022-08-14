@@ -24,9 +24,11 @@
         <ion-icon name="camera" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
+
     <ion-item color="primary">
       <ion-input formControlName="name" type="text" maxlength="40" placeholder="Nombre de la lista"></ion-input>
     </ion-item>
+
     <ion-item color="primary">
       <ion-textarea
         placeholder="Describe tu lista de reproducción"
@@ -34,6 +36,15 @@
         rows="5"
         formControlName="description"
       ></ion-textarea>
+    </ion-item>
+
+    <ion-item color="primary">
+      <ion-input
+        placeholder="Agregar etiqueta"
+        maxlength="50"
+        type="text"
+        #tagInput
+      ></ion-input>
     </ion-item>
   </form>
 

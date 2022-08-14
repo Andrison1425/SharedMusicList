@@ -3,7 +3,7 @@ import { IUser } from './../interfaces/user.interface';
 import { LocalDbName } from './../enums/local-db-name.enum';
 import { ILocalForage } from './../interfaces/localForange.interface';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { onAuthStateChanged, Auth} from '@angular/fire/auth';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const localForage = require('localforage') as ILocalForage;
@@ -19,6 +19,8 @@ export class LocalDbService {
   private stations$ = new Subject<IStation>();
   stations: IStation[];
   private stationDb: ILocalForage;
+  private favoriteStations$ = new ReplaySubject<IStation[]>(1);
+  private tagsDb: ILocalForage;
 
   constructor(
     private auth: Auth
@@ -27,6 +29,15 @@ export class LocalDbService {
   initializeLocalDb() {
     this.userDb = this.loadStore(LocalDbName.Users);
     this.stationDb = this.loadStore(LocalDbName.Stations);
+    this.tagsDb = this.loadStore(LocalDbName.Tags);
+
+    this.getLocalUser()
+      .then(user => {
+        this.getFavoriteStations(user.id)
+          .then(stations => {
+            this.favoriteStations$.next(stations || []);
+          })
+      })
   }
 
   loadStore(name: LocalDbName): ILocalForage {
@@ -59,12 +70,11 @@ export class LocalDbService {
     return this.userDb.setItem(id, user);
   }
 
-  async setStation(id: string, station: IStation): Promise<IStation> {
+  async setStation(id: string, station: IStation, isFavoriteStation = false): Promise<IStation> {
     const localStation = await this.getStation(id);
 
     if (localStation) {
       const musicIds = localStation.musics.map(resp => resp.id);
-      console.log(station)
       station.musics = station.musics.map(music => {
         return {
           ...music,
@@ -80,12 +90,21 @@ export class LocalDbService {
       id
     };
 
-    this.stations$.next(station);
+    if (isFavoriteStation) {
+      const favoriteStations = await this.getFavoriteStations(this.user.id);
+      this.favoriteStations$.next([station, ...favoriteStations]);
+    } else {
+      this.stations$.next(station);
+    }
     return this.stationDb.setItem(id, station);
   }
 
   stationsData() {
     return this.stations$.asObservable();
+  }
+
+  favoriteStationsData() {
+    return this.favoriteStations$.asObservable();
   }
 
   async getStation(id: string) {
@@ -123,5 +142,22 @@ export class LocalDbService {
 
   deleteStation(id: string) {
     this.stationDb.removeItem(id);
+  }
+
+  async removeFavoriteStation(id: string) {
+    await this.stationDb.removeItem(id);
+
+    const favoriteStations = await this.getFavoriteStations(this.user.id);
+    this.favoriteStations$.next(favoriteStations);
+  }
+
+  setTags(tags: string[]){
+    this.tagsDb.setItem('tags', tags);
+    return tags;
+  }
+
+  async getTags(){
+    const tags = await this.tagsDb.getItem('tags');
+    return tags as string[];
   }
 }

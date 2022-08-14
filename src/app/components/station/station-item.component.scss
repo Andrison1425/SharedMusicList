@@ -17,8 +17,16 @@ ion-card{
   background-color: transparent;
 }
 
-ion-card-content > span{
-  max-height: 145px;
+ion-card-content {
+  > span{
+    max-height: 145px;
+  }
+
+  div span {
+    color: var(--ion-color-success);
+    cursor: pointer;
+    margin-left: 3px;
+  }
 }
 
 .cont-info-sec {

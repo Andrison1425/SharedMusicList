@@ -24,5 +24,6 @@ export interface IStation {
     path: string,
     compress: string
   },
-  comments: IComment[]
+  comments: IComment[],
+  tags: string[]
 }

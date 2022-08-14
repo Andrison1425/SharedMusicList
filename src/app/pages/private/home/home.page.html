@@ -9,7 +9,7 @@
 
   </ion-toolbar>
   <ion-toolbar mode="ios" color="secondary">
-    <ion-segment value="FAVORITES" mode="ios" (ionChange)="segmentChanged($event)">
+    <ion-segment [value]="activeTab" mode="ios" (ionChange)="segmentChanged($event)">
       <ion-segment-button value="FAVORITES">
         <ion-label>Favoritos</ion-label>
       </ion-segment-button>
@@ -24,8 +24,9 @@
 
 <ion-content id="home-content" color="primary" *ngIf="activeTab === 'FAVORITES'">
   <ion-list>
-    <div *ngIf="favoriteStations.length === 0" class="no-list-message">
-      Las listas de reproducción que marques se mostrarána aquí
+    <div *ngIf="favoriteStations.length === 0" class="no-list-message ion-padding">
+      <img src="../../../../assets/img/add-to-favorites.png" alt="">
+      Las listas de reproducción que marques se mostrarán aquí
     </div>
 
     <app-station-item *ngFor="let station of favoriteStations" [station]="station" [adminStation]="false"></app-station-item>
@@ -33,14 +34,48 @@
 </ion-content>
 
 <ion-content id="home-content" color="primary" *ngIf="activeTab === 'EXPLORE'">
-  <ion-item color="primary">
+  <div class="loc__search">
+    <div class="loc__search-container">
+      <input 
+        type="search"
+        placeholder="Buscar"
+        class="loc__search-input"  
+      >
+      <ion-icon name="search-sharp"></ion-icon>
+    </div>
+    <ion-button 
+      (click)="openFiltersModal()" 
+      class="loc__filters-btn"
+      mode="ios"
+    >
+      Filtros
       <ion-icon name="filter" slot="end"></ion-icon>
-      <ion-select slot="end" class="ion-no-margin" [(ngModel)]="orderBy" (ionChange)="setOrderBy()">
-        <ion-select-option [value]="stationOrderBy.Likes">Likes</ion-select-option>
-        <ion-select-option [value]="stationOrderBy.Recent">Recientes</ion-select-option>
-        <ion-select-option [value]="stationOrderBy.Views">Vistas</ion-select-option>
-      </ion-select>
-  </ion-item>
-  <app-skeleton *ngIf="!stations"></app-skeleton>
-  <app-station-item *ngFor="let station of stations" [station]="station" [adminStation]="false"></app-station-item>
+      <ion-badge slot="end" color="tertiary">{{cantFilters}}</ion-badge>
+    </ion-button>
+  </div>
+
+  <app-skeleton *ngIf="stations.length === 0 && !connectionError"></app-skeleton>
+
+  <div class="loc__connection-error no-list-message ion-padding" *ngIf="connectionError">
+    Error de conexión al obtener las listas de reproducción.
+    <div>
+      <ion-button 
+        color="medium"
+        (click)="getStations()"  
+      >Reintentar</ion-button>
+    </div>
+  </div>
+
+  <app-station-item 
+    *ngFor="let station of stations; trackBy: trackByFn" 
+    [station]="station" 
+    [adminStation]="false"
+  ></app-station-item>
+
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Cargando más listas...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

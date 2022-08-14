@@ -5,3 +5,44 @@ ion-select {
 ion-list {
   background-color: transparent;
 }
+
+.loc__search-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+
+  ion-icon{
+    margin-left: -1.9rem;
+    font-size: 21px;
+    cursor: pointer;
+  }
+
+  input {
+    border-radius: 7px;
+    width: 100%;
+    height: 80%;
+    border: 0;
+    outline: none;
+    padding: 0 30px 0 15px;
+    background: #ffffff21;
+  }
+}
+
+.loc__search {
+  display: flex;
+}
+
+.loc__filters-btn {
+  ion-badge {
+    position: absolute;
+    top: 4px;
+    right: -14px;
+    padding: 0;
+    width: 19px;
+    height: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

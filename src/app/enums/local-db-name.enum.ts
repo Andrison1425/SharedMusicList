@@ -1,4 +1,5 @@
 export enum LocalDbName {
   Users = 'users',
-  Stations = 'stations'
+  Stations = 'stations',
+  Tags = 'tags'
 }

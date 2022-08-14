@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-button slot="start" color="secondary" mode="ios" (click)="closeModal()">
+      <ion-icon slot="icon-only" name="close-sharp"></ion-icon>
+    </ion-button>
+    <ion-title>Filtros de búsqueda</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding" color="primary">
+  <ion-item color="primary">
+    <ion-label>Ordernar por:</ion-label>
+    <ion-select slot="end" class="ion-no-margin" [(ngModel)]="orderBy">
+      <ion-select-option [value]="stationOrderBy.Likes">Likes</ion-select-option>
+      <ion-select-option [value]="stationOrderBy.Recent">Recientes</ion-select-option>
+      <ion-select-option [value]="stationOrderBy.Views">Vistas</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item color="primary">
+    <ion-label>Etiquetas:</ion-label>
+  </ion-item>
+
+  <ion-item *ngIf="!tagify" color="primary">
+    <ion-spinner class="ion-margin-end" color="secondary"></ion-spinner>
+    <ion-label color="medium">Obteniendo etiquetas #</ion-label>
+  </ion-item>
+
+  <ion-input 
+    placeholder="Agregar etiqueta (Max. 3)" 
+    maxlength="50" 
+    type="text" 
+    class="loc__tags-input"
+    [style]="tagify? 'opacity: 1;': ''" 
+    #tagInput
+    [value]="tags"
+  ></ion-input>
+
+</ion-content>
+
+<ion-footer color="primary">
+  <ion-button color="medium" (click)="clearAll()">
+    Limpiar todo
+  </ion-button>
+
+  <ion-button color="tertiary" (click)="setFilters()">
+    Aceptar
+  </ion-button>
+</ion-footer>

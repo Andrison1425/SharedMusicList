@@ -1,9 +1,11 @@
 import { LocalDbService } from './../../../services/local-db.service';
 import { IStation } from './../../../interfaces/station.interface';
-import { StationService } from './../../../services/station.service';
-import { StationOrderBy } from './../../../enums/station-order-by.enum';
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
+import { FiltersModalComponent } from 'src/app/components/filters-modal/filters-modal.component';
+import { StationService } from 'src/app/services/station.service';
+import { IFilters } from 'src/app/interfaces/filters.interface';
+import { StationOrderBy } from 'src/app/enums/station-order-by.enum';
 
 @Component({
   selector: 'app-home',
@@ -15,34 +17,41 @@ export class HomePage implements OnInit {
   srcAudio = '';
   musicCont = 0;
   activeTab = 'FAVORITES';
+  allStations: IStation[] = [];
   stations: IStation[] = [];
   favoriteStations: IStation[] = [];
-  stationOrderBy = StationOrderBy;
-  orderBy: StationOrderBy = StationOrderBy.Likes;
+  stationOrderByEnum = StationOrderBy;
+  stationOrderBy: StationOrderBy = StationOrderBy.Likes;
+  tags: string[] = [];
+  cantFilters = 1;
+  connectionError = false;
 
   constructor(
     private menu: MenuController,
-    private stationService: StationService,
-    private localDbService: LocalDbService
-  ) {}
+    private localDbService: LocalDbService,
+    private modalController: ModalController,
+    private stationService: StationService
+  ) { }
+  
 
   async ngOnInit() {
 
     this.localDbService.getLocalUser()
-      .then(user => {
-        this.localDbService.getFavoriteStations(user.id)
-          .then(stations => {
-            this.favoriteStations = stations;
-          })
-      })
+      .then(async (user) => {
+        const favStations = await this.localDbService.getFavoriteStations(user.id);
+        this.favoriteStations = favStations;
 
-      this.stationService.getStations(this.stationOrderBy.Likes)
-        .then(resp => {
-          this.stations = resp;
-          console.log(resp);
-        })
-        .catch((e) => console.log(e));
-    }
+        this.localDbService.favoriteStationsData()
+          .subscribe(resp => {
+            this.favoriteStations = resp;
+            if (this.favoriteStations.length === 0) {
+              this.activeTab = 'EXPLORE';
+            }
+          });
+      });
+
+    this.getStations();
+  }
 
   openMenu() {
     this.menu.open('home-menu');
@@ -51,17 +60,66 @@ export class HomePage implements OnInit {
   segmentChanged(ev) {
     if (ev.detail.value === 'EXPLORE') {
       this.activeTab = 'EXPLORE';
-    }else {
+    } else {
       this.activeTab = 'FAVORITES';
     }
   }
 
-  setOrderBy() {
-    this.stationService.getStations(this.orderBy)
+  async openFiltersModal() {
+    const modal = await this.modalController.create({
+      component: FiltersModalComponent,
+      componentProps: {
+        orderBy: this.stationOrderBy,
+        tags: this.tags
+      }
+    });
+
+    modal.present();
+
+    modal.onDidDismiss()
+      .then(({data}) => {
+        const filters = data as IFilters;
+
+        this.stationOrderBy = filters.orderBy;
+        this.tags = filters.tags;
+        if (filters.tags?.length > 0) {
+          this.cantFilters = 2;
+        } else {
+          this.cantFilters = 1;
+        }
+
+        this.getStations();
+      });
+  }
+
+  getStations() {
+    const filters: IFilters = {
+      orderBy: this.stationOrderBy,
+      tags: this.tags
+    };
+
+    this.stations = [];
+    this.connectionError = false;
+    this.stationService.getStations(filters)
       .then(resp => {
-        this.stations = resp;
-        console.log(resp);
+        this.connectionError = resp.connectionError;
+        this.allStations = resp.stations;
+        this.stations = this.allStations.slice(0, 15);
       })
       .catch((e) => console.log(e));
+  }
+
+  loadData(event) {
+    this.stations = this.allStations.slice(0, this.stations.length + 15);
+    
+    event.target.complete();
+
+    if (this.stations.length >= this.allStations.length) {
+      event.target.disabled = true;
+    }
+  }
+
+  trackByFn(index: number, item: IStation) {
+    return item.id;
   }
 }

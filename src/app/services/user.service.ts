@@ -3,7 +3,7 @@ import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IUser } from './../interfaces/user.interface';
 import { LocalDbService } from './local-db.service';
 import { Injectable } from '@angular/core';
-import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference } from '@angular/fire/firestore';
+import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference, arrayRemove } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +37,21 @@ export class UserService {
     updateDoc(docRef, {
       favoriteStations: arrayUnion(station.id)
     }).then(() => {
-      this.localDbService.setStation(station.id, station);
+      this.localDbService.setStation(station.id, station, true);
       this.syncUser();
     });
+  }
+
+  async removeFavoriteStation(stationId: string) {
+    const id = this.localDbService.user.id;
+    const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id );
+    
+    await updateDoc(docRef, {
+      favoriteStations: arrayRemove(stationId)
+    });
+
+    this.localDbService.removeFavoriteStation(stationId);
+    this.syncUser();
   }
 
   syncUser() {

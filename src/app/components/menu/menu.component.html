@@ -22,33 +22,31 @@
   </ion-header>
 
   <ion-content
-    color="light"
+    color="primary"
     padding
   >
-    <ion-list>
-      <ion-item [routerLink]="Routes.Profile">
-        <ion-icon
-          color="primary"
-          name="person-sharp"
-          slot="start"
-        ></ion-icon>
-        <span color="dark">Mi perfil</span>
-      </ion-item>
-      <ion-item routerLink="/chat/notification">
-        <ion-icon
-          color="primary"
-          name="notifications-sharp"
-          slot="start"
-        ></ion-icon>
-        <span color="dark">Mis radios</span>
-      </ion-item>
-      <ion-item  routerLink="/setting">
-        <ion-icon
-          color="primary"
-          slot="start"
-          name="settings-sharp"></ion-icon>
-        <span color="dark">Configuración</span>
-      </ion-item>
-    </ion-list>
+    <ion-item [routerLink]="Routes.Profile" color="medium">
+      <ion-icon
+        color="primary"
+        name="person-sharp"
+        slot="start"
+      ></ion-icon>
+      <span color="dark">Mi perfil</span>
+    </ion-item>
+    <ion-item routerLink="/chat/notification" color="medium">
+      <ion-icon
+        color="primary"
+        name="notifications-sharp"
+        slot="start"
+      ></ion-icon>
+      <span color="dark">Notificaciones</span>
+    </ion-item>
+    <ion-item  routerLink="/setting" color="medium">
+      <ion-icon
+        color="primary"
+        slot="start"
+        name="settings-sharp"></ion-icon>
+      <span color="dark">Configuración</span>
+    </ion-item>
   </ion-content>
 </ion-menu>

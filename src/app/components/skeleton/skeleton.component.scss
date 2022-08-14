@@ -7,5 +7,9 @@ ion-item {
 }
 
 .cont {
-  background: #2e2f33;
+  background: transparent;
+}
+
+ion-skeleton-text {
+  background-color: #ffffff07;
 }

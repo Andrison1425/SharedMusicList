@@ -3,11 +3,12 @@ import { IComment } from './../interfaces/comment.interface';
 import { StationOrderBy } from './../enums/station-order-by.enum';
 import { Reaction } from './../enums/reaction.enum';
 import { Injectable } from '@angular/core';
-import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, CollectionReference, increment, DocumentReference, where, Timestamp } from '@angular/fire/firestore';
+import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, CollectionReference, increment, DocumentReference, where, Timestamp, arrayRemove, arrayUnion } from '@angular/fire/firestore';
 import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IStation } from './../interfaces/station.interface';
 import { LocalDbService } from './local-db.service';
 import { v4 as uuidv4 } from 'uuid';
+import { IFilters } from '../interfaces/filters.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class StationService {
       (async () => {
         try {
           const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + stationID);
+          const tagsRef = doc(this.firestore, FirestoreCollection.StationTags + '/tags');
 
           if (update) {
             await updateDoc(docRef, {
@@ -37,6 +39,10 @@ export class StationService {
             await setDoc(docRef, {
               ...station,
               localData: ''
+            });
+
+            await updateDoc(tagsRef, {
+              tags: arrayUnion(...station.tags)
             });
           }
           await this.localDbService.setStation(stationID, station);
@@ -63,25 +69,35 @@ export class StationService {
     });
   }
 
-  async getStations(_orderBy: StationOrderBy) {
+  async getStations(filters: IFilters) {
     let orderByField = '';
-    if (_orderBy === StationOrderBy.Likes) {
+    if (filters.orderBy === StationOrderBy.Likes) {
       orderByField = 'reactions.numLikes';
-    } else if (_orderBy === StationOrderBy.Recent) {
+    } else if (filters.orderBy === StationOrderBy.Recent) {
       orderByField = 'timestamp';
     } else {
       orderByField = 'views';
     }
-
-    const queryRef = query<IStation>(
+    
+    let queryRef = query<IStation>(
       collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
       orderBy(orderByField, 'desc')
     );
+    
+    if (filters.tags?.length > 0) {
+      queryRef = query<IStation>(
+        collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+        where('tags', 'array-contains-any', filters.tags),
+        orderBy(orderByField, 'desc')
+      );
+    }
 
-    const docResp = await getDocs(queryRef);
-    console.log(docResp.docs);
+    const docResp = await getDocs(queryRef)
     const stations = docResp.docs.map(resp => resp.data());
-    return stations;
+    return {
+      stations,
+      connectionError: docResp.metadata.fromCache
+    };
   }
 
   async getStation(id: string) {
@@ -192,6 +208,16 @@ export class StationService {
         seconds: new Date().getTime() / 1000
       }
     }
+  }
+
+  async getTags() {
+    const docRef = doc(this.firestore, FirestoreCollection.StationTags + '/tags') as DocumentReference<{
+      tags: string[]
+    }>;
+
+    const tags = await getDoc(docRef);
+    this.localDbService.setTags(tags.data().tags);
+    return tags.data().tags;
   }
 
   private orderComments(comments: IComment[]) {

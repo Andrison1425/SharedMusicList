@@ -34,7 +34,6 @@ export class StationItemComponent implements OnInit {
   reaction: Reaction;
   percentageReaction = 50;
 
-
   constructor(
     private alertController: AlertController,
     private musicService: MusicService,
@@ -135,9 +134,38 @@ export class StationItemComponent implements OnInit {
     await alert.present();
   }
 
-  addToFavorites() {
-    this.isFavoriteStation = true;
-    this.userService.addFavoriteStation(this.station);
+  async addToFavorites() {
+    if (this.isFavoriteStation) {
+      const alert = await this.alertController.create({
+        header: 'Confirmar',
+        message: '¿Desea quitar esta lista de reproducción de favoritos?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          }, {
+            text: 'Quitar',
+            id: 'confirm-button',
+            handler: () => {
+              this.loadingService.present('Eliminando...');
+  
+              this.userService.removeFavoriteStation(this.station.id)
+                .then(() => {
+                  this.loadingService.dismiss();
+                }).catch(() => {
+                  this.loadingService.dismiss();
+                  this.toastService.presentToast('Error de conexión', Colors.DANGER);
+                })
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    } else {
+      this.isFavoriteStation = true;
+      this.userService.addFavoriteStation(this.station);
+    }
   }
 
   goStation(id: string) {

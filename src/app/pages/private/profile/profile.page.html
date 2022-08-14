@@ -18,6 +18,7 @@
       <div class="cont-primary-info">
         <h3>{{user?.userName}}</h3>
         <div class="cont-country">
+          {{getCountryFlag(user?.location.countryCode)}}
           {{user?.location.country}}
         </div>
         <div class="cont-reactions">

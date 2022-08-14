@@ -32,6 +32,10 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: ''
   },
+  {
+    path: 'setting',
+    loadChildren: () => import('./setting/setting.module').then( m => m.SettingPageModule)
+  },
 ];
 
 @NgModule({

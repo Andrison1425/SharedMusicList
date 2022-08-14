@@ -7,6 +7,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { GlobalComponentsModule } from 'src/app/components/global-components.module';
+import { FiltersModalComponent } from 'src/app/components/filters-modal/filters-modal.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { GlobalComponentsModule } from 'src/app/components/global-components.mod
   ],
   declarations: [
     HomePage,
-    MenuComponent
+    MenuComponent,
+    FiltersModalComponent
   ]
 })
 export class HomePageModule {}
