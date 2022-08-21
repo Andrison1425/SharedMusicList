@@ -7,7 +7,7 @@
       mode="md"
     ></ion-back-button>
     <ion-title slot="start" class="ion-no-padding">{{station? 'Editar': 'Crear'}} lista</ion-title>
-    <ion-button slot="end" mode="md" color="success" class="mr-15" (click)="createStation()">
+    <ion-button slot="end" mode="md" color="tertiary" class="mr-15" (click)="createStation()">
       {{station? 'Editar': 'Crear'}}
     </ion-button>
   </ion-toolbar>
@@ -26,42 +26,53 @@
     </div>
 
     <ion-item color="primary">
-      <ion-input formControlName="name" type="text" maxlength="40" placeholder="Nombre de la lista"></ion-input>
+      <ion-label position="floating">Nombre de la lista</ion-label>
+      <ion-input 
+        formControlName="name" 
+        type="text" 
+        maxlength="40"
+      ></ion-input>
     </ion-item>
 
-    <ion-item color="primary">
+    <ion-item color="primary" class="loc__item-mb">
+      <ion-label position="floating">Describe tu lista de reproducción</ion-label>
       <ion-textarea
-        placeholder="Describe tu lista de reproducción"
         maxlength="450"
-        rows="5"
+        rows="3"
         formControlName="description"
       ></ion-textarea>
     </ion-item>
 
     <ion-item color="primary">
-      <ion-input
-        placeholder="Agregar etiqueta"
-        maxlength="50"
-        type="text"
+      <ion-input 
+        formControlName="name" 
+        type="text" 
+        maxlength="40"
         #tagInput
+        class="loc__tags-input"
+        placeholder="Agregar etiqueta"
       ></ion-input>
     </ion-item>
   </form>
 
-  <span class="cont-delete-all-btn">
+  <section color="primary" class="ion-padding loc__btns">
+    <ion-button 
+      color="tertiary" 
+      slot="start" 
+      (click)="openModal()"
+    >
+      <ion-label>Agregar canción</ion-label>
+    </ion-button>
+  
     <ion-button
-      color="warning"
-      fill="outline"
+      color="medium"
       slot="end"
-      size="small"
-      class="ion-float-right mr-15"
-    >Eliminar todo</ion-button>
-  </span>
+      (click)="confirmDelete()"
+    >
+      Eliminar todo
+    </ion-button>
+  </section>
 
-  <ion-button color="primary" expand="full" class="add-music-btn" (click)="openModal()">
-    <ion-label>Agregar canción</ion-label>
-    <ion-icon name="add" slot="end"></ion-icon>
-  </ion-button>
 
   <ion-reorder-group disabled="false" (ionItemReorder)="doReorder($event)">
     <ion-item color="primary" *ngFor="let music of musicArr; let i = index">

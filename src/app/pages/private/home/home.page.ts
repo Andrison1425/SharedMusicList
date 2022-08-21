@@ -25,6 +25,7 @@ export class HomePage implements OnInit {
   tags: string[] = [];
   cantFilters = 1;
   connectionError = false;
+  searchTxt = '';
 
   constructor(
     private menu: MenuController,
@@ -35,7 +36,6 @@ export class HomePage implements OnInit {
   
 
   async ngOnInit() {
-
     this.localDbService.getLocalUser()
       .then(async (user) => {
         const favStations = await this.localDbService.getFavoriteStations(user.id);

@@ -8,6 +8,7 @@
   <form [formGroup]="addMusicForm">
     <ion-list slot="content" color="primary">
       <br>
+
       <ion-item color="primary">
         <div>
           <ion-label>
@@ -16,14 +17,28 @@
           <ion-input formControlName="title" type="text" maxlength="60" placeholder="Escribe aquí"></ion-input>
         </div>
       </ion-item>
-      <ion-item color="primary">
-        <div>
-          <ion-label>
-            Nombre del artista (opcional):
-          </ion-label>
-          <ion-input formControlName="artist" type="text" maxlength="40" placeholder="Escribe aquí"></ion-input>
-        </div>
-      </ion-item>
+
+      <div class="loc__artists-cont">
+        <ion-label>
+          Nombre del artista (opcional):
+        </ion-label>
+
+        <ng-select 
+          [items]="artists"
+          bindLabel="name"
+          [addTag]="true"
+          addTagText="Agregar artista:"
+          [hideSelected]="true"
+          [minTermLength]="2"
+          typeToSearchText="Ingresa 2 o más caracteres"
+          formControlName="artist"
+          maxlength="40"
+          [virtualScroll]="true"
+          (change)="onHandleArtists()"
+          [placeholder]="artistsPlaceholder"
+          [class]="artistsPlaceholder? 'loc__input-label': ''"
+        ></ng-select>
+      </div>
 
       <ion-item color="primary" *ngIf="!musicData">
         <div class="cont-music-file" color="tertiary" (click)="uploadMusic()">
@@ -38,7 +53,7 @@
       <ion-item color="primary">
         <ion-row>
           <ion-col class="ion-no-padding">
-            <ion-button fill="clear" color="success" (click)="addMusic()">
+            <ion-button fill="clear" color="tertiary" (click)="addMusic()">
               <ion-icon name="add" slot="start"></ion-icon>
               <div>Agregar</div>
             </ion-button>

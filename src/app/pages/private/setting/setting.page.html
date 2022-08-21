@@ -1,9 +1,47 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>setting</ion-title>
+  <ion-toolbar color="secondary">
+    <ion-back-button
+      slot="start"
+      [defaultHref]="'radio/'"
+      text=""
+      mode="md"
+    ></ion-back-button>
+    <ion-title slot="start" class="ion-no-padding">Configuración</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="ion-no-padding" color="primary">
+  <div class="loc__phone" *ngIf="!connectedAccount">
+    <form [formGroup]="form">
+      <h5>
+        Conectar cuenta
+      </h5>
+      <h6>Ingresa tu número de teléfono</h6>
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [preferredCountries]="[CountryISO.UnitedStates]"
+          [enableAutoCountrySelect]="false"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [selectedCountryISO]="CountryISO.UnitedStates"
+          [maxLength]="15"
+          [phoneValidation]="true"
+          [numberFormat]="PhoneNumberFormat.National"
+          name="phone"
+          formControlName="phone"
+        ></ngx-intl-tel-input>
+      <ion-row>
+        <ion-button (click)="verifyPhone()" color="tertiary">
+          Verificar
+        </ion-button>
+      </ion-row>
+      <div id="recaptcha-container"></div>
+      <ion-row>
+        <small>
+          Al tocar Verificar, podría enviarse un SMS. Es posible que se apliquen cargos de mensajería y uso de datos.
+        </small>
+      </ion-row>
+    </form>
+  </div>
 </ion-content>

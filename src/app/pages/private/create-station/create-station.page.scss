@@ -13,20 +13,6 @@ ion-card {
   width: 100%;
 }
 
-.add-music-btn {
-  justify-content: center;
-  align-items: center;
-  border: dashed 1px white;
-  border-radius: 4px;
-  cursor: pointer;
-  background: transparent;
-  width: calc(100% - 30px);
-  box-sizing: border-box;
-  margin: 10px 0 10px 15px;
-  padding: 0px 0;
-  height: 2.5rem;
-}
-
 .cont-music-file {
   border-radius: 5px;
   margin: 5px 0;
@@ -54,6 +40,7 @@ form {
 
 .cont-image {
   padding: 0.5rem 0 0 1rem;
+  overflow: visible;
 
   img {
     width: 5rem;
@@ -61,13 +48,22 @@ form {
   }
 
   ion-button {
-    margin: -1rem 0 0 -1.5rem;
+    margin: 3.3rem 0 0rem -1.5rem;
     border-radius: 50%;
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
     overflow: hidden;
     width: 50px;
-    height: 50px;
+    height: 50px; 
   }
+}
+
+.loc__btns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.loc__item-mb {
+  margin-bottom: 10px;
 }

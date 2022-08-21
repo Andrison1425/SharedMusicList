@@ -16,6 +16,9 @@ export class AddMusicComponent implements OnInit {
   music: IMusic;
   pos: number;
   duration: number;
+  artists: string[];
+  artistsPlaceholder = 'Escribe aquí';
+  unapproved = false;
   @ViewChild('fileInput', { static: false }) fileInput;
 
   addMusicForm = this.fb.group({
@@ -36,11 +39,33 @@ export class AddMusicComponent implements OnInit {
   ngOnInit() {
     this.music = this.navParams.get('music');
     this.pos = this.navParams.get('pos');
+    this.artists = this.navParams.get('artists');
+    this.artist.setValue(this.navParams.get('lastArtist'));
+
+    if (this.navParams.get('lastArtist')) {
+      this.artistsPlaceholder = '';
+    }
 
     if(this.music) {
       this.title.setValue(this.music.title);
       this.artist.setValue(this.music.artist);
+      this.artistsPlaceholder = '';
       this.musicData = this.music.localData;
+      this.unapproved = this.music.unapprovedArtists;
+    }
+  }
+
+  onHandleArtists () {
+    if (this.artist.value) {
+      this.artistsPlaceholder = '';
+      if (this.artists.includes(this.artist.value)) {
+        this.unapproved = false;
+      } else {
+        this.unapproved = true;
+      }
+    } else {
+      console.log('4')
+      this.artistsPlaceholder = 'Escribe aquí';
     }
   }
 
@@ -49,6 +74,7 @@ export class AddMusicComponent implements OnInit {
       const music: IMusic = {
         title: this.title.value,
         artist: this.artist.value,
+        unapprovedArtists: this.unapproved,
         downloadUrl: '',
         localData: this.musicData,
         id: '',

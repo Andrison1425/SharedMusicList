@@ -21,6 +21,7 @@ export class LocalDbService {
   private stationDb: ILocalForage;
   private favoriteStations$ = new ReplaySubject<IStation[]>(1);
   private tagsDb: ILocalForage;
+  private artistsDb: ILocalForage;
 
   constructor(
     private auth: Auth
@@ -30,6 +31,7 @@ export class LocalDbService {
     this.userDb = this.loadStore(LocalDbName.Users);
     this.stationDb = this.loadStore(LocalDbName.Stations);
     this.tagsDb = this.loadStore(LocalDbName.Tags);
+    this.artistsDb = this.loadStore(LocalDbName.Artists);
 
     this.getLocalUser()
       .then(user => {
@@ -159,5 +161,15 @@ export class LocalDbService {
   async getTags(){
     const tags = await this.tagsDb.getItem('tags');
     return tags as string[];
+  }
+
+  setArtists(artists: string[]){
+    this.artistsDb.setItem('artists', artists);
+    return artists;
+  }
+
+  async getArtists(){
+    const artists = await this.artistsDb.getItem('artists');
+    return artists as string[];
   }
 }

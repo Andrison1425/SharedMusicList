@@ -1,7 +1,8 @@
 
 export interface IMusic {
   title: string;
-  artist: string;
+  artist: string
+  unapprovedArtists?: boolean;
   downloadUrl: string;
   localData?: string;
   id: string;

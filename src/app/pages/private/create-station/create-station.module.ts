@@ -3,6 +3,7 @@ import { AddMusicComponent } from './../../../components/add-music/add-music.com
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -15,6 +16,7 @@ import { CreateStationPage } from './create-station.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    NgSelectModule,
     ReactiveFormsModule,
     CreateStationPageRoutingModule,
     GlobalComponentsModule

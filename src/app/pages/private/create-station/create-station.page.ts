@@ -13,12 +13,13 @@ import { IStation } from './../../../interfaces/station.interface';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
 import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
-import { ModalController, ItemReorderEventDetail, ActionSheetController, IonInput } from '@ionic/angular';
+import { ModalController, ItemReorderEventDetail, ActionSheetController, IonInput, AlertController } from '@ionic/angular';
 import { Route } from 'src/app/enums/route.enum';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import * as uniqid from 'uniqid';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
 import * as Tagify from '@yaireo/tagify'
+import { UsefulListsService } from 'src/app/services/usefulLists.service';
 
 @Component({
   selector: 'app-create-station',
@@ -32,6 +33,8 @@ export class CreateStationPage implements OnInit {
   station: IStation;
   stationID: string;
   tagify: Tagify;
+  artists: string[] = [];
+  lastArtist: string = '';
   imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('tagInput', { static: false }) tagInput: IonInput;
 
@@ -54,7 +57,9 @@ export class CreateStationPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private imageService: ImageService,
     private fileSystemService: FileSystemService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private usefulListsService: UsefulListsService,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -76,6 +81,8 @@ export class CreateStationPage implements OnInit {
         clearInterval(interval)
       }
     }, 200)
+
+    this.getAllArtists();
   }
 
   doReorder(ev: Event) {
@@ -88,7 +95,9 @@ export class CreateStationPage implements OnInit {
       component: AddMusicComponent,
       componentProps: {
         music,
-        pos
+        pos,
+        artists: this.artists,
+        lastArtist: this.lastArtist
       }
     });
 
@@ -98,6 +107,7 @@ export class CreateStationPage implements OnInit {
       .then(({data}) => {
         const dataType = data as {music: IMusic, pos?: number};
         if(dataType) {
+          this.lastArtist = dataType.music.artist;
           if(dataType.pos !== undefined) {
             this.musicArr[dataType.pos] = dataType.music;
           } else {
@@ -140,6 +150,10 @@ export class CreateStationPage implements OnInit {
       }
       this.loadingService.setContent(this.station?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
 
+      const artistsName = this.musicArr.map(track => track.artist)
+
+      await this.usefulListsService.addUnapprovedArtists(artistsName);
+
       const user = await this.localDbService.getLocalUser();
 
       const station: IStation = {
@@ -147,6 +161,7 @@ export class CreateStationPage implements OnInit {
         name: this.stationName.value,
         description: this.stationDescription.value,
         inReproduction: 3,
+        artistsName: artistsName,
         author: {
           id: user.id,
           userName: user.userName
@@ -269,5 +284,43 @@ export class CreateStationPage implements OnInit {
 
   getTags() {
     return this.tagify.value.map(tag => tag.value)
+  }
+
+  async getAllArtists() {
+    this.artists = await this.localDbService.getArtists();
+    if (!this.artists) {
+      this.artists = await this.usefulListsService.getArtists();
+    } else {
+      this.usefulListsService.getArtists()
+        .then(resp => this.artists = resp);
+    }
+  }
+
+  deleteAll() {
+    this.musicArr = [];
+  }
+
+  async confirmDelete() {
+    const alert = await this.alertController.create({
+      header: 'Eliminar todo!',
+      message: 'Seguro de que deseas eliminar todas las canciones?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'confirm',
+          handler: () => {
+            this.deleteAll()
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    await alert.onDidDismiss();
   }
 }

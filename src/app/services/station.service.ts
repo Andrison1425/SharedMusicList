@@ -3,7 +3,9 @@ import { IComment } from './../interfaces/comment.interface';
 import { StationOrderBy } from './../enums/station-order-by.enum';
 import { Reaction } from './../enums/reaction.enum';
 import { Injectable } from '@angular/core';
-import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, CollectionReference, increment, DocumentReference, where, Timestamp, arrayRemove, arrayUnion } from '@angular/fire/firestore';
+import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, 
+         CollectionReference, increment, DocumentReference, where, Timestamp, arrayUnion 
+       } from '@angular/fire/firestore';
 import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IStation } from './../interfaces/station.interface';
 import { LocalDbService } from './local-db.service';

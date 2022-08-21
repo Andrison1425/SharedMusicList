@@ -28,14 +28,14 @@ const routes: Routes = [
     loadChildren: () => import('./station/station.module').then( m => m.StationPageModule)
   },
   {
-    path: '**',
-    pathMatch: 'full',
-    redirectTo: ''
-  },
-  {
     path: 'setting',
     loadChildren: () => import('./setting/setting.module').then( m => m.SettingPageModule)
   },
+  {
+    path: '**',
+    pathMatch: 'full',
+    redirectTo: ''
+  }
 ];
 
 @NgModule({

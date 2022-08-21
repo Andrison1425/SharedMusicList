@@ -15,12 +15,32 @@ ion-list {
 }
 
 .cont-music-file {
-  border-left: 0.25rem solid var(--ion-color-success);
-  border-right: 0.25rem solid var(--ion-color-success);
+  border-left: 0.25rem solid var(--ion-color-tertiary);
+  border-right: 0.25rem solid var(--ion-color-tertiary);
   padding: 0.3rem;
   border-radius: 5px;
 }
 
 input[type="file"] {
   visibility: hidden;
+}
+
+.loc__artists-cont {
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
+
+:host ::ng-deep {
+  .ng-dropdown-panel-items {
+    background: var(--ion-color-primary);
+    box-shadow: 0 0 6px #fff;
+  }
+
+  .ng-option {
+    padding: 7px;
+  }
+
+  .ng-select {
+    padding: 10px !important;
+  }
 }

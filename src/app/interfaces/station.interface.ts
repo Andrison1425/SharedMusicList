@@ -8,6 +8,7 @@ export interface IStation {
   name: string,
   description: string,
   inReproduction: number,
+  artistsName: string[],
   author: {
     userName: string,
     id: string

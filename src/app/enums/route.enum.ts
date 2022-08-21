@@ -3,5 +3,6 @@ export enum Route {
   Profile = 'profile',
   Register = 'auth/register',
   Login = 'auth/login',
-  CreateStation = 'create-station'
+  CreateStation = 'create-station',
+  Setting = 'setting'
 }
