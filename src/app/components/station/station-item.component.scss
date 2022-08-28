@@ -72,3 +72,12 @@ ion-card-content {
 rect {
   fill: var(--ion-color-tertiary);
 }
+
+.loc__chare-col {
+  display: flex;
+  justify-content: flex-end;
+
+  ion-button {
+    margin-right: 8px;
+  }
+}

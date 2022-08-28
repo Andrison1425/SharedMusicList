@@ -1,6 +1,15 @@
 {
-	"appId": "io.ionic.starter",
-	"appName": "puzer",
+	"appId": "com.puzeos.track_list",
+	"appName": "Puzer",
 	"webDir": "www",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"plugins": {
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		}
+	}
 }

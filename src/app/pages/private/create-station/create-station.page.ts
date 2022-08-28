@@ -35,6 +35,7 @@ export class CreateStationPage implements OnInit {
   tagify: Tagify;
   artists: string[] = [];
   lastArtist: string = '';
+  trackListArtists: string[] = [];
   imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('tagInput', { static: false }) tagInput: IonInput;
 
@@ -72,6 +73,11 @@ export class CreateStationPage implements OnInit {
           this.stationName.setValue(this.station.name);
           this.stationDescription.setValue(this.station.description);
           this.musicArr = this.station.musics;
+          this.musicArr.forEach(track => {
+            if (this.trackListArtists.indexOf(track.artist) === -1) {
+              this.trackListArtists.push(track.artist)
+            }
+          });
         });
     }
 
@@ -96,7 +102,7 @@ export class CreateStationPage implements OnInit {
       componentProps: {
         music,
         pos,
-        artists: this.artists,
+        artists: [...this.trackListArtists, ...this.artists],
         lastArtist: this.lastArtist
       }
     });
@@ -107,6 +113,9 @@ export class CreateStationPage implements OnInit {
       .then(({data}) => {
         const dataType = data as {music: IMusic, pos?: number};
         if(dataType) {
+          if (this.trackListArtists.indexOf(dataType.music.artist) === -1) {
+            this.trackListArtists.push(dataType.music.artist)
+          }
           this.lastArtist = dataType.music.artist;
           if(dataType.pos !== undefined) {
             this.musicArr[dataType.pos] = dataType.music;
@@ -130,7 +139,7 @@ export class CreateStationPage implements OnInit {
       for (let index = 0; index < this.musicArr.length; index++) {
         const music = this.musicArr[index];
 
-        if (music.id) {
+        if (music.downloadUrl) {
           this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);
           continue;
         }
@@ -140,7 +149,8 @@ export class CreateStationPage implements OnInit {
           music.downloadUrl = downloadUrl;
           music.localPath = localPath;
           music.id = uniqid();
-          music.stationId= stationID;
+          music.stationId = stationID;
+          music.localData = '';
           this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);
         } catch (error) {
           this.loadingService.dismiss();
@@ -323,4 +333,6 @@ export class CreateStationPage implements OnInit {
 
     await alert.onDidDismiss();
   }
+
+
 }

@@ -4,5 +4,6 @@ export enum Route {
   Register = 'auth/register',
   Login = 'auth/login',
   CreateStation = 'create-station',
-  Setting = 'setting'
+  Setting = 'setting',
+  Notifications = 'notifications'
 }

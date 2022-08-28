@@ -32,8 +32,9 @@ export class ProfilePage implements OnInit {
   stations: IStation[] = [];
   imgPath = '../../../assets/img/person.jpg';
   activeTab = 'LISTS';
-
-
+  createDate: string = '';
+  views = 0;
+  
   constructor(
     private localDbService: LocalDbService,
     private route: ActivatedRoute,
@@ -52,6 +53,7 @@ export class ProfilePage implements OnInit {
       this.userService.getUser(this.userID)
         .then(user => {
           this.user = user;
+          this.createDate = String(new Date(user.createDate.seconds * 1000));
           if (user.profileImage.compressImage) {
             this.imgPath = user.profileImage.compressImage;
           }
@@ -64,6 +66,7 @@ export class ProfilePage implements OnInit {
       this.localDbService.getLocalUser()
         .then(resp => {
           this.user = resp;
+          this.createDate = String(new Date(resp.createDate.seconds * 1000));
           if (resp.profileImage.imageLocalPath) {
             this.imgPath = Capacitor.convertFileSrc(resp.profileImage.imageLocalPath);
           }
@@ -72,21 +75,24 @@ export class ProfilePage implements OnInit {
               this.stations = stations
               let likesCount = 0;
               let dislikesCount = 0;
+              let views = 0;
               stations.forEach(station => {
                 likesCount += station.reactions.numLikes;
                 dislikesCount += station.reactions.numLikes;
+                views += station.views;
               });
 
               this.reactionsCount = {
                 dislikes: dislikesCount,
                 likes: likesCount
               }
+
+              this.views = views;
             });
         });
 
       this.localDbService.userData()
         .subscribe(resp => {
-          console.log(resp)
           this.user = resp;
           if (resp.profileImage.imageLocalPath) {
             this.imgPath = Capacitor.convertFileSrc(resp.profileImage.imageLocalPath);

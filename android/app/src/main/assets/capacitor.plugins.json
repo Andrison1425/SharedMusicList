@@ -1,5 +1,9 @@
 [
 	{
+		"pkg": "@capacitor-community/fcm",
+		"classpath": "com.getcapacitor.community.fcm.FCMPlugin"
+	},
+	{
 		"pkg": "@capacitor/app",
 		"classpath": "com.capacitorjs.plugins.app.AppPlugin"
 	},
@@ -20,16 +24,16 @@
 		"classpath": "com.capacitorjs.plugins.keyboard.KeyboardPlugin"
 	},
 	{
+		"pkg": "@capacitor/push-notifications",
+		"classpath": "com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin"
+	},
+	{
 		"pkg": "@capacitor/share",
 		"classpath": "com.capacitorjs.plugins.share.SharePlugin"
 	},
 	{
 		"pkg": "@capacitor/status-bar",
 		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
-	},
-	{
-		"pkg": "capacitor-music-controls-plugin",
-		"classpath": "com.ingageco.capacitormusiccontrols.CapacitorMusicControls"
 	},
 	{
 		"pkg": "capacitor-v3-music-controls",

@@ -1,3 +1,5 @@
+import { Timestamp } from '@angular/fire/firestore';
+
 export interface IUser {
   id: string,
   userName: string,
@@ -10,5 +12,6 @@ export interface IUser {
   location: {
     country: string,
     countryCode: string
-  }
+  },
+  createDate: Timestamp
 }

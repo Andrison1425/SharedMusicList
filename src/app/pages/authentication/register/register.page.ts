@@ -13,6 +13,7 @@ import { Colors } from 'src/app/enums/color.enum';
 import { Auth } from '@angular/fire/auth';
 import { ActionSheetController } from '@ionic/angular';
 import { compressUriImage } from 'src/app/utils/utils';
+import { serverTimestamp, Timestamp } from '@angular/fire/firestore';
 
 
 @Component({
@@ -48,10 +49,10 @@ export class RegisterPage implements OnInit {
   }
 
   async completeUserRegister() {
-
     const user: IUser = {
       id: this.auth.currentUser.uid,
       userName: this.userName.value,
+      createDate: serverTimestamp() as Timestamp,
       favoriteStations: [],
       profileImage: {
         compressImage: this.compressImg,
@@ -100,8 +101,9 @@ export class RegisterPage implements OnInit {
     this.userService.createUser(user).then(() => {
       this.loading.dismiss();
       this.router.navigate(['radio/']);
-    }).catch(() => {
+    }).catch((e) => {
       this.loading.dismiss();
+      console.log(e)
       this.toastService.presentToast('Ha ocurrido un error', Colors.DANGER);
     });
   }

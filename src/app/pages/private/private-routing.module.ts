@@ -32,6 +32,10 @@ const routes: Routes = [
     loadChildren: () => import('./setting/setting.module').then( m => m.SettingPageModule)
   },
   {
+    path: 'notifications',
+    loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: ''

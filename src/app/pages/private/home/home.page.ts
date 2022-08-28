@@ -34,7 +34,6 @@ export class HomePage implements OnInit {
     private stationService: StationService
   ) { }
   
-
   async ngOnInit() {
     this.localDbService.getLocalUser()
       .then(async (user) => {
@@ -95,6 +94,7 @@ export class HomePage implements OnInit {
   getStations() {
     const filters: IFilters = {
       orderBy: this.stationOrderBy,
+      search: this.searchTxt,
       tags: this.tags
     };
 
@@ -121,5 +121,9 @@ export class HomePage implements OnInit {
 
   trackByFn(index: number, item: IStation) {
     return item.id;
+  }
+
+  search() {
+
   }
 }

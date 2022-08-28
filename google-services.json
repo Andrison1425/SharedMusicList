@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "96489754925",
+    "project_id": "myradio-fd491",
+    "storage_bucket": "myradio-fd491.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96489754925:android:a3ace4456412aa26adc3a4",
+        "android_client_info": {
+          "package_name": "com.puzeos.track_list"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96489754925-a1vs2i5e4d0ktkntsl4aipd8822leb87.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwZTo39RCPkNlGUe7tJtBv9vsnE0SCnEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96489754925-a1vs2i5e4d0ktkntsl4aipd8822leb87.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -64,13 +64,27 @@ export class AddMusicComponent implements OnInit {
         this.unapproved = true;
       }
     } else {
-      console.log('4')
       this.artistsPlaceholder = 'Escribe aquí';
     }
   }
 
   addMusic() {
     if(this.addMusicFormValidate()) {
+      if (this.music) {
+        const music: IMusic = {
+          title: this.title.value,
+          artist: this.artist.value,
+          unapprovedArtists: this.unapproved,
+          downloadUrl: '',
+          localData: this.musicData,
+          id: this.music.id,
+          duration: this.duration,
+          stationId: this.music.stationId,
+          local: {
+            isNew: false
+          }
+        }
+      }
       const music: IMusic = {
         title: this.title.value,
         artist: this.artist.value,
@@ -132,6 +146,9 @@ export class AddMusicComponent implements OnInit {
     //this.musicData = event.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
+      if (this.music) {
+        this.music.downloadUrl = '';
+      }
       this.musicData = reader.result as string;
       event.target.value = null;
     };

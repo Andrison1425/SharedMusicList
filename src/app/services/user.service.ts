@@ -22,7 +22,9 @@ export class UserService {
           const usersCollection = collection(this.firestore, FirestoreCollection.Users);
           const newUserDoc = doc(usersCollection, user.id);
           await setDoc(newUserDoc, user);
-          await this.localDbService.setUserData(user.id, user);
+          const userData = await getDoc(newUserDoc);
+          console.log( userData.data())
+          await this.localDbService.setUserData(user.id, userData.data() as IUser);
           resolve(user);
         } catch (error) {
           rejeact(error);

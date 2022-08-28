@@ -5,6 +5,7 @@ import { ILocalForage } from './../interfaces/localForange.interface';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Subject } from 'rxjs';
 import { onAuthStateChanged, Auth} from '@angular/fire/auth';
+import { getFakeTimestamp } from '../utils/utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const localForage = require('localforage') as ILocalForage;
 
@@ -35,10 +36,12 @@ export class LocalDbService {
 
     this.getLocalUser()
       .then(user => {
-        this.getFavoriteStations(user.id)
-          .then(stations => {
-            this.favoriteStations$.next(stations || []);
-          })
+        if (user) {
+          this.getFavoriteStations(user.id)
+            .then(stations => {
+              this.favoriteStations$.next(stations || []);
+            })
+        }
       })
   }
 
@@ -69,7 +72,14 @@ export class LocalDbService {
 
   setUserData(id: string, user: IUser): Promise<IUser> {
     this.userData$.next(user);
-    return this.userDb.setItem(id, user);
+    console.log(user.createDate.nanoseconds, user.createDate.seconds)
+    return this.userDb.setItem(id, {
+      ...user,
+      createDate: {
+        nanoseconds: user.createDate.nanoseconds,
+        seconds: user.createDate.seconds
+      }
+    });
   }
 
   async setStation(id: string, station: IStation, isFavoriteStation = false): Promise<IStation> {

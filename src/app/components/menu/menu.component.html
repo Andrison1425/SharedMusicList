@@ -33,7 +33,7 @@
       ></ion-icon>
       <span color="dark">Mi perfil</span>
     </ion-item>
-    <ion-item routerLink="/chat/notification" color="medium">
+    <ion-item [routerLink]="Routes.Notifications" color="medium">
       <ion-icon
         color="primary"
         name="notifications-sharp"
@@ -41,7 +41,7 @@
       ></ion-icon>
       <span color="dark">Notificaciones</span>
     </ion-item>
-    <ion-item  [routerLink]="Routes.Setting" color="medium">
+    <ion-item [routerLink]="Routes.Setting" color="medium">
       <ion-icon
         color="primary"
         slot="start"
