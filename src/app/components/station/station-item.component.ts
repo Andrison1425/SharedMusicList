@@ -152,6 +152,7 @@ export class StationItemComponent implements OnInit {
               this.userService.removeFavoriteStation(this.station.id)
                 .then(() => {
                   this.loadingService.dismiss();
+                  this.isFavoriteStation = false;
                 }).catch(() => {
                   this.loadingService.dismiss();
                   this.toastService.presentToast('Error de conexión', Colors.DANGER);
@@ -164,7 +165,14 @@ export class StationItemComponent implements OnInit {
       await alert.present();
     } else {
       this.isFavoriteStation = true;
-      this.userService.addFavoriteStation(this.station);
+      this.userService.addFavoriteStation(this.station)
+        .then(() => {
+          this.toastService.presentToast('Agregado a favoritos.', Colors.SUCCESS,1500);
+        })
+        .catch(e => {
+          console.log(e)
+          this.toastService.presentToast('Error de conexión.', Colors.DANGER, 1500);
+        });
     }
   }
 

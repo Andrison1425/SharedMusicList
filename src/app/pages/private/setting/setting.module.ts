@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { SettingPageRoutingModule } from './setting-routing.module';
 
 import { SettingPage } from './setting.page';
-import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import {ExtendedFirebaseUIAuthConfig, firebase, FirebaseUIModule} from 'firebaseui-angular-i18n';
 
 const firebaseUiAuthConfig: ExtendedFirebaseUIAuthConfig = {
@@ -26,7 +25,6 @@ const firebaseUiAuthConfig: ExtendedFirebaseUIAuthConfig = {
     IonicModule,
     SettingPageRoutingModule,
     ReactiveFormsModule,
-    NgxIntlTelInputModule,
     FirebaseUIModule.forRoot(firebaseUiAuthConfig)
   ],
   declarations: [SettingPage]

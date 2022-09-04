@@ -1,10 +1,11 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit, ViewChild, } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 import { RecaptchaVerifier, ConfirmationResult, Auth, signInWithPhoneNumber, PhoneAuthProvider, user, linkWithCredential } from "@angular/fire/auth";
 import { LoadingService } from 'src/app/services/loading.service';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from 'src/app/services/toast.service';
+import * as intlTelInput from 'intl-tel-input';
+import { LocalDbService } from 'src/app/services/local-db.service';
 
 @Component({
   selector: 'app-setting',
@@ -16,11 +17,9 @@ export class SettingPage implements OnInit {
   verification = false;
   recaptchaVerifier: RecaptchaVerifier;
   confirmationResult: ConfirmationResult;
-  CountryISO = CountryISO;
-  PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
   connectedAccount = false;
-  
+  intTelRef: intlTelInput.Plugin;
+  @ViewChild('telInput', { static: false }) telInput;
   form = this.fb.group({
     phone: ['', [Validators.required]]
   });
@@ -32,7 +31,8 @@ export class SettingPage implements OnInit {
     private auth: Auth,
     private loadingService: LoadingService,
     private alertController: AlertController,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private localDbService: LocalDbService
   ) { }
 
   ngOnInit() {
@@ -41,6 +41,17 @@ export class SettingPage implements OnInit {
     } else {
       this.connectedAccount = false;
     }
+
+    const interval = setInterval(() => {
+      if (this.telInput) {
+        this.intTelRef = intlTelInput(this.telInput.nativeElement, {
+          customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.j. " + selectedCountryPlaceholder,
+          initialCountry: this.localDbService.user.location.countryCode,
+          separateDialCode: true
+        });
+        clearInterval(interval);
+      }
+    }, 200)
   }
 
   async ionViewDidEnter() {
@@ -56,22 +67,23 @@ export class SettingPage implements OnInit {
   }
 
   verifyPhone() {
-    if (this.form.valid) {
-      this.loadingService.present();signInWithPhoneNumber
-      signInWithPhoneNumber(this.auth, this.phone.value.e164Number, this.recaptchaVerifier)
-        .then(async (confirmationResult) => {
-          this.confirmationResult = confirmationResult;
-          this.loadingService.dismiss();
-          this.presentAlert();
-        }).catch(() => {
-          this.loadingService.dismiss();
-          this.toastService.presentToast('No se pudo enviar el código de verificación');
-        });
-    } else {
-      if (this.phone?.errors?.required) {
-          this.toastService.presentToast('El número de teléfono es requerido');
-      }
-    }
+    //console.log(this.intTelRef.getNumber());
+    // if (this.form.valid) {
+    //   this.loadingService.present();signInWithPhoneNumber
+    //   signInWithPhoneNumber(this.auth, this.phone.value.e164Number, this.recaptchaVerifier)
+    //     .then(async (confirmationResult) => {
+    //       this.confirmationResult = confirmationResult;
+    //       this.loadingService.dismiss();
+    //       this.presentAlert();
+    //     }).catch(() => {
+    //       this.loadingService.dismiss();
+    //       this.toastService.presentToast('No se pudo enviar el código de verificación');
+    //     });
+    // } else {
+    //   if (this.phone?.errors?.required) {
+    //       this.toastService.presentToast('El número de teléfono es requerido');
+    //   }
+    // }
   }
 
   async presentAlert() {

@@ -56,7 +56,8 @@ export class LoginPage implements OnInit {
         clearInterval(this.animationInterval);
         this.router.navigate([Route.Register]);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         this.loadingService.dismiss();
           this.toastService.presentToast('Error al tratar de continuar', Colors.DANGER, 5000);
       });

@@ -17,20 +17,7 @@
         Conectar cuenta
       </h5>
       <h6>Ingresa tu número de teléfono</h6>
-        <ngx-intl-tel-input
-          [cssClass]="'custom'"
-          [preferredCountries]="[CountryISO.UnitedStates]"
-          [enableAutoCountrySelect]="false"
-          [enablePlaceholder]="true"
-          [searchCountryFlag]="true"
-          [selectFirstCountry]="false"
-          [selectedCountryISO]="CountryISO.UnitedStates"
-          [maxLength]="15"
-          [phoneValidation]="true"
-          [numberFormat]="PhoneNumberFormat.National"
-          name="phone"
-          formControlName="phone"
-        ></ngx-intl-tel-input>
+      <input type="tel" #telInput/>
       <ion-row>
         <ion-button (click)="verifyPhone()" color="tertiary">
           Verificar

@@ -4,6 +4,8 @@ import { IUser } from './../interfaces/user.interface';
 import { LocalDbService } from './local-db.service';
 import { Injectable } from '@angular/core';
 import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference, arrayRemove } from '@angular/fire/firestore';
+import { NotificationTokensService } from './notification-tokens.service';
+import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,9 @@ export class UserService {
 
   constructor(
     private localDbService: LocalDbService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private notificationTokensService: NotificationTokensService,
+    private notificationsService: NotificationsService
   ) { /* */}
 
   createUser(user: IUser) {
@@ -33,15 +37,18 @@ export class UserService {
     });
   }
 
-  addFavoriteStation(station: IStation) {
+  async addFavoriteStation(station: IStation) {
     const id = this.localDbService.user.id;
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id );
-    updateDoc(docRef, {
+    await updateDoc(docRef, {
       favoriteStations: arrayUnion(station.id)
-    }).then(() => {
-      this.localDbService.setStation(station.id, station, true);
-      this.syncUser();
-    });
+    })
+    console.log('a')
+    await this.localDbService.setStation(station.id, station, true);
+    console.log('b')
+    await this.notificationTokensService.addTokenInMusicList(station.id, this.notificationsService.userToken);
+    this.syncUser();
+    return;
   }
 
   async removeFavoriteStation(stationId: string) {
@@ -52,8 +59,10 @@ export class UserService {
       favoriteStations: arrayRemove(stationId)
     });
 
-    this.localDbService.removeFavoriteStation(stationId);
+    await this.localDbService.removeFavoriteStation(stationId);
+    await this.notificationTokensService.deleteTokenInMusicList(stationId, this.notificationsService.userToken);
     this.syncUser();
+    return;
   }
 
   syncUser() {

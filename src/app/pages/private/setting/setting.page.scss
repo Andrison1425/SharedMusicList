@@ -1,3 +1,9 @@
+// .iti__flag {background-image: url("path/to/flags.png");}
+
+// @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+//   .iti__flag {background-image: url("path/to/flags@2x.png");}
+// }
+
 .loc__phone {
   padding: 0 10px;
 
@@ -31,10 +37,10 @@
   min-width: calc(100vw - 20px);
 }
 
-:host ::ng-deep {
-  .iti__country-list,
-  #country-search-box  {
-    background-color: var(--ion-color-primary);
-    color: var(--ion-color-light);
-  }
-}
+// :host ::ng-deep {
+//   .iti__country-list,
+//   #country-search-box  {
+//     background-color: var(--ion-color-primary);
+//     color: var(--ion-color-light);
+//   }
+// }

@@ -28,51 +28,54 @@
 
 @import "~@yaireo/tagify/src/tagify.scss";
 
-.tagify__dropdown__wrapper{
-  background-color: var(--ion-color-primary) !important;
+@import "~intl-tel-input/build/css/intlTelInput.css";
+
+.tagify__dropdown__wrapper {
+	background-color: var(--ion-color-primary) !important;
 }
 
 .tagify__dropdown__item:hover {
-  background-color: var(--ion-color-tertiary) !important;
+	background-color: var(--ion-color-tertiary) !important;
 }
 
-.fondo{
-  position: absolute;
-  z-index: -1;
-  height: 100%;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  background: var(--fondo-color);
-  div{
-    background-repeat: repeat;
-    background-size: cover;
-    background-image: url('./assets/img/fondo.jpg');
-    height: 100%;
-    width: 100%;
-    position: relative;
-    opacity: 0.07;
-  }
+.fondo {
+	position: absolute;
+	z-index: -1;
+	height: 100%;
+	width: 100vw;
+	top: 0;
+	left: 0;
+	background: var(--fondo-color);
+
+	div {
+		background-repeat: repeat;
+		background-size: cover;
+		background-image: url('./assets/img/fondo.jpg');
+		height: 100%;
+		width: 100%;
+		position: relative;
+		opacity: 0.07;
+	}
 }
 
 .g-d-contents {
-  display: contents;
+	display: contents;
 }
 
 .no-list-message {
-  flex: 1;
-  height: 100%;
-  text-align: center;
-  padding-top: 4rem;
+	flex: 1;
+	height: 100%;
+	text-align: center;
+	padding-top: 4rem;
 
-  img {
-    display: block;
-    margin: 0 auto 10px auto;
-  }
+	img {
+		display: block;
+		margin: 0 auto 10px auto;
+	}
 }
 
 .tagify--noTags .tagify__input::before {
-  color: #fff !important;
+	color: #fff !important;
 }
 
 .tagify__input:empty::before {
@@ -86,9 +89,9 @@
 		padding-left: 0;
 	}
 
-  .tagify__tag {
-    margin: 5px 5px 5px 0;
-  }
+	.tagify__tag {
+		margin: 5px 5px 5px 0;
+	}
 }
 
 .loc__input-label .ng-placeholder {
@@ -99,92 +102,45 @@
 	Custom styling example bellow.
 *****************************************************/
 
+
+
 .iti {
-	display: block !important;
-	margin-bottom: 20px;
+	color: #000;
 }
 
-.iti .dropdown-menu.country-dropdown {
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-color: #c7cace;
-	margin-top: -1px;
-}
+// .iti .dropdown-menu.country-dropdown {
+// 	border-top-left-radius: 0px;
+// 	border-top-right-radius: 0px;
+// 	border-color: #c7cace;
+// 	margin-top: -1px;
+// }
 
-.iti .iti__country-list {
-	box-shadow: none;
-	font-size: 14px;
-	margin-left: 0;
-	width: 244px;
-	max-height: 170px;
-}
+// .iti .iti__country-list {
+// 	box-shadow: none;
+// 	font-size: 14px;
+// 	margin-left: 0;
+// 	width: 244px;
+// 	max-height: 170px;
+// }
 
-.iti__flag-container.open + input {
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-}
+// .iti__flag-container.open+input {
+// 	border-bottom-left-radius: 0px;
+// 	border-bottom-right-radius: 0px;
+// }
 
-.iti .search-container input {
-	font-size: 14px;
-	border-color: #c7cace;
-	border-radius: 0;
-	padding: 5px 10px;
-}
+// .iti .search-container input {
+// 	font-size: 14px;
+// 	border-color: #c7cace;
+// 	border-radius: 0;
+// 	padding: 5px 10px;
+// }
 
-.iti .search-container input:focus {
-	outline: none;
-}
+// .iti .search-container input:focus {
+// 	outline: none;
+// }
 
-@media screen and (max-width: 479px) {
-	.iti .iti__country-list {
-		width: 88.3vw;
-	}
-}
-
-ngx-intl-tel-input input {
-	height: 44px;
-	margin-bottom: 20px;
-	padding: 10px;
-	border-style: solid;
-	border-width: 1px;
-  background-color: var(--white);
-	border-radius: 4px;
-	font-size: 18px;
-  width: 100%;
-}
-
-ngx-intl-tel-input.ng-invalid.ng-touched input {
-	border: 1px solid #c0392b;
-  width: 100%;
-  background-color: var(--white);
-}
-
-ngx-intl-tel-input input:hover {
-	box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.24);
-}
-
-ngx-intl-tel-input input:focus {
-	outline: none !important;
-	border-color: #3498db;
-	box-shadow: 0 0 0 0 #000;
-}
-
-ngx-intl-tel-input input::-webkit-input-placeholder {
-	color: #bac2c7;
-}
-
-ngx-intl-tel-input input:-ms-input-placeholder {
-	color: #bac2c7;
-}
-
-ngx-intl-tel-input input::-ms-input-placeholder {
-	color: #bac2c7;
-}
-
-ngx-intl-tel-input input::placeholder {
-	color: #bac2c7;
-}
-
-ngx-intl-tel-input input[disabled] {
-	background-color: #e5eaf1;
-}
+// @media screen and (max-width: 479px) {
+// 	.iti .iti__country-list {
+// 		width: 88.3vw;
+// 	}
+// }
