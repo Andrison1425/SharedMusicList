@@ -94,6 +94,9 @@
       </ion-label>
     </div>
 
-    <ion-icon name="download" slot="end" color="tertiary"></ion-icon>
+    <ion-button (click)="downloadMusic(musicPlaying)" mode="ios" slot="end">
+      <ion-icon name="download" slot="icon-only" color="tertiary"></ion-icon>
+    </ion-button>
+    
   </ion-item>
 </ion-card>

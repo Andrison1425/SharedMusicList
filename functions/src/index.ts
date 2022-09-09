@@ -4,11 +4,9 @@ import { Firestore } from "@google-cloud/firestore";
 
 admin.initializeApp();
 const firestore = new Firestore();
-// firebase deploy --only functions
-
 
 exports.newMusicInList = functions.firestore
-    .document("/stations/{idStation}/")
+    .document("/stations/{station}")
     .onUpdate(async (change, context) => {
         const beforeData = change.before.data() as IStation;
         const afterData = change.after.data() as IStation;
@@ -37,15 +35,29 @@ exports.newMusicInList = functions.firestore
                             },
                             path: 'radio/station/' + afterData.id,
                             tokens: userTokens
-                        })
-                        // 
+                        });
+
+                        const notificationDB = firestore.collection("/notifications");
+                         
+                        notificationDB.add({
+                            title: afterData.name,
+                            body: 'Se han agregado ' + newMusics + ' canciones nuevas.',
+                            tokens: userTokens,
+                            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                            type: 'NewMusicInList',
+                            data: {
+                                musicListId: afterData.id
+                            }
+                        });
                     }
                 })
         }
+
+        return;
     });
 
 const sendNotification = (notification: INotification) => {
-    admin.messaging().sendMulticast({
+    return admin.messaging().sendMulticast({
         tokens: notification.tokens,
         notification: notification.notification,
         data: {

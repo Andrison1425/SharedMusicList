@@ -45,6 +45,7 @@
           Agregar archivo de música
         </div>
       </ion-item>
+      
       <ion-item color="primary" *ngIf="musicData">
         <app-audio [audioData]="musicData" (duration)="onDuration($event)"></app-audio>
         <ion-icon name="trash" slot="end" color="tertiary" (click)="musicData = null"></ion-icon>

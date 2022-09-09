@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-back-button 
+      slot="start" 
+      [defaultHref]="Routes.Home" 
+      text="" 
+      mode="md"
+    ></ion-back-button>
+    <ion-title slot="start" class="ion-no-padding">Descargas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding" color="primary">
+  <ion-item *ngFor="let download of downloads" color="primary">
+
+    <ion-label>
+      <h3>{{download.music.title}} - {{download.music.artist}}</h3>
+      <div class="loc__progress-bar">
+        <div>
+          <div class="loc__progress" [style]="'width:' + download.progress + '%'"></div>
+        </div>
+      </div>
+
+      <div class="loc__progress-options">
+        <span>
+          <ion-button fill="clear" color="tertiary">
+            {{download.fileUri}}
+          </ion-button>
+        </span>
+      </div>
+    </ion-label>
+
+    <ion-button color="tertiary" fill="clear">
+      <ion-icon slot="icon-only" name="ellipsis-vertical-sharp"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-content>

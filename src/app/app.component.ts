@@ -1,8 +1,14 @@
 import { BackgroundModeService } from './services/background-mode.service';
 import { LocalDbService } from './services/local-db.service';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { NotificationsService } from './services/notifications.service';
+import { LocalNotificationsService } from './services/local-notifications.service';
+import { DownloadService } from './services/download.service';
+import { IonModal } from '@ionic/angular';
+import { IMusic } from './interfaces/music.interface';
+import { IDownload, IDownloadData } from './interfaces/download.interface';
+import { DownloadState } from './enums/download-state.enum';
 
 @Component({
   selector: 'app-root',
@@ -10,14 +16,41 @@ import { NotificationsService } from './services/notifications.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+
+  @ViewChild('downloadingModal') downloadingModal: IonModal;
+  downloads: IDownload = {};
+  DownloadState = DownloadState;
+
   constructor(
-    localDbService: LocalDbService,
-    backgroundModeService: BackgroundModeService,
-    notificationsService: NotificationsService
+    private localDbService: LocalDbService,
+    private backgroundModeService: BackgroundModeService,
+    private notificationsService: NotificationsService,
+    private localNotificationsService: LocalNotificationsService,
+    private downloadService: DownloadService
   ) {
-    StatusBar.setBackgroundColor({color: '#390D02'});
+    StatusBar.setBackgroundColor({ color: '#390D02' });
     localDbService.initializeLocalDb();
     backgroundModeService.initialize();
     notificationsService.initialize();
+    localNotificationsService.initialize();
+
+    downloadService.onShowDownloadsModal()
+      .subscribe(() => {
+        this.downloadingModal.present();
+      })
+
+    downloadService.getDownloads()
+      .subscribe(resp => {
+        this.downloads = resp;
+        console.log(resp)
+      })
+  }
+
+  cancelDownload(music: IMusic) {
+    this.downloadService.cancelDownload(music);
+  }
+
+  viewDownloadInExplorer(downloadUri: string) {
+    this.downloadService.openDownloadInExplorer(downloadUri);
   }
 }

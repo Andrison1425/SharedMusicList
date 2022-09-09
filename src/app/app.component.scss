@@ -3,3 +3,50 @@ app-music-player {
   width: 100%;
   bottom: 0;
 }
+
+ion-modal {
+  --backdrop-opacity: 2.5;
+}
+
+ion-item {
+  align-items: flex-start;
+  small {
+    color: var(--ion-color-medium);
+  }
+}
+
+.loc__progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  >div {
+    flex: 1;
+    background: black;
+    border-radius: 10px;
+    height: 5px;
+    margin: 7px 0;
+
+    div {
+      height: 100%;
+      background: var(--ion-color-success);
+      width: 0%;
+      border-radius: 10px;
+    }
+  }
+}
+
+.loc__progress-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  ion-button {
+    font-size: 12px;
+    padding: 0;
+    --padding-top: 0;
+    --padding-end: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+  }
+}

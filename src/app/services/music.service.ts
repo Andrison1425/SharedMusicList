@@ -154,4 +154,8 @@ export class MusicService {
       state: null
     });
   }
+
+  download(musicId: string) {
+
+  }
 }

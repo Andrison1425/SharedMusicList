@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject, Subject } from 'rxjs';
 import { onAuthStateChanged, Auth} from '@angular/fire/auth';
 import { getFakeTimestamp } from '../utils/utils';
+import { IDownload, IDownloadData } from '../interfaces/download.interface';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const localForage = require('localforage') as ILocalForage;
 
@@ -23,6 +24,7 @@ export class LocalDbService {
   private favoriteStations$ = new ReplaySubject<IStation[]>(1);
   private tagsDb: ILocalForage;
   private artistsDb: ILocalForage;
+  private musicDownloadsDb: ILocalForage;
 
   constructor(
     private auth: Auth
@@ -33,6 +35,7 @@ export class LocalDbService {
     this.stationDb = this.loadStore(LocalDbName.Stations);
     this.tagsDb = this.loadStore(LocalDbName.Tags);
     this.artistsDb = this.loadStore(LocalDbName.Artists);
+    this.musicDownloadsDb = this.loadStore(LocalDbName.MusicDownloads);
 
     this.getLocalUser()
       .then(user => {
@@ -181,5 +184,18 @@ export class LocalDbService {
   async getArtists(){
     const artists = await this.artistsDb.getItem('artists');
     return artists as string[];
+  }
+
+  addMusicDownload(download: IDownloadData) {
+    this.musicDownloadsDb.setItem(download.id, download);
+  }
+
+  async getDownloads(): Promise<IDownloadData[]> {
+    const downloads: IDownloadData[] = [];
+    await this.musicDownloadsDb.iterate((value: IDownloadData) => {
+      downloads.push(value);
+    });
+
+    return downloads;
   }
 }

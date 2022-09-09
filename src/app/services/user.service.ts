@@ -27,7 +27,6 @@ export class UserService {
           const newUserDoc = doc(usersCollection, user.id);
           await setDoc(newUserDoc, user);
           const userData = await getDoc(newUserDoc);
-          console.log( userData.data())
           await this.localDbService.setUserData(user.id, userData.data() as IUser);
           resolve(user);
         } catch (error) {
@@ -43,9 +42,7 @@ export class UserService {
     await updateDoc(docRef, {
       favoriteStations: arrayUnion(station.id)
     })
-    console.log('a')
     await this.localDbService.setStation(station.id, station, true);
-    console.log('b')
     await this.notificationTokensService.addTokenInMusicList(station.id, this.notificationsService.userToken);
     this.syncUser();
     return;

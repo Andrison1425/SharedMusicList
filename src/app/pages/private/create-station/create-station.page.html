@@ -73,7 +73,6 @@
     </ion-button>
   </section>
 
-
   <ion-reorder-group disabled="false" (ionItemReorder)="doReorder($event)">
     <ion-item color="primary" *ngFor="let music of musicArr; let i = index">
       <ion-card color="primary">
@@ -89,7 +88,7 @@
             </ion-label>
           </div>
           <div class="cont-music-file" color="tertiary">
-            <app-audio [audioData]="music.localData"></app-audio>
+            <app-audio [audioData]="music.localPath"></app-audio>
           </div>
         </ion-card-content>
         <ion-row>

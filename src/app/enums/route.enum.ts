@@ -5,5 +5,6 @@ export enum Route {
   Login = 'auth/login',
   CreateStation = 'create-station',
   Setting = 'setting',
-  Notifications = 'notifications'
+  Notifications = 'notifications',
+  Downloads = 'downloads'
 }

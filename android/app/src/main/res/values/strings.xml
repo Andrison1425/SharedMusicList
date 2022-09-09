@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Puzer</string>
-    <string name="title_activity_main">Puzer</string>
+    <string name="app_name">Musicalia</string>
+    <string name="title_activity_main">Musicalia</string>
     <string name="package_name">com.puzeos.track_list</string>
     <string name="custom_url_scheme">com.puzeos.track_list</string>
 </resources>

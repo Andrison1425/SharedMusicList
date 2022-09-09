@@ -12,4 +12,28 @@
 
 <ion-content class="ion-no-padding" color="primary">
 
+  <ion-item 
+    color="primary" 
+    lines 
+    *ngFor="let notification of notifications"
+    [routerLink]="notification?.data?.musicListId? '/radio/station/' + notification.data?.musicListId: ''"
+    detail
+  >
+    <ion-thumbnail slot="start">
+      <img [src]="stationImages[notification.id] || '../../../../assets/img/no-image.png'">
+    </ion-thumbnail>
+    <ion-label>
+      <span>
+        {{notification.title}}
+      </span>
+      <br/>
+      <h4>
+        {{notification.body}}
+      </h4>
+      <h6>
+        {{notification.timestamp.toDate() | date: 'short'}}
+      </h6>
+    </ion-label>
+  </ion-item>
+
 </ion-content>

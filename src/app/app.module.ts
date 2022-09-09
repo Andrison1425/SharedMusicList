@@ -17,6 +17,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     BackgroundMode,
+    FileOpener
   ],
   bootstrap: [AppComponent],
 })

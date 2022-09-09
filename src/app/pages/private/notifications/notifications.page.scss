@@ -1,0 +1,15 @@
+ion-item {
+    span {
+        color: var(--ion-color-tertiary);
+    }
+
+    h4 {
+        color: var(--ion-color-medium);
+    }
+
+    h6 {
+        text-align: end;
+        color: var(--ion-color-medium);
+        font-size: 12px;
+    }
+}

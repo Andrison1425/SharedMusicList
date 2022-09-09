@@ -14,6 +14,8 @@ import { Colors } from 'src/app/enums/color.enum';
 import { IUser } from 'src/app/interfaces/user.interface';
 import { Reaction } from 'src/app/enums/reaction.enum';
 import { Share } from '@capacitor/share';
+import { LocalNotificationsService } from 'src/app/services/local-notifications.service';
+import { DownloadService } from 'src/app/services/download.service';
 
 @Component({
   selector: 'app-station-item',
@@ -33,6 +35,7 @@ export class StationItemComponent implements OnInit {
   reactionEnum = Reaction;
   reaction: Reaction;
   percentageReaction = 50;
+  private units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
   constructor(
     private alertController: AlertController,
@@ -43,6 +46,8 @@ export class StationItemComponent implements OnInit {
     private router: Router,
     private localDbService: LocalDbService,
     private userService: UserService,
+    private localNotificationsService: LocalNotificationsService,
+    private downloadService: DownloadService
   ) {
   }
 
@@ -203,7 +208,6 @@ export class StationItemComponent implements OnInit {
   syncStation() {
     this.stationService.syncStation(this.station.id)
     .then(resp => {
-      console.log(resp)
       this.station = resp;
       if (this.station.reactions.numLikes) {
         this.percentageReaction =
@@ -230,5 +234,40 @@ export class StationItemComponent implements OnInit {
 
   async edit() {
     this.router.navigate(['/radio/create-station/' + this.station.id]);
+  }
+
+  async downloadMusic(music: IMusic) {
+    const alert = await this.alertController.create({
+      message: `
+        ¿Descargar ${music.title} - ${music.artist}? 
+        <br> 
+        <small>${this.getMusicSize(music.size)}</small>
+      `,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }, {
+          text: 'Descargar',
+          id: 'confirm-button',
+          handler: () => {
+            this.downloadService.showDownloadsModal();
+            this.downloadService.downloadMusic(this.musicPlaying);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private getMusicSize(x: number) {
+    let l = 0;
+    let n = x || 0;
+
+    while (n >= 1024 && ++l) {
+      n = n / 1024;
+    }
+    return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + this.units[l]);
   }
 }

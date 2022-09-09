@@ -145,10 +145,10 @@ export class CreateStationPage implements OnInit {
         }
 
         try {
+          music.id = uniqid();
           const {downloadUrl, localPath} = await this.musicService.uploadMusic(music, stationID, this.stationName.value);
           music.downloadUrl = downloadUrl;
           music.localPath = localPath;
-          music.id = uniqid();
           music.stationId = stationID;
           music.localData = '';
           this.loadingService.setContent(`Subiendo canciones ${index+2}/${this.musicArr.length}`);

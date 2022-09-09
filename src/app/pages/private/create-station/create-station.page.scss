@@ -36,6 +36,10 @@ form {
   >ion-label {
     margin-left: 1rem;
   }
+
+  ion-item.item-has-value ion-label {
+    color: var(--ion-color-success) !important;
+  }
 }
 
 .cont-image {

@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.puzeos.track_list',
-  appName: 'Puzer',
+  appName: 'Musicalia',
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {

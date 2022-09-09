@@ -19,6 +19,7 @@ export class AddMusicComponent implements OnInit {
   artists: string[];
   artistsPlaceholder = 'Escribe aquí';
   unapproved = false;
+  size: number = 0;
   @ViewChild('fileInput', { static: false }) fileInput;
 
   addMusicForm = this.fb.group({
@@ -50,8 +51,9 @@ export class AddMusicComponent implements OnInit {
       this.title.setValue(this.music.title);
       this.artist.setValue(this.music.artist);
       this.artistsPlaceholder = '';
-      this.musicData = this.music.localData;
+      this.musicData = this.music.localData || this.music.localPath;
       this.unapproved = this.music.unapprovedArtists;
+      this.size = this.music.size;
     }
   }
 
@@ -70,34 +72,37 @@ export class AddMusicComponent implements OnInit {
 
   addMusic() {
     if(this.addMusicFormValidate()) {
-      if (this.music) {
-        const music: IMusic = {
-          title: this.title.value,
-          artist: this.artist.value,
-          unapprovedArtists: this.unapproved,
-          downloadUrl: '',
-          localData: this.musicData,
-          id: this.music.id,
-          duration: this.duration,
-          stationId: this.music.stationId,
-          local: {
-            isNew: false
-          }
-        }
-      }
-      const music: IMusic = {
+      let music: IMusic; 
+
+      music = {
+        ...music,
         title: this.title.value,
         artist: this.artist.value,
         unapprovedArtists: this.unapproved,
-        downloadUrl: '',
         localData: this.musicData,
-        id: '',
-        duration: this.duration,
-        stationId: '',
         local: {
           isNew: false
+        },
+        size: this.size
+      }
+      if (this.music) {
+        music = {
+          ...music,
+          downloadUrl: this.music.downloadUrl,
+          id: this.music.id,
+          localPath: this.music.localPath,
+          duration: this.music.duration,
+          stationId: this.music.stationId
         }
-      };
+      } else {
+        music = {
+          ...music,
+          downloadUrl: '',
+          id: '',
+          duration: this.duration,
+          stationId: ''
+        };
+      }
 
       this.modalController.dismiss({
         music: music,
@@ -150,6 +155,10 @@ export class AddMusicComponent implements OnInit {
         this.music.downloadUrl = '';
       }
       this.musicData = reader.result as string;
+      const base64Length = this.musicData.length - (this.musicData.indexOf(',') + 1);
+      const padding = (this.musicData.charAt(this.musicData.length - 2) === '=') ? 2 : ((this.musicData.charAt(this.musicData.length - 1) === '=') ? 1 : 0);
+      this.size = base64Length * 0.75 - padding;
+  
       event.target.value = null;
     };
     reader.readAsDataURL(event.target.files[0]);

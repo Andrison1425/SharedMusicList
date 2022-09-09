@@ -1,6 +1,6 @@
 {
 	"appId": "com.puzeos.track_list",
-	"appName": "Puzer",
+	"appName": "Musicalia",
 	"webDir": "www",
 	"bundledWebRuntime": false,
 	"plugins": {

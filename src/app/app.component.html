@@ -2,4 +2,57 @@
   <ion-router-outlet></ion-router-outlet>
 
   <app-music-player></app-music-player>
+
+  <ion-modal #downloadingModal [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+    <ng-template>
+      <ion-content color="primary">
+        <ion-title class="ion-margin-top">Gestor de descargas</ion-title>
+        <ion-item color="primary">
+          <small>No cierres la app si estás descargando</small>
+        </ion-item>
+
+        <ion-item *ngFor="let download of downloads | keyvalue" color="primary">
+
+          <ion-label>
+            <h3>{{download.value.music.title}} - {{download.value.music.artist}}</h3>
+            <div class="loc__progress-bar">
+              <div>
+                <div class="loc__progress" [style]="'width:' + download.value.progress + '%'"></div>
+              </div>
+            </div>
+
+            <div class="loc__progress-options">
+              <span>
+                <ion-button 
+                  fill="clear" 
+                  color="tertiary"
+                  (click)="cancelDownload(download.value.music)"
+                  *ngIf="download.value.state === DownloadState.DOWNLOADING"
+                >
+                  Cancelar
+                </ion-button>
+
+                <ion-button 
+                  fill="clear" 
+                  color="tertiary"
+                  (click)="viewDownloadInExplorer(download.value.fileUri)"
+                  *ngIf="download.value.state === DownloadState.DOWNLOADED"
+                >
+                  Ver en el explorador
+                </ion-button>
+
+                <small *ngIf="download.value.state === DownloadState.CANCELLED">Cancelado</small>
+              </span>
+              
+              <p>{{download.value.progress}}%</p>
+            </div>
+          </ion-label>
+
+          <ion-button color="tertiary" fill="clear">
+            <ion-icon slot="icon-only" name="ellipsis-vertical-sharp"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-app>

@@ -11,5 +11,6 @@ export interface IMusic {
   localPath?: string;
   local: {
     isNew: boolean
-  }
+  },
+  size: number
 }

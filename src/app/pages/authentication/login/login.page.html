@@ -6,7 +6,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" *ngIf="continueWithPhone">
+<ion-content 
+  class="ion-padding" 
+  *ngIf="continueWithPhone"
+  color="primary"  
+>
    <firebase-ui [language] = "'es'" (signInSuccessWithAuthResult)="checkUserState($event)"></firebase-ui>
 </ion-content>
 
@@ -23,10 +27,10 @@
 
   <div class="text-animation">
     <div class="js-animation">
-      <h1>Crea tu propia emisora o eschucha la de otros</h1>
-      <h1 class="d-none">Escucha música sin límites</h1>
+      <h1>Crea tus propias playlist o eschucha la de otros</h1>
+      <h1 class="d-none">Escucha música sin límites y gratis</h1>
       <h1 class="d-none">Descarga listas de reproducciones</h1>
-      <h1 class="d-none">Descubre a nuevos artistas</h1>
+      <h1 class="d-none">Descubre a nuevos artistas y canciones</h1>
     </div>
   </div>
 
