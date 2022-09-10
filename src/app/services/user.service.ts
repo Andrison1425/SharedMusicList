@@ -3,9 +3,10 @@ import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IUser } from './../interfaces/user.interface';
 import { LocalDbService } from './local-db.service';
 import { Injectable } from '@angular/core';
-import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference, arrayRemove } from '@angular/fire/firestore';
+import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference, arrayRemove, query, CollectionReference, where, orderBy, getDocs } from '@angular/fire/firestore';
 import { NotificationTokensService } from './notification-tokens.service';
 import { NotificationsService } from './notifications.service';
+import { StationService } from './station.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class UserService {
     private localDbService: LocalDbService,
     private firestore: Firestore,
     private notificationTokensService: NotificationTokensService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private stationService: StationService
   ) { /* */}
 
   createUser(user: IUser) {
@@ -47,7 +49,7 @@ export class UserService {
     this.syncUser();
     return;
   }
-
+  
   async removeFavoriteStation(stationId: string) {
     const id = this.localDbService.user.id;
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id );
@@ -62,19 +64,44 @@ export class UserService {
     return;
   }
 
-  syncUser() {
-    const id = this.localDbService.user.id;
+  async syncFavoriteStations(user: IUser) {
+    const queryRef = query<IStation>(
+      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+      where('id', 'in', user.favoriteStations)
+    );
+
+    const docResp = await getDocs(queryRef);
+    const stations = docResp.docs.map(resp => resp.data());
+
+    return stations;
+  }
+
+  async syncUser(userID?: string) {
+    const id = userID || this.localDbService.user.id;
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
-    getDoc(docRef)
-      .then(resp => {
-        this.localDbService.setUserData(id, resp.data());
-      })
+    const userData = await getDoc(docRef);
+    this.localDbService.setUserData(id, userData.data());
+    const stations = await this.stationService.getStationsForUser(id);
+
+    for (let index = 0; index < stations.length; index++) {
+      const station = stations[index];
+      await this.localDbService.setStation(station.id, station);
+    }
+
+    const favoriteStations =  await this.syncFavoriteStations(userData.data());
+
+    for (let index = 0; index < favoriteStations.length; index++) {
+      const station = favoriteStations[index];
+      await this.localDbService.setStation(station.id, station);
+    }
+
+    return;
   }
 
   async getUser(id: string) {
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
     const userData = await getDoc(docRef);
-    return userData.data();
+    return userData?.data();
   }
 
   async updateUser(id: string, updateData: Partial<IUser>) {

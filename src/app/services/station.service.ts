@@ -148,6 +148,7 @@ export class StationService {
 
     const docResp = await getDocs(queryRef);
     const stations = docResp.docs.map(resp => resp.data());
+
     return stations;
   }
 
