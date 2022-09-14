@@ -1,7 +1,11 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
 
-  <app-music-player></app-music-player>
+  <ion-tabs>
+    <app-music-player></app-music-player>
+  </ion-tabs>
+
+  
 
   <ion-modal #downloadingModal [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
     <ng-template>

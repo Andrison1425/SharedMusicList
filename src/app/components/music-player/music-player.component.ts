@@ -16,6 +16,7 @@ export class MusicPlayerComponent implements OnInit {
   musicStateEnum = MusicState;
   music: IMusic;
   progress = 0;
+  seek = 0;
   @ViewChild('range') range: IonRange;
 
   constructor(
@@ -29,16 +30,21 @@ export class MusicPlayerComponent implements OnInit {
     this.musicService.musicPlayingInfo()
       .subscribe(resp => {
         if(this.music !== resp.music) {
-          this.progress = 0;
+          this.seek = 0;
         }
         this.music = resp.music;
         this.musicState = resp.state;
       });
 
-    this.musicService.getProgress()
+    this.musicService.getSeek()
       .subscribe(resp => {
-        this.progress = resp;
+        if (this.music) {
+          this.seek = resp;
+          const progressCalc = (resp / this.music.duration) * 100 || 0;
+          this.progress = progressCalc;
+        }
       });
+
   }
 
   play(music: IMusic) {
@@ -65,7 +71,7 @@ export class MusicPlayerComponent implements OnInit {
     }
   }
 
-  seek() {
+  seekProgress() {
     const newValue = +this.range.value;
     const duration = this.music.duration;
     this.musicService.player.seek(duration * (newValue / 100));

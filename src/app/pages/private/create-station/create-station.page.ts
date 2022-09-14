@@ -67,7 +67,7 @@ export class CreateStationPage implements OnInit {
     this.stationID = this.route.snapshot.paramMap.get('id');
 
     if(this.stationID) {
-      this.localDbService.getStation(this.stationID)
+      this.stationService.getStation(this.stationID)
         .then(resp => {
           this.station = resp;
           this.stationName.setValue(this.station.name);
@@ -287,7 +287,9 @@ export class CreateStationPage implements OnInit {
     if (!this.tagify) {
       this.tagInput.getInputElement()
         .then(input => {
-          this.tagify = new Tagify(input)
+          this.tagify = new Tagify(input, {
+          
+          })
         })
     }
   }

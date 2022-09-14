@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     this.localDbService.getLocalUser()
       .then(async (user) => {
+        console.log(user)
         const favStations = await this.localDbService.getFavoriteStations(user.id);
         this.favoriteStations = favStations;
 

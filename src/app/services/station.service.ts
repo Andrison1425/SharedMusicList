@@ -28,13 +28,13 @@ export class StationService {
         try {
           const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + stationID);
           const tagsRef = doc(this.firestore, FirestoreCollection.StationTags + '/tags');
-
+          station.musics = station.musics.map(music => ({ ...music, localPath: '' }));
           if (update) {
             await updateDoc(docRef, {
               name: station.name,
               description: station.description,
               image: station.image,
-              musics: station.musics,
+              musics: station.musics.map(music => ({ ...music, localPath: '' })),
               localData: ''
             });
           } else {
@@ -148,6 +148,7 @@ export class StationService {
 
     const docResp = await getDocs(queryRef);
     const stations = docResp.docs.map(resp => resp.data());
+
     return stations;
   }
 

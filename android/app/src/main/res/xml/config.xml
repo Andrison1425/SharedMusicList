@@ -13,5 +13,9 @@
     <param name="android-package" value="io.github.pwlin.cordova.plugins.fileopener2.FileOpener2"/>
   </feature>
 
+  <feature name="MusicControls">
+    <param name="android-package" value="com.homerours.musiccontrols.MusicControls"/>
+  </feature>
+
   
 </widget>

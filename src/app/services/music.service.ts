@@ -3,7 +3,7 @@ import { Folder } from './../enums/folder.enum';
 import { FileSystemService } from './file-system.service';
 import { MusicState } from './../enums/music-state.enum';
 import { Subject } from 'rxjs';
-import { Howler, Howl } from 'howler';
+import { Howl } from 'howler';
 import { FirebaseStorageRoute } from './../enums/firebase-storage-route.enum';
 import { IMusic } from './../interfaces/music.interface';
 import { Injectable } from '@angular/core';
@@ -15,15 +15,15 @@ import * as uniqid from 'uniqid';
 })
 export class MusicService {
 
-  player: Howler;
+  player: Howl;
   musicPlayingIndex = 0;
   musics: IMusic[] = [];
   musicsUrlDownload: string[] = [];
   musicPlaying: IMusic;
-  progress = 0;
+  seek = 0;
   interval: NodeJS.Timeout;
   private musicPlayingInfo$ = new Subject<{music: IMusic, state: MusicState}>();
-  private progress$ = new Subject<number>();
+  private seek$ = new Subject<number>();
 
   constructor(
     private fileSystemService: FileSystemService
@@ -53,8 +53,8 @@ export class MusicService {
   loadMusics(musics: IMusic[]) {
     this.musics = musics;
     this.musicPlaying = musics[0];
-    musics.forEach(music => {
-      this.musicsUrlDownload[music.id] = Capacitor.convertFileSrc(music.localPath) || music.downloadUrl;
+    musics.forEach((music, i) => {
+      this.musicsUrlDownload[i] = Capacitor.convertFileSrc(music.localPath) || music.downloadUrl;
     });
   }
 
@@ -81,8 +81,11 @@ export class MusicService {
       this.player = new Howl({
         src: [this.musicsUrlDownload[this.musicPlayingIndex]],
         html5: true,
+        onseek: (e) => {
+          console.log(e)
+        },
         onplay: () => {
-          this.updateProgress();
+          this.updateSeek();
         },
         onpause: () => {
           clearInterval(this.interval);
@@ -117,17 +120,15 @@ export class MusicService {
     return this.musicPlayingInfo$.asObservable();
   }
 
-  getProgress() {
-    return this.progress$.asObservable();
+  getSeek() {
+    return this.seek$.asObservable();
   }
 
-  updateProgress() {
+  updateSeek() {
     const seek = this.player.seek();
-    const progressCalc = (seek / this.player.duration()) * 100 || 0;
-    this.progress = progressCalc;
-    this.progress$.next(progressCalc);
+    this.seek$.next(seek);
     this.interval = setTimeout(() => {
-      this.updateProgress();
+      this.updateSeek();
     }, 100);
   }
 
@@ -148,6 +149,7 @@ export class MusicService {
   }
 
   close() {
+    clearInterval(this.interval);
     this.player.stop();
     this.musicPlayingInfo$.next({
       music: null,

@@ -18,6 +18,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { MusicControls } from '@awesome-cordova-plugins/music-controls/ngx';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     BackgroundMode,
+    MusicControls,
     FileOpener
   ],
   bootstrap: [AppComponent],

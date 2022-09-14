@@ -18,8 +18,8 @@ dependencies {
     implementation project(':capacitor-push-notifications')
     implementation project(':capacitor-share')
     implementation project(':capacitor-status-bar')
-    implementation project(':capacitor-v3-music-controls')
     implementation "com.android.support:support-v4:27.+"
+    implementation "com.android.support:support-v4:28.0.0"
 }
 
 

@@ -8,6 +8,7 @@ import { Colors } from 'src/app/enums/color.enum';
 import { signInAnonymously, Auth } from '@angular/fire/auth';
 import { Route } from 'src/app/enums/route.enum';
 import { FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular-i18n';
+import { StationService } from 'src/app/services/station.service';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +26,8 @@ export class LoginPage implements OnInit {
     private toastService: ToastService,
     private auth: Auth,
     private userService: UserService,
-    private localDbService: LocalDbService
+    private localDbService: LocalDbService,
+    private stationService: StationService
   ) { /**/}
 
   ngOnInit() {
@@ -63,7 +65,7 @@ export class LoginPage implements OnInit {
       });
   }
 
-  checkUserState(data: FirebaseUISignInSuccessWithAuthResult){
+  checkUserState(data: FirebaseUISignInSuccessWithAuthResult) {
     this.loadingService.present();
     this.userService.getUser(data.authResult.user.uid)
       .then(user => {
@@ -73,11 +75,21 @@ export class LoginPage implements OnInit {
           this.router.navigate([Route.Register]);
         }else{
           this.localDbService.setUserData(user.id, user)
-            .then(() => this.router.navigate(['radio/']));
+            .then(() => {
+              this.userService.syncUser(user.id)
+                .then(() => {
+                  this.router.navigate(['radio/']);
+                })
+                .catch((e) => {
+                  console.log(e)
+                  this.toastService.presentToast('Ha ocurrido un error de conexión', Colors.DANGER, 2500);
+                })
+            }).catch(e => console.log(e));
         }
         this.loadingService.dismiss();
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         this.loadingService.dismiss();
           this.toastService.presentToast('Ha ocurrido un error', Colors.DANGER, 2500);
       });

@@ -6,15 +6,15 @@
       max="100"
       disabled="false"
       [(ngModel)]="progress"
-      (touchend)="seek()"
+      (touchend)="seekProgress()"
       (touchstart)="pause()"
-      (mouseup)="seek()"
+      (mouseup)="seekProgress()"
       (mousedown)="pause()"
     ></ion-range>
   </div>
   <div class="cont-music-info">
     <div class="duration">
-      <span>0:00</span>
+      <span>{{seek * 1000 | date:'mm:ss':'UTC' || '0:00'}}</span>
       <span>{{music?.duration * 1000 | date:'mm:ss':'UTC' || '0:00'}}</span>
     </div>
     <div class="controls">

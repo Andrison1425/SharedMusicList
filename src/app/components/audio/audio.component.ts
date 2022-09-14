@@ -28,7 +28,7 @@ export class AudioComponent implements OnInit, OnDestroy {
       this.player.unload();
   }
 
-  controls(src: string): Howl {
+  controls(src: string) {
     this.player = new Howl({
       src: [src],
       format: 'mp3',

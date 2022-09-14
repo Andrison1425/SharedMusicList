@@ -15,7 +15,6 @@ import { ActionSheetController } from '@ionic/angular';
 import { compressUriImage } from 'src/app/utils/utils';
 import { serverTimestamp, Timestamp } from '@angular/fire/firestore';
 
-
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',

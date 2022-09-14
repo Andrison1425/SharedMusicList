@@ -34,9 +34,5 @@
 	{
 		"pkg": "@capacitor/status-bar",
 		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
-	},
-	{
-		"pkg": "capacitor-v3-music-controls",
-		"classpath": "com.ingageco.capacitormusiccontrols.CapacitorMusicControls"
 	}
 ]
