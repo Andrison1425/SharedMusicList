@@ -7,8 +7,9 @@ import { LocalNotificationsService } from './services/local-notifications.servic
 import { DownloadService } from './services/download.service';
 import { IonModal } from '@ionic/angular';
 import { IMusic } from './interfaces/music.interface';
-import { IDownload, IDownloadData } from './interfaces/download.interface';
+import { IDownload } from './interfaces/download.interface';
 import { DownloadState } from './enums/download-state.enum';
+import { App, URLOpenListenerEvent } from '@capacitor/app';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,7 @@ export class AppComponent {
     private backgroundModeService: BackgroundModeService,
     private notificationsService: NotificationsService,
     private localNotificationsService: LocalNotificationsService,
-    private downloadService: DownloadService
+    private downloadService: DownloadService,
   ) {
     StatusBar.setBackgroundColor({ color: '#390D02' });
     localDbService.initializeLocalDb();
@@ -44,6 +45,10 @@ export class AppComponent {
         this.downloads = resp;
         console.log(resp)
       })
+
+    App.addListener('appUrlOpen', (e: URLOpenListenerEvent) => {
+      console.log(e)
+    })
   }
 
   cancelDownload(music: IMusic) {

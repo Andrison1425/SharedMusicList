@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.puzeos.track_list",
+            "sha256_cert_fingerprints": [
+                "CD:0C:08:E1:A0:DB:AC:CC:A5:A1:A5:82:DE:DA:9C:87:DA:83:8F:CF:5D:5C:F9:E9:D7:AB:BF:FF:B2:98:96:C1"
+            ]
+        }
+    }
+]
