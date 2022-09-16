@@ -7,5 +7,6 @@ export const environment = {
     storageBucket: 'myradio-fd491.appspot.com',
     messagingSenderId: '96489754925',
     appId: '1:96489754925:web:7e785dc82d7168adadc3a4'
-  }
+  },
+  deeplinkBase: 'https://musicaliaapp.page.link'
 };

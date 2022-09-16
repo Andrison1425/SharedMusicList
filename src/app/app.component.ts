@@ -3,13 +3,12 @@ import { LocalDbService } from './services/local-db.service';
 import { Component, ViewChild } from '@angular/core';
 import { StatusBar } from '@capacitor/status-bar';
 import { NotificationsService } from './services/notifications.service';
-import { LocalNotificationsService } from './services/local-notifications.service';
 import { DownloadService } from './services/download.service';
 import { IonModal } from '@ionic/angular';
 import { IMusic } from './interfaces/music.interface';
 import { IDownload } from './interfaces/download.interface';
 import { DownloadState } from './enums/download-state.enum';
-import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { DeepLinkService } from './services/deep-link.service';
 
 @Component({
   selector: 'app-root',
@@ -26,14 +25,14 @@ export class AppComponent {
     private localDbService: LocalDbService,
     private backgroundModeService: BackgroundModeService,
     private notificationsService: NotificationsService,
-    private localNotificationsService: LocalNotificationsService,
     private downloadService: DownloadService,
+    private deepLinkService: DeepLinkService
   ) {
     StatusBar.setBackgroundColor({ color: '#390D02' });
     localDbService.initializeLocalDb();
     backgroundModeService.initialize();
     notificationsService.initialize();
-    localNotificationsService.initialize();
+    deepLinkService.initialize();
 
     downloadService.onShowDownloadsModal()
       .subscribe(() => {
@@ -45,10 +44,6 @@ export class AppComponent {
         this.downloads = resp;
         console.log(resp)
       })
-
-    App.addListener('appUrlOpen', (e: URLOpenListenerEvent) => {
-      console.log(e)
-    })
   }
 
   cancelDownload(music: IMusic) {

@@ -58,6 +58,7 @@
     "localforage": "^1.10.0",
     "ngx-bootstrap": "^9.0.0",
     "ngx-image-cropper": "^6.2.2",
+    "query-string": "^7.1.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "uniqid": "^5.4.0",

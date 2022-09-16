@@ -16,6 +16,8 @@ import { Reaction } from 'src/app/enums/reaction.enum';
 import { Share } from '@capacitor/share';
 import { LocalNotificationsService } from 'src/app/services/local-notifications.service';
 import { DownloadService } from 'src/app/services/download.service';
+import { environment } from 'src/environments/environment.prod';
+import { Deeplink } from 'src/app/enums/deeplink.enum';
 
 @Component({
   selector: 'app-station-item',
@@ -226,8 +228,8 @@ export class StationItemComponent implements OnInit {
   async share() {
     await Share.share({
       title: 'Compartir',
-      text: 'Comparte tu publicación',
-      url: 'https://play.google.com/store/apps/details?id=com.puzeos.puzeos',
+      text: 'Escucha la música disponible en esta lista',
+      url: environment.deeplinkBase + Deeplink.PLAYLIST + this.station.id,
       dialogTitle: 'Compartir',
     });
   }
