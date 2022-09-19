@@ -29,7 +29,7 @@ export class MusicPlayerComponent implements OnInit {
 
     this.musicService.musicPlayingInfo()
       .subscribe(resp => {
-        if(this.music !== resp.music) {
+        if (this.music !== resp.music) {
           this.seek = 0;
         }
         this.music = resp.music;
@@ -79,7 +79,9 @@ export class MusicPlayerComponent implements OnInit {
   }
 
   goStation() {
-    this.router.navigate(['radio/station/' + this.music.stationId]);
+    this.router.navigate(['radio/station/' + this.music.stationId], {
+      queryParams: { trackId: this.music.id }
+    });
   }
 
   close() {

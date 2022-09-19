@@ -1,0 +1,28 @@
+ion-button {
+    --background: transparent;
+    --box-shadow: none;
+}
+
+ion-content {
+    --background: var(--ion-toolbar-background);
+}
+
+ion-list {
+    background-color: transparent;
+
+    ion-icon {
+        margin-right: 3px;
+    }
+
+    >ion-button {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+.no-list-message {
+    flex: 1;
+    height: 100%;
+    text-align: center;
+    padding-top: 4rem;
+}

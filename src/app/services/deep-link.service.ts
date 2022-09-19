@@ -17,6 +17,7 @@ export class DeepLinkService {
   async initialize() {
 
     App.addListener('appUrlOpen', (e: URLOpenListenerEvent) => {
+      console.log('urlOpen')
       const { url, query:{ id }} = parseUrl(e.url);
       console.log(url, environment.deeplinkBase + Deeplink.PLAYLIST)
       if (url && (url + '?id=') === environment.deeplinkBase + Deeplink.PLAYLIST) {

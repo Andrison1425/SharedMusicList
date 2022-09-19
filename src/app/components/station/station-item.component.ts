@@ -18,6 +18,7 @@ import { LocalNotificationsService } from 'src/app/services/local-notifications.
 import { DownloadService } from 'src/app/services/download.service';
 import { environment } from 'src/environments/environment.prod';
 import { Deeplink } from 'src/app/enums/deeplink.enum';
+import { PlaylistType } from 'src/app/enums/playlist-type.enum';
 
 @Component({
   selector: 'app-station-item',
@@ -65,7 +66,9 @@ export class StationItemComponent implements OnInit {
           }
         });
 
-      this.stationService.addView(this.station.id);
+      if (this.station.type !== PlaylistType.PRIVATE) {
+        this.stationService.addView(this.station.id);
+      }
     }
 
     this.localDbService.getLocalUser()
@@ -81,12 +84,16 @@ export class StationItemComponent implements OnInit {
 
         if (user.favoriteStations.includes(this.station.id)) {
           this.isFavoriteStation = true;
-          this.syncStation();
+          if (this.station.type !== PlaylistType.PRIVATE) {
+            this.syncStation();
+          }
         }
 
         if (this.user.id === this.station.author.id) {
           if (this.adminStation) {
-            this.syncStation();
+            if (this.station.type !== PlaylistType.PRIVATE) {
+              this.syncStation();
+            }
           }
         } else {
           this.showFavoriteOption = true;

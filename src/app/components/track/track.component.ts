@@ -1,6 +1,6 @@
 import { MusicService } from './../../services/music.service';
 import { IMusic } from './../../interfaces/music.interface';
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MusicState } from 'src/app/enums/music-state.enum';
 
 @Component({
@@ -8,27 +8,30 @@ import { MusicState } from 'src/app/enums/music-state.enum';
   templateUrl: './track.component.html',
   styleUrls: ['./track.component.scss'],
 })
-export class TrackComponent implements OnInit {
+export class TrackComponent implements OnInit, AfterViewInit {
 
   @Input() track: IMusic;
   @Input() musicPlayingId: string;
   @Input() lastStationView: number;
   @Input() musicState: MusicState;
-  newTrack = false;
+  @Input() trackId?: string;
+  @ViewChild('trackItem') trackItem: any;
   musicStateEnum = MusicState;
 
   constructor(
-    private musicService: MusicService
+    private musicService: MusicService,
   ) { }
 
   ngOnInit() {
-    // if (this.lastStationView) {
-    //   if (Number(this.lastStationView) < new Date(this.track.timestamp.seconds * 1000).valueOf()) {
-    //     this.newTrack = true;
-    //   }
-    // } else {
-    //   return false;
-    // }
+  }
+
+  ngAfterViewInit() {
+    if (this.trackId === this.track.id) {
+
+      setTimeout(() => {
+        this.trackItem.el.scrollIntoView(false);
+      }, 220);
+    }
   }
 
   play(music: IMusic) {

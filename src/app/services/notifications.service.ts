@@ -22,7 +22,6 @@ export class NotificationsService {
   ) { }
 
   async initialize() {
-
     PushNotifications.addListener('registration', token => {
       this.token = token.value;
       this.getMyNotifications();

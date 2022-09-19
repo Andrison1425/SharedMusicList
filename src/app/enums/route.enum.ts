@@ -6,5 +6,6 @@ export enum Route {
   CreateStation = 'create-station',
   Setting = 'setting',
   Notifications = 'notifications',
-  Downloads = 'downloads'
+  Downloads = 'downloads',
+  Playlists = 'playlists'
 }

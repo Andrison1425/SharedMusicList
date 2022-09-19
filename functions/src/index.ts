@@ -76,7 +76,6 @@ interface IStation {
     musics: IMusic[],
     name: string,
     description: string,
-    inReproduction: number,
     artistsName: string[],
     author: {
         userName: string,

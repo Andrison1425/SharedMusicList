@@ -40,10 +40,14 @@ const routes: Routes = [
     loadChildren: () => import('./downloads/downloads.module').then( m => m.DownloadsPageModule)
   },
   {
+    path: 'playlists',
+    loadChildren: () => import('./playlists/playlists.module').then( m => m.PlaylistsPageModule)
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: ''
-  }
+  },
 ];
 
 @NgModule({

@@ -13,13 +13,17 @@ import { IStation } from './../../../interfaces/station.interface';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
 import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
-import { ModalController, ItemReorderEventDetail, ActionSheetController, IonInput, AlertController } from '@ionic/angular';
+import { ModalController, ItemReorderEventDetail, ActionSheetController, IonInput, AlertController, IonModal } from '@ionic/angular';
 import { Route } from 'src/app/enums/route.enum';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import * as uniqid from 'uniqid';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
 import * as Tagify from '@yaireo/tagify'
 import { UsefulListsService } from 'src/app/services/usefulLists.service';
+import { FileExplorerComponent } from 'src/app/components/file-explorer/file-explorer.component';
+import { PlaylistType } from 'src/app/enums/playlist-type.enum';
+import { FileInfo, Filesystem } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-create-station',
@@ -36,18 +40,22 @@ export class CreateStationPage implements OnInit {
   artists: string[] = [];
   lastArtist: string = '';
   trackListArtists: string[] = [];
+  playlistType: PlaylistType = PlaylistType.PUBLIC;
   imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('tagInput', { static: false }) tagInput: IonInput;
+  @ViewChild('playlistTypeModal') playlistTypeModal: IonModal;
+  playlistTypeEnum = PlaylistType;
 
   stationForm = this.fb.group({
-    name: ['', [Validators.required, Validators.min(5)]],
-    description: ['', [Validators.required, Validators.min(5)]]
+    name: ['', [Validators.required, Validators.min(5), Validators.max(40)]],
+    description: ['', [Validators.required, Validators.min(5), Validators.max(200)]]
   });
   get stationName() { return this.stationForm.get('name'); }
   get stationDescription() { return this.stationForm.get('description'); }
 
   constructor(
     private modalController: ModalController,
+    private multipleSelectController: ModalController,
     private toastService: ToastService,
     private fb: FormBuilder,
     private loadingService: LoadingService,
@@ -126,13 +134,81 @@ export class CreateStationPage implements OnInit {
       });
   }
 
+  async selectMusicsModal() {
+    const modal = await this.multipleSelectController.create({
+      component: FileExplorerComponent,
+      componentProps: {
+        musics: this.musicArr
+      }
+    });
+
+    modal.present();
+
+    modal.onDidDismiss()
+      .then(async ({data}) => {
+        const musics: FileInfo[] = data.musics;
+        const arrTmp: IMusic[] = [];
+        for (let index = 0; index < musics.length; index++) {
+          const musicTmp = musics[index];
+          const findMusic = this.musicArr.find(ele => ele.localPath === musicTmp.uri);
+          if (findMusic) {
+            arrTmp.push(findMusic);
+            continue;
+          }
+          
+          const fileData = await Filesystem.readFile({
+            path: musicTmp.uri
+          })
+
+          const base64Length = fileData.data.length - (fileData.data.indexOf(',') + 1);
+          const padding = (fileData.data.charAt(fileData.data.length - 2) === '=') ? 2 : ((fileData.data.charAt(fileData.data.length - 1) === '=') ? 1 : 0);
+          const size = base64Length * 0.75 - padding;
+
+          const music: IMusic = {
+              title: musicTmp.name,
+              artist: 'Desconocido',
+              unapprovedArtists: false,
+              localData: fileData.data,
+              localPath: musicTmp.uri,
+              local: {
+                isNew: false
+              },
+              size: size,
+              downloadUrl: '',
+              id: uniqid(),
+              duration: await this.getDuration(Capacitor.convertFileSrc(musicTmp.uri)),
+              stationId: ''
+          }
+
+          arrTmp.push(music);
+        }
+
+        this.musicArr = arrTmp;
+      });
+  }
+
+  getDuration(src: string): Promise<number> {
+    return new Promise((resolve) => {
+      const audio = new Audio();
+      audio.onloadedmetadata = () => {
+        resolve(audio.duration);
+      }
+      audio.src = src;
+    });
+  }
+
+
+  changePlaylistType(type: PlaylistType) {
+    this.playlistType = type;
+    this.playlistTypeModal.dismiss();
+  }
+
   deleteMusic(index: number) {
     this.musicArr = this.musicArr.filter((music, i) => i !== index);
   }
 
   async createStation() {
     if(this.stationFormValidate()) {
-
       this.loadingService.present('Subiendo canciones 1/' + this.musicArr.length);
       const stationID = this.station?.id || uniqid();
 
@@ -170,7 +246,7 @@ export class CreateStationPage implements OnInit {
         id: this.station?.id || stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
-        inReproduction: 3,
+        type: PlaylistType.PUBLIC,
         artistsName: artistsName,
         author: {
           id: user.id,
@@ -190,6 +266,75 @@ export class CreateStationPage implements OnInit {
       };
 
       this.stationService.createOrUpdateStation(station, stationID, (this.station? true: false))
+        .then(() => {
+          this.loadingService.dismiss();
+          this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
+          this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
+        })
+        .catch((e) => {
+          console.log(e)
+          this.loadingService.dismiss();
+          this.toastService.presentToast('Error al tratar de crear la estación', Colors.DANGER);
+        })
+    }
+  }
+
+  async createPrivateStation() {
+    if(this.stationFormValidate()) {
+      this.loadingService.present('Agregando canciones 1/' + this.musicArr.length);
+      const stationID = this.station?.id || uniqid();
+
+      for (let index = 0; index < this.musicArr.length; index++) {
+        const music = this.musicArr[index];
+
+        if (music.downloadUrl) {
+          this.loadingService.setContent(`Agregando canciones ${index+2}/${this.musicArr.length}`);
+          continue;
+        }
+
+        try {
+          music.id = uniqid();
+          music.stationId = stationID;
+          const localPath = await this.fileSystemService.writeFile(music.localData, `${music.title + '--' + music.id}.mp3`, `${Folder.Tracks + this.stationName.value}/`);
+          music.localPath = localPath;
+          music.localData = '';
+          this.loadingService.setContent(`Agregando canciones ${index+2}/${this.musicArr.length}`);
+        } catch (error) {
+          this.loadingService.dismiss();
+          this.toastService.presentToast('Error de conexión', Colors.DANGER, 5000);
+          break;
+        }
+      }
+      this.loadingService.setContent(this.station?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
+
+      const artistsName = this.musicArr.map(track => track.artist)
+
+      const user = await this.localDbService.getLocalUser();
+
+      const station: IStation = {
+        id: this.station?.id || stationID,
+        name: this.stationName.value,
+        description: this.stationDescription.value,
+        type: PlaylistType.PRIVATE,
+        artistsName: artistsName,
+        author: {
+          id: user.id,
+          userName: user.userName
+        },
+        image: await this.uploadImage(this.imageStation, stationID),
+        musics: this.musicArr,
+        views: 0,
+        reactions: {
+          idUsersAndReaction: {},
+          numDislikes: 0,
+          numLikes: 0
+        },
+        timestamp: serverTimestamp() as Timestamp,
+        comments: [],
+        tags: this.getTags()
+      };
+
+      this.localDbService.setStation(stationID, station)
         .then(() => {
           this.loadingService.dismiss();
           this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
@@ -336,5 +481,7 @@ export class CreateStationPage implements OnInit {
     await alert.onDidDismiss();
   }
 
-
+  trackByFn(index: number, music: IMusic) {
+    return music.id || index;
+  }
 }

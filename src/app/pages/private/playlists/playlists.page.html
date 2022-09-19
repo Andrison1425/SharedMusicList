@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-back-button
+      slot="start"
+      [defaultHref]="Routes.Home"
+      text=""
+      mode="md"
+    ></ion-back-button>
+    <ion-title class="ion-no-padding">Listas de reproducción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen color="primary">
+  <ion-list class="loc__cont-des">
+    <ion-button expand="block" color="tertiary" [routerLink]="'/radio/'+Routes.CreateStation">
+      <ion-icon name="add" slot="start"></ion-icon>
+      <div>Crear lista privada</div>
+    </ion-button>
+
+    <div *ngIf="stations.length === 0" class="no-list-message">
+      Sin listas de reproducción privadas
+    </div>
+
+    <app-station-item
+      *ngFor="let station of stations"
+      [station]="station"
+      [playing]="false"
+      (deleteStation)="onDeleteStation($event)"
+    ></app-station-item>
+  </ion-list>
+</ion-content>

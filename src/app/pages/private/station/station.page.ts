@@ -9,7 +9,7 @@ import { IStation } from './../../../interfaces/station.interface';
 import { LocalDbService } from './../../../services/local-db.service';
 import { Component, OnInit } from '@angular/core';
 import { Route } from 'src/app/enums/route.enum';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { MusicState } from 'src/app/enums/music-state.enum';
 import { Colors } from 'src/app/enums/color.enum';
 
@@ -33,6 +33,7 @@ export class StationPage implements OnInit {
   user: IUser;
   lastView: number;
   isLocalStation = false;
+  routeQuery: Params;
 
   commentsForm: FormGroup = this.fb.group({
     comment: ['', [Validators.required, Validators.minLength(1)]]
@@ -81,11 +82,19 @@ export class StationPage implements OnInit {
             .then(station => {
               this.station = station;
             })
+            .catch(e => console.log(e))
         }
-      });
+      }).catch(e => console.log(e));
 
     this.localDbService.getLocalUser()
-      .then(user => this.user = user);
+      .then(user => this.user = user)
+      .catch(e => console.log(e));
+      
+    this.route.queryParams
+      .subscribe(params => {
+        this.routeQuery = params;
+      });
+      
   }
 
   trackByFn(index: number, music: IMusic) {

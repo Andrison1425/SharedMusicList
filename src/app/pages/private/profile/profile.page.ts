@@ -13,6 +13,7 @@ import { IUser } from './../../../interfaces/user.interface';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Route } from 'src/app/enums/route.enum';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
+import { PlaylistType } from 'src/app/enums/playlist-type.enum';
 
 @Component({
   selector: 'app-profile',
@@ -72,7 +73,7 @@ export class ProfilePage implements OnInit {
           }
           this.localDbService.getMyStations(this.user.id)
             .then(stations => {
-              this.stations = stations
+              this.stations = stations.filter(playlist => playlist.type !== PlaylistType.PRIVATE)
               let likesCount = 0;
               let dislikesCount = 0;
               let views = 0;

@@ -39,3 +39,9 @@ export const getFakeTimestamp = () => {
     valueOf: () => ''
   }
 }
+
+export const extractExtension = (fileName: string): string | undefined => {
+  const re = /(?:\.([^.]+))?$/;
+
+  return re.exec(fileName)[1]
+}

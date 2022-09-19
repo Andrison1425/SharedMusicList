@@ -71,3 +71,50 @@ form {
 .loc__item-mb {
   margin-bottom: 10px;
 }
+
+ion-modal {
+  --height: fit-content;
+  --width: 90%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --background: var(--ion-color-primary);
+  padding: 1rem;
+  color: #fff;
+
+  ul {
+    font-size: 14px;
+    padding: 1rem;
+    margin: 0;
+    li {
+      list-style: none;
+    }
+  }
+
+  p {
+    margin: 1rem 0 0 0;
+    color: var(--ion-color-medium);
+  }
+
+}
+
+.loc__cont-btns {
+  padding: 1rem;
+
+  ion-button {
+    text-transform: capitalize;
+  }
+}
+
+.loc__modal-btn.selected {
+  background-color: var(--ion-color-tertiary);
+  cursor: default;
+  color: var(--ion-color-primary);
+  span {
+    color: #fff;
+  }
+}
+
+ion-modal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
+}

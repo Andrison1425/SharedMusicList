@@ -8,6 +8,7 @@ import { StationItemComponent } from './station/station-item.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImageCropperModule } from 'ngx-image-cropper';
+import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 
 
 
@@ -17,7 +18,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     MusicPlayerComponent,
     AudioComponent,
     SkeletonComponent,
-    ImageCropperModalComponent
+    ImageCropperModalComponent,
+    FileExplorerComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +32,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     MusicPlayerComponent,
     AudioComponent,
     SkeletonComponent,
-    ImageCropperModalComponent
+    ImageCropperModalComponent,
+    FileExplorerComponent
   ]
 })
 export class GlobalComponentsModule { }

@@ -7,7 +7,13 @@
       mode="md"
     ></ion-back-button>
     <ion-title slot="start" class="ion-no-padding">{{station? 'Editar': 'Crear'}} lista</ion-title>
-    <ion-button slot="end" mode="md" color="tertiary" class="mr-15" (click)="createStation()">
+    <ion-button 
+      slot="end" 
+      mode="md" 
+      color="tertiary" 
+      class="mr-15" 
+      (click)="playlistType === playlistTypeEnum.PUBLIC? createStation(): createPrivateStation()"
+    >
       {{station? 'Editar': 'Crear'}}
     </ion-button>
   </ion-toolbar>
@@ -26,26 +32,45 @@
     </div>
 
     <ion-item color="primary">
-      <ion-label position="floating">Nombre de la lista</ion-label>
+      <ion-button 
+        color="medium" 
+        slot="start" 
+        id="open-custom-dialog"
+        [disabled]="musicArr.length > 0"  
+      >
+        <ion-icon [name]="playlistType === playlistTypeEnum.PUBLIC? 'earth': 'lock-closed'" slot="start"></ion-icon>
+        <ion-label>
+          {{playlistType === playlistTypeEnum.PUBLIC? 'Pública': 'Privada'}}
+        </ion-label>
+      </ion-button>
+    </ion-item>
+
+    <ion-item color="primary">
+      <ion-label position="stacked">Nombre de la lista</ion-label>
       <ion-input 
         formControlName="name" 
         type="text" 
         maxlength="40"
+        minlength="5"
+        [autocapitalize]="true"
+        placeholder="Escribe aquí"
       ></ion-input>
     </ion-item>
 
     <ion-item color="primary" class="loc__item-mb">
-      <ion-label position="floating">Describe tu lista de reproducción</ion-label>
+      <ion-label position="stacked">Describe tu lista de reproducción</ion-label>
       <ion-textarea
-        maxlength="450"
+        maxlength="200"
+        minlength="5"
         rows="3"
         formControlName="description"
+        [autocapitalize]="true"
+        placeholder="Escribe aquí"
       ></ion-textarea>
     </ion-item>
 
     <ion-item color="primary">
       <ion-input 
-        formControlName="name" 
         type="text" 
         maxlength="40"
         #tagInput
@@ -60,9 +85,9 @@
     <ion-button 
       color="tertiary" 
       slot="start" 
-      (click)="openModal()"
+      (click)="playlistType === playlistTypeEnum.PUBLIC? openModal(): selectMusicsModal()"
     >
-      <ion-label>Agregar canción</ion-label>
+      <ion-label>{{playlistType === playlistTypeEnum.PUBLIC? 'Agregar canción': 'Agregar canciones'}}</ion-label>
     </ion-button>
   
     <ion-button
@@ -75,7 +100,7 @@
   </section>
 
   <ion-reorder-group disabled="false" (ionItemReorder)="doReorder($event)">
-    <ion-item color="primary" *ngFor="let music of musicArr; let i = index">
+    <ion-item color="primary" *ngFor="let music of musicArr; let i = index; trackBy: trackByFn">
       <ion-card color="primary">
         <ion-card-content class="ion-no-padding">
           <div>
@@ -113,4 +138,36 @@
 
 </ion-content>
 
+<ion-modal 
+  id="type-modal" 
+  #playlistTypeModal 
+  trigger="open-custom-dialog" 
+>
+  <ng-template class="" id="loc__modal-container">
+    <div>
+      <ul>
+        <p>
+          Pública
+        </p>
+        <li>Cualquier usuario puede reproducir esta lista.</li>
+        <li>Las canciones se almacenan en Musicalia.</li>
+        <p>
+          Privada
+        </p>
+        <li>Solo se puede reproducir en tu dispositivo.</li>
+        <li>Puedes agregar canciones sin especificar el nombre.</li>
+      </ul>
+    </div>
 
+    <div class="loc__cont-btns">
+      <ion-button color="tertiary" (click)="changePlaylistType(playlistTypeEnum.PUBLIC)">
+        <ion-icon slot="start" name="earth"></ion-icon>
+        <ion-label>Pública</ion-label>
+      </ion-button>
+      <ion-button color="tertiary" (click)="changePlaylistType(playlistTypeEnum.PRIVATE)">
+        <ion-icon slot="start" name="lock-closed"></ion-icon>
+        <ion-label>Privada</ion-label>
+      </ion-button>
+    </div>
+  </ng-template>
+</ion-modal>

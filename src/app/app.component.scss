@@ -13,6 +13,10 @@ ion-item {
   }
 }
 
+ion-tabs {
+  background-color: var(--ion-color-primary);
+}
+
 .loc__progress-bar {
   display: flex;
   justify-content: space-between;

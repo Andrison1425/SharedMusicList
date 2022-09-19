@@ -25,7 +25,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-      this.player.unload();
+    this.player.unload();
   }
 
   controls(src: string) {

@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title slot="start">Agregar canciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="primary" class="ion-no-padding">
+  <ion-accordion-group [multiple]="true" [value]="directoriesName">
+    <ion-accordion 
+      *ngFor="let directory of audioFiles | keyvalue"   
+      [value]="directory.key"
+    >
+      <ion-item slot="header" color="primary">
+        <ion-icon name="folder-open-sharp" slot="start"></ion-icon>
+        <ion-label>{{directory.key}}</ion-label>
+      </ion-item>
+      <div slot="content">
+        <ion-item *ngFor="let audioFile of directory.value" color="primary">
+          <ion-button 
+            slot="start" 
+            mode="ios"
+            (click)="playMusic(audioFile)"
+          >
+            <ion-icon 
+              [name]="(playingMusic?.uri === audioFile.uri && !pause)? 'pause': 'play'" 
+              slot="icon-only" 
+              color="tertiary"
+            ></ion-icon>
+          </ion-button>
+          <ion-label>{{audioFile.name}}</ion-label>
+          <ion-checkbox 
+            slot="end" 
+            (ionChange)="selectMusic($event, audioFile)"
+            [checked]="isSelected(audioFile)"
+          ></ion-checkbox>
+        </ion-item>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content>
+
+<ion-footer color="primary">
+    <ion-button 
+      fill="clear" 
+      color="medium"
+      (click)="cancel()"  
+    >
+      <ion-icon name="close" slot="start"></ion-icon>
+      <div>Cancelar</div>
+    </ion-button>
+    <ion-button 
+      fill="clear" 
+      color="tertiary"
+      (click)="addMusics()"  
+    >
+      <ion-icon name="add" slot="start"></ion-icon>
+      <div>Agregar</div>
+    </ion-button>
+</ion-footer>

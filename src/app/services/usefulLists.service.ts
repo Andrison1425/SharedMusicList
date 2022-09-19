@@ -19,7 +19,6 @@ export class UsefulListsService {
     }>;
 
     const artists = await getDoc(docRef);
-    console.log(artists.data().artists)
     this.localDbService.setArtists(artists.data().artists);
     return artists.data().artists;
   }

@@ -51,7 +51,7 @@ export class AddMusicComponent implements OnInit {
       this.title.setValue(this.music.title);
       this.artist.setValue(this.music.artist);
       this.artistsPlaceholder = '';
-      this.musicData = this.music.localData || this.music.localPath;
+      this.musicData = this.music.localPath || this.music.localData;
       this.unapproved = this.music.unapprovedArtists;
       this.size = this.music.size;
     }
@@ -99,6 +99,7 @@ export class AddMusicComponent implements OnInit {
           ...music,
           downloadUrl: '',
           id: '',
+          localPath: this.musicData,
           duration: this.duration,
           stationId: ''
         };
