@@ -3,7 +3,7 @@ import { Timestamp } from '@angular/fire/firestore';
 import { IMusic } from './music.interface';
 import { PlaylistType } from '../enums/playlist-type.enum';
 
-export interface IStation {
+export interface IPlaylist {
   id: string,
   musics: IMusic[],
   name: string,

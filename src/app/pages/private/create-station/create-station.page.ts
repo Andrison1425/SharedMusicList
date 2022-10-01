@@ -2,14 +2,14 @@ import { Folder } from './../../../enums/folder.enum';
 import { FileSystemService } from './../../../services/file-system.service';
 import { CameraSource } from '@capacitor/camera';
 import { ImageService } from './../../../services/image.service';
-import { StationService } from './../../../services/station.service';
+import { PlaylistService } from '../../../services/playlist.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LocalDbService } from './../../../services/local-db.service';
 import { MusicService } from './../../../services/music.service';
 import { LoadingService } from './../../../services/loading.service';
 import { Colors } from 'src/app/enums/color.enum';
 import { FormBuilder, Validators } from '@angular/forms';
-import { IStation } from './../../../interfaces/station.interface';
+import { IPlaylist } from '../../../interfaces/playlist.interface';
 import { AddMusicComponent } from './../../../components/add-music/add-music.component';
 import { IMusic } from './../../../interfaces/music.interface';
 import { ToastService } from './../../../services/toast.service';
@@ -34,13 +34,14 @@ export class CreateStationPage implements OnInit {
 
   Routes = Route;
   musicArr: IMusic[] = [];
-  station: IStation;
+  station: IPlaylist;
   stationID: string;
   tagify: Tagify;
   artists: string[] = [];
   lastArtist: string = '';
   trackListArtists: string[] = [];
   playlistType: PlaylistType = PlaylistType.PUBLIC;
+  disabledSelectType = false;
   imageStation = '../../../../assets/img/no-image.png';
   @ViewChild('tagInput', { static: false }) tagInput: IonInput;
   @ViewChild('playlistTypeModal') playlistTypeModal: IonModal;
@@ -60,7 +61,7 @@ export class CreateStationPage implements OnInit {
     private fb: FormBuilder,
     private loadingService: LoadingService,
     private musicService: MusicService,
-    private stationService: StationService,
+    private playlistService: PlaylistService,
     private localDbService: LocalDbService,
     private router: Router,
     private actionSheetController: ActionSheetController,
@@ -75,7 +76,7 @@ export class CreateStationPage implements OnInit {
     this.stationID = this.route.snapshot.paramMap.get('id');
 
     if(this.stationID) {
-      this.stationService.getStation(this.stationID)
+      this.playlistService.getStation(this.stationID)
         .then(resp => {
           this.station = resp;
           this.stationName.setValue(this.station.name);
@@ -97,6 +98,14 @@ export class CreateStationPage implements OnInit {
     }, 200)
 
     this.getAllArtists();
+
+    this.route.queryParams
+      .subscribe(params => {
+        if(params.type) {
+          this.playlistType = params.type;
+          this.disabledSelectType = true;
+        }
+      });
   }
 
   doReorder(ev: Event) {
@@ -242,7 +251,7 @@ export class CreateStationPage implements OnInit {
 
       const user = await this.localDbService.getLocalUser();
 
-      const station: IStation = {
+      const station: IPlaylist = {
         id: this.station?.id || stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
@@ -265,16 +274,16 @@ export class CreateStationPage implements OnInit {
         tags: this.getTags()
       };
 
-      this.stationService.createOrUpdateStation(station, stationID, (this.station? true: false))
+      this.playlistService.createOrUpdateStation(station, stationID, (this.station? true: false))
         .then(() => {
           this.loadingService.dismiss();
-          this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
+          this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
           this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
         })
         .catch((e) => {
           console.log(e)
           this.loadingService.dismiss();
-          this.toastService.presentToast('Error al tratar de crear la estación', Colors.DANGER);
+          this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
         })
     }
   }
@@ -311,7 +320,7 @@ export class CreateStationPage implements OnInit {
 
       const user = await this.localDbService.getLocalUser();
 
-      const station: IStation = {
+      const station: IPlaylist = {
         id: this.station?.id || stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
@@ -337,17 +346,32 @@ export class CreateStationPage implements OnInit {
       this.localDbService.setStation(stationID, station)
         .then(() => {
           this.loadingService.dismiss();
-          this.toastService.presentToast('Se ha creado la estación', Colors.SUCCESS);
+          this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
           this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
         })
         .catch((e) => {
           console.log(e)
           this.loadingService.dismiss();
-          this.toastService.presentToast('Error al tratar de crear la estación', Colors.DANGER);
+          this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
         })
     }
   }
 
+  async uploadImage(image: string, stationId: string) {
+    if (this.imageStation === '../../../../assets/img/no-image.png') {
+      return {
+        compress: '',
+        path: '',
+        localPath: ''
+      }
+    } else {
+      const fileName = new Date().getTime() + '.jpeg';
+      const localPath = await this.fileSystemService.writeFile(image, fileName, Folder.StationImage);
+      const imageData = await this.imageService.uploadStationImage(image, stationId);
+      return {...imageData, localPath};
+    }
+  }
+  
   async presentImageActionSheet() {
     const actionSheet = await this.actionSheetController.create({
       cssClass: 'my-custom-class',
@@ -377,21 +401,6 @@ export class CreateStationPage implements OnInit {
       ]
     });
     await actionSheet.present();
-  }
-
-  async uploadImage(image: string, stationId: string) {
-    if (this.imageStation === '../../../../assets/img/no-image.png') {
-      return {
-        compress: '',
-        path: '',
-        localPath: ''
-      }
-    } else {
-      const fileName = new Date().getTime() + '.jpeg';
-      const localPath = await this.fileSystemService.writeFile(image, fileName, Folder.StationImage);
-      const imageData = await this.imageService.uploadStationImage(image, stationId);
-      return {...imageData, localPath};
-    }
   }
 
   stationFormValidate() {

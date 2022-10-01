@@ -10,6 +10,7 @@ import { DownloadState } from '../enums/download-state.enum';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import * as uniqid from 'uniqid';
 import { LocalDbService } from './local-db.service';
+import { AlertController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +25,14 @@ export class DownloadService {
   musicPlaying: IMusic;
   Folder: Folder;
   downloads: IDownload = {};
+  private units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
   constructor(
     private http: HttpClient,
     private fileSystemService: FileSystemService,
     private fileOpener: FileOpener,
-    private localDbService: LocalDbService
+    private localDbService: LocalDbService,
+    private alertController: AlertController
   ) { }
 
   showDownloadsModal() {
@@ -40,43 +43,72 @@ export class DownloadService {
     return this.showDownloadsModal$.asObservable();
   }
 
-  downloadMusic(music: IMusic) {
-    this.downloads[music.id] = {
-      music: music,
-      progress: 0,
-      state: DownloadState.DOWNLOADING,
-      id: uniqid(),
-      fileUri: ''
-    }
+  downloadMusic(music: IMusic, fileName?: string, dir?: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.downloads[music.id] = {
+        music: music,
+        progress: 0,
+        state: DownloadState.DOWNLOADING,
+        id: uniqid(),
+        fileUri: ''
+      }
+  
+      this.httpSubscriptions[music.id] =
+        this.http.get(music.downloadUrl, {
+          responseType: 'blob',
+          reportProgress: true,
+          observe: 'events'
+        })
+          .subscribe(async event => {
+            if (event.type === HttpEventType.DownloadProgress) {
+              this.downloads[music.id].progress = (100 * event.loaded) / event.total;
+              this.myDownloads$.next(this.downloads)
+  
+            } else if (event.type === HttpEventType.Response) {
+              let base64: string | ArrayBuffer;
+              this.downloads[music.id].state = DownloadState.DOWNLOADED;
+  
+              const resultData = await convertBlobToBase64(event.body)
+              base64 = resultData as string | ArrayBuffer;
+  
+              
+              const downloadUri = await this.fileSystemService.writeFile(base64 as string,
+                fileName || `${music.title + music.id}.mp3`,
+                dir || `${Folder.Tracks}`
+              )
+                
+              this.downloads[music.id].fileUri = downloadUri;
+              this.localDbService.addMusicDownload(this.downloads[music.id]);
+              this.myDownloads$.next(this.downloads)
+              resolve(downloadUri);
+            }
+          });
+    })
+  }
 
-    this.httpSubscriptions[music.id] =
-      this.http.get(music.downloadUrl, {
-        responseType: 'blob',
-        reportProgress: true,
-        observe: 'events'
-      })
-        .subscribe(async event => {
-          if (event.type === HttpEventType.DownloadProgress) {
-            this.downloads[music.id].progress = (100 * event.loaded) / event.total;
-            this.myDownloads$.next(this.downloads)
-
-          } else if (event.type === HttpEventType.Response) {
-            let base64: string | ArrayBuffer;
-            this.downloads[music.id].state = DownloadState.DOWNLOADED;
-
-            const resultData = await convertBlobToBase64(event.body)
-            base64 = resultData as string | ArrayBuffer;
-
-            const downloadUri = await this.fileSystemService.writeFile(base64 as string,
-              `${music.title + music.id}.mp3`,
-              `${Folder.Tracks}`
-            )
-
-            this.downloads[music.id].fileUri = downloadUri;
-            this.localDbService.addMusicDownload(this.downloads[music.id]);
-            this.myDownloads$.next(this.downloads)
+  async downloadMusicWithAlert(music: IMusic) {
+    const alert = await this.alertController.create({
+      message: `
+        ¿Descargar ${music.title} - ${music.artist}? 
+        <br> 
+        <small>${this.getMusicSize(music.size)}</small>
+      `,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }, {
+          text: 'Descargar',
+          id: 'confirm-button',
+          handler: () => {
+            this.showDownloadsModal();
+            this.downloadMusic(music);
           }
-        });
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   getDownloads(): Observable<IDownload> {
@@ -96,5 +128,15 @@ export class DownloadService {
     this.fileOpener.showOpenWithDialog(path, 'audio/*')
       .then(() => console.log('File is opened'))
       .catch(e => console.log('Error opening file', e));
+  }
+
+  private getMusicSize(x: number) {
+    let l = 0;
+    let n = x || 0;
+
+    while (n >= 1024 && ++l) {
+      n = n / 1024;
+    }
+    return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + this.units[l]);
   }
 }

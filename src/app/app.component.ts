@@ -42,7 +42,6 @@ export class AppComponent {
     downloadService.getDownloads()
       .subscribe(resp => {
         this.downloads = resp;
-        console.log(resp)
       })
   }
 

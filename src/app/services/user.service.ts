@@ -1,4 +1,4 @@
-import { IStation } from './../interfaces/station.interface';
+import { IPlaylist } from '../interfaces/playlist.interface';
 import { FirestoreCollection } from './../enums/firestore-collection.enum';
 import { IUser } from './../interfaces/user.interface';
 import { LocalDbService } from './local-db.service';
@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import { collection, doc, Firestore, setDoc, updateDoc, arrayUnion, getDoc, DocumentReference, arrayRemove, query, CollectionReference, where, orderBy, getDocs } from '@angular/fire/firestore';
 import { NotificationTokensService } from './notification-tokens.service';
 import { NotificationsService } from './notifications.service';
-import { StationService } from './station.service';
+import { PlaylistService } from './playlist.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class UserService {
     private firestore: Firestore,
     private notificationTokensService: NotificationTokensService,
     private notificationsService: NotificationsService,
-    private stationService: StationService
+    private playlistService: PlaylistService
   ) { /* */}
 
   createUser(user: IUser) {
@@ -38,7 +38,7 @@ export class UserService {
     });
   }
 
-  async addFavoriteStation(station: IStation) {
+  async addFavoriteStation(station: IPlaylist) {
     const id = this.localDbService.user.id;
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id );
     await updateDoc(docRef, {
@@ -65,8 +65,8 @@ export class UserService {
   }
 
   async syncFavoriteStations(user: IUser) {
-    const queryRef = query<IStation>(
-      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+    const queryRef = query<IPlaylist>(
+      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
       where('id', 'in', user.favoriteStations)
     );
 
@@ -81,7 +81,7 @@ export class UserService {
     const docRef = doc(this.firestore, FirestoreCollection.Users + '/' + id ) as DocumentReference<IUser>;
     const userData = await getDoc(docRef);
     this.localDbService.setUserData(id, userData.data());
-    const stations = await this.stationService.getStationsForUser(id);
+    const stations = await this.playlistService.getStationsForUser(id);
 
     for (let index = 0; index < stations.length; index++) {
       const station = stations[index];

@@ -2,10 +2,10 @@ import { ToastService } from './../../../services/toast.service';
 import { IUser } from './../../../interfaces/user.interface';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IComment } from './../../../interfaces/comment.interface';
-import { StationService } from './../../../services/station.service';
+import { PlaylistService } from '../../../services/playlist.service';
 import { IMusic } from './../../../interfaces/music.interface';
 import { MusicService } from './../../../services/music.service';
-import { IStation } from './../../../interfaces/station.interface';
+import { IPlaylist } from '../../../interfaces/playlist.interface';
 import { LocalDbService } from './../../../services/local-db.service';
 import { Component, OnInit } from '@angular/core';
 import { Route } from 'src/app/enums/route.enum';
@@ -21,9 +21,9 @@ import { Colors } from 'src/app/enums/color.enum';
 export class StationPage implements OnInit {
 
   Routes = Route;
-  station: IStation;
+  station: IPlaylist;
   stationID: string;
-  musicPlayingId: string;
+  musicPlaying: IMusic;
   musicState: MusicState;
   musicStateEnum = MusicState;
   comments: IComment[] = [];
@@ -44,7 +44,7 @@ export class StationPage implements OnInit {
     private route: ActivatedRoute,
     private localDbService: LocalDbService,
     private musicService: MusicService,
-    private stationService: StationService,
+    private playlistService: PlaylistService,
     private fb: FormBuilder,
     private toastService: ToastService,
   ) { }
@@ -59,26 +59,15 @@ export class StationPage implements OnInit {
         if (resp) {
           this.station = resp;
           this.isLocalStation = true;
-          const commentsData = this.stationService.getComments(this.station);
+          const commentsData = this.playlistService.getComments(this.station);
           if (commentsData) {
             this.replyComments = commentsData.replyComments;
             this.comments = commentsData.comments;
           }
 
           this.musicState = MusicState.Pause;
-
-          this.musicService.musicPlayingInfo()
-            .subscribe(resp => {
-              if (resp.music) {
-                this.musicPlayingId = resp.music.id;
-                this.musicState = resp.state;
-              } else {
-                this.musicPlayingId = null;
-                this.musicState = null;
-              }
-            });
         } else {
-          this.stationService.getStation(this.stationID)
+          this.playlistService.getStation(this.stationID)
             .then(station => {
               this.station = station;
             })
@@ -86,15 +75,26 @@ export class StationPage implements OnInit {
         }
       }).catch(e => console.log(e));
 
+    this.musicService.musicPlayingInfo()
+      .subscribe(resp => {
+        if (resp.music) {
+          this.musicPlaying = resp.music;
+          this.musicState = resp.state;
+        } else {
+          this.musicPlaying = null;
+          this.musicState = null;
+        }
+      });
+
     this.localDbService.getLocalUser()
       .then(user => this.user = user)
       .catch(e => console.log(e));
-      
+
     this.route.queryParams
       .subscribe(params => {
         this.routeQuery = params;
       });
-      
+
   }
 
   trackByFn(index: number, music: IMusic) {
@@ -121,7 +121,7 @@ export class StationPage implements OnInit {
 
   async addComment() {
     const replyCommentTmp = this.replyComment;
-    this.stationService.addComment(this.comment.value, this.station.id, this.user.userName, this.replyComment)
+    this.playlistService.addComment(this.comment.value, this.station.id, this.user.userName, this.replyComment)
       .then(newComment => {
         if (replyCommentTmp?.parentComment) {
           this.replyComments[replyCommentTmp.parentComment].unshift(newComment);
@@ -141,4 +141,15 @@ export class StationPage implements OnInit {
   deleteReply() {
     this.replyComment = null;
   }
+
+  onPlayMusic(music: IMusic) {
+    if (this.musicPlaying) {
+      if (this.musicPlaying.stationId !== this.stationID) {
+        this.musicService.loadMusics(this.station.musics)
+      }
+    } else {
+      this.musicService.loadMusics(this.station.musics)
+    }
+  }
 }
+

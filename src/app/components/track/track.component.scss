@@ -25,6 +25,18 @@ ion-badge {
   position: absolute;
   top: 0;
   right: 49px;
+  z-index: 2;
+}
+
+.loader {
+  transform: rotate(180deg);
+  svg {
+    fill: var(--ion-color-medium);
+  }
+}
+
+.loc__primary-opc {
+  height: 2.1rem;
 }
 
 @keyframes fade {

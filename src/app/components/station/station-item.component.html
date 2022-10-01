@@ -83,13 +83,13 @@
   </ion-row>
 
   <ion-item *ngIf="playing" color="primary" class="playing-info">
-    <div>
-      Reproduciendo
+    <div (click)="highlightItem(musicPlaying?.id)">
+      Canción {{musicIndex}}/{{station.musics.length}}
       <br>
       <ion-label color="tertiary" class="music-info">
-        {{musicPlaying?.title}}
+        {{musicPlaying?.title || station.musics[musicIndex - 1].title}} 
         <h4>
-          {{' - ' + musicPlaying?.artist}}
+          {{' - ' + musicPlaying?.artist || station.musics[musicIndex - 1].artist}}
         </h4>
       </ion-label>
     </div>

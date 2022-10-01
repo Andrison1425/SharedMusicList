@@ -8,8 +8,8 @@ const firestore = new Firestore();
 exports.newMusicInList = functions.firestore
     .document("/stations/{station}")
     .onUpdate(async (change, context) => {
-        const beforeData = change.before.data() as IStation;
-        const afterData = change.after.data() as IStation;
+        const beforeData = change.before.data() as IPlaylist;
+        const afterData = change.after.data() as IPlaylist;
 
         const beforeMusicsID: string[] = beforeData.musics.map(music => music.id);
 
@@ -71,7 +71,7 @@ const sendNotification = (notification: INotification) => {
     })
 };
 
-interface IStation {
+interface IPlaylist {
     id: string,
     musics: IMusic[],
     name: string,

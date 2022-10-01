@@ -1,20 +1,19 @@
 import { Capacitor } from '@capacitor/core';
 import { UserService } from './../../services/user.service';
 import { LocalDbService } from './../../services/local-db.service';
-import { StationService } from './../../services/station.service';
+import { PlaylistService } from '../../services/playlist.service';
 import { IMusic } from './../../interfaces/music.interface';
 import { Router } from '@angular/router';
 import { ToastService } from './../../services/toast.service';
 import { LoadingService } from './../../services/loading.service';
 import { MusicService } from './../../services/music.service';
-import { IStation } from './../../interfaces/station.interface';
+import { IPlaylist } from '../../interfaces/playlist.interface';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { Colors } from 'src/app/enums/color.enum';
 import { IUser } from 'src/app/interfaces/user.interface';
 import { Reaction } from 'src/app/enums/reaction.enum';
 import { Share } from '@capacitor/share';
-import { LocalNotificationsService } from 'src/app/services/local-notifications.service';
 import { DownloadService } from 'src/app/services/download.service';
 import { environment } from 'src/environments/environment.prod';
 import { Deeplink } from 'src/app/enums/deeplink.enum';
@@ -27,7 +26,7 @@ import { PlaylistType } from 'src/app/enums/playlist-type.enum';
 })
 export class StationItemComponent implements OnInit {
 
-  @Input() station: IStation;
+  @Input() station: IPlaylist;
   @Input() playing = false;
   @Input() adminStation = true;
   @Output() deleteStation = new EventEmitter<string>();
@@ -38,36 +37,38 @@ export class StationItemComponent implements OnInit {
   reactionEnum = Reaction;
   reaction: Reaction;
   percentageReaction = 50;
-  private units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
   constructor(
     private alertController: AlertController,
     private musicService: MusicService,
-    private stationService: StationService,
+    private playlistService: PlaylistService,
     private loadingService: LoadingService,
     private toastService: ToastService,
     private router: Router,
     private localDbService: LocalDbService,
     private userService: UserService,
-    private localNotificationsService: LocalNotificationsService,
     private downloadService: DownloadService
   ) {
   }
 
   ngOnInit() {
     if (this.playing) {
-      this.load();
-
       this.musicPlaying = this.musicService.musicPlaying;
       this.musicService.musicPlayingInfo()
         .subscribe(resp => {
           if (resp.music) {
-            this.musicPlaying = resp.music;
+            if (resp.music.stationId === this.station.id) {
+              this.musicPlaying = resp.music;
+            }
           }
         });
 
+      if (!this.musicPlaying) {
+        this.musicService.loadMusics(this.station.musics)
+      }
+
       if (this.station.type !== PlaylistType.PRIVATE) {
-        this.stationService.addView(this.station.id);
+        this.playlistService.addView(this.station.id);
       }
     }
 
@@ -114,14 +115,10 @@ export class StationItemComponent implements OnInit {
     }
   }
 
-  load() {
-    this.musicService.loadMusics(this.station.musics);
-  }
-
   async delete() {
     const alert = await this.alertController.create({
       header: 'Confirmar',
-      message: '¿Desea eliminar esta estación?',
+      message: '¿Desea eliminar esta lista de reproducción?',
       buttons: [
         {
           text: 'Cancelar',
@@ -132,7 +129,7 @@ export class StationItemComponent implements OnInit {
           handler: () => {
             this.loadingService.present('Eliminando...');
 
-            this.stationService.deleteStation(this.station.id)
+            this.playlistService.deleteStation(this.station.id)
               .then(() => {
                 this.loadingService.dismiss();
                 this.deleteStation.emit(this.station.id);
@@ -162,7 +159,7 @@ export class StationItemComponent implements OnInit {
             id: 'confirm-button',
             handler: () => {
               this.loadingService.present('Eliminando...');
-  
+
               this.userService.removeFavoriteStation(this.station.id)
                 .then(() => {
                   this.loadingService.dismiss();
@@ -181,7 +178,7 @@ export class StationItemComponent implements OnInit {
       this.isFavoriteStation = true;
       this.userService.addFavoriteStation(this.station)
         .then(() => {
-          this.toastService.presentToast('Agregado a favoritos.', Colors.SUCCESS,1500);
+          this.toastService.presentToast('Agregado a favoritos.', Colors.SUCCESS, 1500);
         })
         .catch(e => {
           console.log(e)
@@ -204,7 +201,7 @@ export class StationItemComponent implements OnInit {
 
   setReaction(reaction: Reaction) {
     if (!this.reaction) {
-      this.stationService.setReaction(this.station.id, this.user.id, reaction);
+      this.playlistService.setReaction(this.station.id, this.user.id, reaction);
       this.reaction = reaction;
       if (reaction === Reaction.Like) {
         this.station.reactions.numLikes++;
@@ -215,21 +212,21 @@ export class StationItemComponent implements OnInit {
   }
 
   syncStation() {
-    this.stationService.syncStation(this.station.id)
-    .then(resp => {
-      this.station = resp;
-      if (this.station.reactions.numLikes) {
-        this.percentageReaction =
-          ((this.station.reactions.numDislikes + this.station.reactions.numLikes) * 100) / this.station.reactions.numLikes;
-      } else {
-        this.percentageReaction = 0;
-      }
-      for (const key of Object.keys(this.station.reactions.idUsersAndReaction)) {
-        if (key === this.user.id) {
-          this.reaction = this.station.reactions.idUsersAndReaction[key];
+    this.playlistService.syncStation(this.station.id)
+      .then(resp => {
+        this.station = resp;
+        if (this.station.reactions.numLikes) {
+          this.percentageReaction =
+            ((this.station.reactions.numDislikes + this.station.reactions.numLikes) * 100) / this.station.reactions.numLikes;
+        } else {
+          this.percentageReaction = 0;
         }
-      }
-    });
+        for (const key of Object.keys(this.station.reactions.idUsersAndReaction)) {
+          if (key === this.user.id) {
+            this.reaction = this.station.reactions.idUsersAndReaction[key];
+          }
+        }
+      });
   }
 
   async share() {
@@ -245,38 +242,25 @@ export class StationItemComponent implements OnInit {
     this.router.navigate(['/radio/create-station/' + this.station.id]);
   }
 
-  async downloadMusic(music: IMusic) {
-    const alert = await this.alertController.create({
-      message: `
-        ¿Descargar ${music.title} - ${music.artist}? 
-        <br> 
-        <small>${this.getMusicSize(music.size)}</small>
-      `,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        }, {
-          text: 'Descargar',
-          id: 'confirm-button',
-          handler: () => {
-            this.downloadService.showDownloadsModal();
-            this.downloadService.downloadMusic(this.musicPlaying);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
+  downloadMusic(music: IMusic) {
+    this.downloadService.downloadMusicWithAlert(music);
   }
 
-  private getMusicSize(x: number) {
-    let l = 0;
-    let n = x || 0;
-
-    while (n >= 1024 && ++l) {
-      n = n / 1024;
+  get musicIndex() {
+    if (this.musicPlaying) {
+      if (this.musicPlaying.stationId !== this.station.id) {
+        return 1;
+      } else {
+        return this.station.musics.findIndex(music => music.id === this.musicPlaying.id) + 1;
+      }
+    } else {
+      return 1;
     }
-    return (n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + this.units[l]);
+  }
+
+  highlightItem(id: string) {
+    this.router.navigate(['radio/station/' + this.station.id], {
+      queryParams: { trackId: id }
+    });
   }
 }

@@ -1,0 +1,17 @@
+<h5>Agregar a lista de reproducción</h5>
+<ion-item 
+  button 
+  color="primary"
+  (click)="createPlaylist()"  
+>
+  <ion-icon name="add-sharp"></ion-icon>
+  <ion-label>Crear lista</ion-label>
+</ion-item>
+<ion-item 
+  button
+  *ngFor="let playlist of playlists"
+  (click)="addTrackInPlaylist(playlist.id)"
+  color="primary"  
+>
+  {{playlist.name}}
+</ion-item>

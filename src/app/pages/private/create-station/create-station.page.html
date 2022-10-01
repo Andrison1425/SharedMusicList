@@ -36,9 +36,12 @@
         color="medium" 
         slot="start" 
         id="open-custom-dialog"
-        [disabled]="musicArr.length > 0"  
+        [disabled]="(musicArr.length > 0 || disabledSelectType)"  
       >
-        <ion-icon [name]="playlistType === playlistTypeEnum.PUBLIC? 'earth': 'lock-closed'" slot="start"></ion-icon>
+        <ion-icon 
+          [name]="playlistType === playlistTypeEnum.PUBLIC? 'earth': 'lock-closed'" 
+          slot="start"
+        ></ion-icon>
         <ion-label>
           {{playlistType === playlistTypeEnum.PUBLIC? 'Pública': 'Privada'}}
         </ion-label>

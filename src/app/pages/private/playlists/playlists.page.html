@@ -12,17 +12,22 @@
 
 <ion-content fullscreen color="primary">
   <ion-list class="loc__cont-des">
-    <ion-button expand="block" color="tertiary" [routerLink]="'/radio/'+Routes.CreateStation">
+    <ion-button 
+      expand="block" 
+      color="tertiary" 
+      [routerLink]="'/radio/'+Routes.CreateStation"
+      [queryParams]="{ type: PlaylistType.PRIVATE }"  
+    >
       <ion-icon name="add" slot="start"></ion-icon>
       <div>Crear lista privada</div>
     </ion-button>
 
-    <div *ngIf="stations.length === 0" class="no-list-message">
+    <div *ngIf="playlists.length === 0" class="no-list-message">
       Sin listas de reproducción privadas
     </div>
 
     <app-station-item
-      *ngFor="let station of stations"
+      *ngFor="let station of playlists"
       [station]="station"
       [playing]="false"
       (deleteStation)="onDeleteStation($event)"

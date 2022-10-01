@@ -9,6 +9,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
+import { PopoverTrackComponent } from './popover-track/popover-track.component';
+import { AddTrackPlaylistModalComponent } from './add-track-playlist-modal/add-track-playlist-modal.component';
 
 
 
@@ -19,7 +21,9 @@ import { FileExplorerComponent } from './file-explorer/file-explorer.component';
     AudioComponent,
     SkeletonComponent,
     ImageCropperModalComponent,
-    FileExplorerComponent
+    FileExplorerComponent,
+    PopoverTrackComponent,
+    AddTrackPlaylistModalComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +37,9 @@ import { FileExplorerComponent } from './file-explorer/file-explorer.component';
     AudioComponent,
     SkeletonComponent,
     ImageCropperModalComponent,
-    FileExplorerComponent
+    FileExplorerComponent,
+    PopoverTrackComponent,
+    AddTrackPlaylistModalComponent
   ]
 })
 export class GlobalComponentsModule { }

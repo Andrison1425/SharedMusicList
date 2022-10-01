@@ -1,9 +1,9 @@
 import { LocalDbService } from './../../../services/local-db.service';
-import { IStation } from './../../../interfaces/station.interface';
+import { IPlaylist } from '../../../interfaces/playlist.interface';
 import { Component, OnInit } from '@angular/core';
 import { MenuController, ModalController } from '@ionic/angular';
 import { FiltersModalComponent } from 'src/app/components/filters-modal/filters-modal.component';
-import { StationService } from 'src/app/services/station.service';
+import { PlaylistService } from 'src/app/services/playlist.service';
 import { IFilters } from 'src/app/interfaces/filters.interface';
 import { StationOrderBy } from 'src/app/enums/station-order-by.enum';
 
@@ -17,9 +17,9 @@ export class HomePage implements OnInit {
   srcAudio = '';
   musicCont = 0;
   activeTab = 'FAVORITES';
-  allStations: IStation[] = [];
-  stations: IStation[] = [];
-  favoriteStations: IStation[] = [];
+  allStations: IPlaylist[] = [];
+  stations: IPlaylist[] = [];
+  favoriteStations: IPlaylist[] = [];
   stationOrderByEnum = StationOrderBy;
   stationOrderBy: StationOrderBy = StationOrderBy.Likes;
   tags: string[] = [];
@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
     private menu: MenuController,
     private localDbService: LocalDbService,
     private modalController: ModalController,
-    private stationService: StationService
+    private playlistService: PlaylistService
   ) { }
   
   async ngOnInit() {
@@ -101,7 +101,7 @@ export class HomePage implements OnInit {
 
     this.stations = [];
     this.connectionError = false;
-    this.stationService.getStations(filters)
+    this.playlistService.getStations(filters)
       .then(resp => {
         this.connectionError = resp.connectionError;
         this.allStations = resp.stations;
@@ -120,7 +120,7 @@ export class HomePage implements OnInit {
     }
   }
 
-  trackByFn(index: number, item: IStation) {
+  trackByFn(index: number, item: IPlaylist) {
     return item.id;
   }
 

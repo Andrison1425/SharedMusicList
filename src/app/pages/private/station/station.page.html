@@ -11,7 +11,12 @@
 </ion-header>
 
 <ion-content fullscreen color="primary">
-  <app-station-item *ngIf="station" [station]="station" [playing]="true"></app-station-item>
+
+  <app-station-item 
+    *ngIf="station" 
+    [station]="station" 
+    [playing]="true"
+  ></app-station-item>
 
   <ion-toolbar mode="ios" color="primary">
     <ion-segment value="TRACKS" mode="ios" (ionChange)="segmentChanged($event)">
@@ -28,10 +33,11 @@
     <app-track
       *ngFor="let music of station?.musics; trackBy: trackByFn"
       [track]="music"
-      [musicPlayingId]="musicPlayingId"
+      [musicPlayingId]="musicPlaying?.id"
       [musicState]="musicState"
       [lastStationView]="lastView"
       [trackId]="routeQuery.trackId"
+      (playMusic)="onPlayMusic($event)"
     ></app-track>
   </ion-list>
 

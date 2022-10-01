@@ -1,28 +1,44 @@
-import { getFakeTimestamp } from './../utils/utils';
-import { IComment } from './../interfaces/comment.interface';
-import { StationOrderBy } from './../enums/station-order-by.enum';
-import { Reaction } from './../enums/reaction.enum';
+import { getFakeTimestamp } from '../utils/utils';
+import { IComment } from '../interfaces/comment.interface';
+import { StationOrderBy } from '../enums/station-order-by.enum';
+import { Reaction } from '../enums/reaction.enum';
 import { Injectable } from '@angular/core';
 import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, 
          CollectionReference, increment, DocumentReference, where, Timestamp, arrayUnion 
        } from '@angular/fire/firestore';
-import { FirestoreCollection } from './../enums/firestore-collection.enum';
-import { IStation } from './../interfaces/station.interface';
+import { FirestoreCollection } from '../enums/firestore-collection.enum';
+import { IPlaylist } from '../interfaces/playlist.interface';
 import { LocalDbService } from './local-db.service';
-import { v4 as uuidv4 } from 'uuid';
+import * as uniqid from 'uniqid';
 import { IFilters } from '../interfaces/filters.interface';
+import { IMusic } from '../interfaces/music.interface';
+import { LoadingService } from './loading.service';
+import { Colors } from '../enums/color.enum';
+import { ToastService } from './toast.service';
+import { FileSystemService } from './file-system.service';
+import { DownloadService } from './download.service';
+import { Folder } from '../enums/folder.enum';
+import { AlertController } from '@ionic/angular';
+import { PlaylistType } from '../enums/playlist-type.enum';
+import { ImageService } from './image.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class StationService {
+export class PlaylistService {
 
   constructor(
     private localDbService: LocalDbService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private loadingService: LoadingService,
+    private toastService: ToastService,
+    private fileSystemService: FileSystemService,
+    private downloadService: DownloadService,
+    private alertController: AlertController,
+    // private imageService: ImageService
   ) { }
 
-  createOrUpdateStation(station: IStation, stationID: string, update?: boolean) {
+  createOrUpdateStation(station: IPlaylist, stationID: string, update?: boolean) {
     return new Promise<string>((resolve, rejeact) => {
       (async () => {
         try {
@@ -81,14 +97,14 @@ export class StationService {
       orderByField = 'views';
     }
     
-    let queryRef = query<IStation>(
-      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+    let queryRef = query<IPlaylist>(
+      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
       orderBy(orderByField, 'desc')
     );
     
     if (filters.tags?.length > 0) {
-      queryRef = query<IStation>(
-        collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+      queryRef = query<IPlaylist>(
+        collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
         where('tags', 'array-contains-any', filters.tags),
         orderBy(orderByField, 'desc')
       );
@@ -103,7 +119,7 @@ export class StationService {
   }
 
   async getStation(id: string) {
-    const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + id ) as DocumentReference<IStation>;
+    const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + id ) as DocumentReference<IPlaylist>;
     const stationData = await getDoc(docRef);
     return stationData.data();
   }
@@ -118,10 +134,10 @@ export class StationService {
   }
 
   syncStation(stationId: string) {
-    return new Promise<IStation>((resolve, rejeact) => {
+    return new Promise<IPlaylist>((resolve, rejeact) => {
       (async () => {
         try {
-          const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + stationId) as DocumentReference<IStation>;
+          const docRef = doc(this.firestore, FirestoreCollection.Stations + '/' + stationId) as DocumentReference<IPlaylist>;
           const stationData = await getDoc(docRef);
           const syncStation = await this.localDbService.setStation(stationId, stationData.data());
           resolve(syncStation);
@@ -140,8 +156,8 @@ export class StationService {
   }
 
   async getStationsForUser(userID: string) {
-    const queryRef = query<IStation>(
-      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IStation>,
+    const queryRef = query<IPlaylist>(
+      collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
       where('author.id', '==', userID),
       orderBy('reactions.numLikes', 'asc')
     );
@@ -152,7 +168,7 @@ export class StationService {
     return stations;
   }
 
-  getComments(station: IStation) {
+  getComments(station: IPlaylist) {
     const comments = [];
     let replyComments = [];
     const objReplyComments = {};
@@ -174,7 +190,7 @@ export class StationService {
   }
 
   async addComment(comment: string, stationId: string, userName: string, replyComment?: IComment): Promise<IComment> {
-    const uniqueId = uuidv4();
+    const uniqueId = uniqid();
 
     let path = '';
 
@@ -223,6 +239,99 @@ export class StationService {
     return tags.data().tags;
   }
 
+  
+  async createPlaylistWithName(track: IMusic) {
+    const alert = await this.alertController.create({
+      header: 'Crear lista de reproducción privada',
+      buttons: [  {
+        text: 'Crear',
+        handler: ({playlistName}) => {
+          if (playlistName.trim().length < 3) {
+            this.toastService.presentToast('El nombre de la lista debe tener 3 o más caracteres', Colors.DANGER, 3000);
+            return false;
+          } else {
+            this.createPrivatePlaylist(playlistName, track)
+            return true;
+          }
+        }
+      }],
+      inputs: [
+        {
+          placeholder: 'Nombre de la lista',
+          attributes: {
+            maxlength: 40,
+            minlength: 3
+          },
+          name: 'playlistName'
+        }
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async uploadImage() {
+    return {
+      compress: '',
+      path: '',
+      localPath: ''
+    }
+  }
+
+  private async createPrivatePlaylist(name: string, track: IMusic) {
+    this.loadingService.present('Creando lista de reproducción');
+    const playlistID = uniqid();
+
+    try {
+      track.id = uniqid();
+      track.stationId = playlistID;
+      const localPath = await this.downloadService.downloadMusic(track, `${track.title + '--' + track.id}.mp3`, `${Folder.Tracks + name}/`)
+      track.localPath = localPath;
+      track.localData = '';
+    } catch (error) {
+      this.loadingService.dismiss();
+      this.toastService.presentToast('Error de conexión', Colors.DANGER, 3000);
+    }
+
+    const artistsName = [track.artist];
+
+    const user = await this.localDbService.getLocalUser();
+
+    const station: IPlaylist = {
+      id: playlistID,
+      name: name,
+      description: 'Sin descripción',
+      type: PlaylistType.PRIVATE,
+      artistsName: artistsName,
+      author: {
+        id: user.id,
+        userName: user.userName
+      },
+      image: await this.uploadImage(),
+      musics: [track],
+      views: 0,
+      reactions: {
+        idUsersAndReaction: {},
+        numDislikes: 0,
+        numLikes: 0
+      },
+      timestamp: serverTimestamp() as Timestamp,
+      comments: [],
+      tags: []
+    };
+
+    this.localDbService.setStation(playlistID, station)
+      .then(() => {
+        this.loadingService.dismiss();
+        this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
+      })
+      .catch((e) => {
+        console.log(e)
+        this.loadingService.dismiss();
+        this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
+      })
+  }
+
   private orderComments(comments: IComment[]) {
     comments = comments.sort((a, b) => {
       if (a.timestamp.seconds < b.timestamp.seconds) {
@@ -234,5 +343,5 @@ export class StationService {
       return 0;
     });
     return comments;
-  }
+  } 
 }

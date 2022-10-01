@@ -8,7 +8,7 @@ import { Colors } from 'src/app/enums/color.enum';
 import { signInAnonymously, Auth } from '@angular/fire/auth';
 import { Route } from 'src/app/enums/route.enum';
 import { FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular-i18n';
-import { StationService } from 'src/app/services/station.service';
+import { PlaylistService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ export class LoginPage implements OnInit {
     private auth: Auth,
     private userService: UserService,
     private localDbService: LocalDbService,
-    private stationService: StationService
+    private playlistService: PlaylistService
   ) { /**/}
 
   ngOnInit() {

@@ -1,4 +1,4 @@
-import { IStation } from './../interfaces/station.interface';
+import { IPlaylist } from '../interfaces/playlist.interface';
 import { IUser } from './../interfaces/user.interface';
 import { LocalDbName } from './../enums/local-db-name.enum';
 import { ILocalForage } from './../interfaces/localForange.interface';
@@ -18,10 +18,10 @@ export class LocalDbService {
   private userData$ = new Subject<IUser>();
   user: IUser;
   private userDb: ILocalForage;
-  private stations$ = new Subject<IStation>();
-  stations: IStation[];
+  private stations$ = new Subject<IPlaylist>();
+  stations: IPlaylist[];
   private stationDb: ILocalForage;
-  private favoriteStations$ = new ReplaySubject<IStation[]>(1);
+  private favoriteStations$ = new ReplaySubject<IPlaylist[]>(1);
   private tagsDb: ILocalForage;
   private artistsDb: ILocalForage;
   private musicDownloadsDb: ILocalForage;
@@ -85,7 +85,7 @@ export class LocalDbService {
     });
   }
 
-  async setStation(id: string, station: IStation, isFavoriteStation = false): Promise<IStation> {
+  async setStation(id: string, station: IPlaylist, isFavoriteStation = false): Promise<IPlaylist> {
     const localStation = await this.getStation(id);
 
     if (localStation) {
@@ -123,13 +123,13 @@ export class LocalDbService {
   }
 
   async getStation(id: string) {
-    const station: IStation = await this.stationDb.getItem(id);
+    const station: IPlaylist = await this.stationDb.getItem(id);
     return station;
   }
 
   async getMyStations(userId: string) {
-    const stations: IStation[] = [];
-    await this.stationDb.iterate((values: IStation, key) => {
+    const stations: IPlaylist[] = [];
+    await this.stationDb.iterate((values: IPlaylist, key) => {
       if (values.author.id === userId) {
         stations.push({
           id: key,
@@ -142,8 +142,8 @@ export class LocalDbService {
   }
 
   async getFavoriteStations(userId: string) {
-    const stations: IStation[] = [];
-    await this.stationDb.iterate((values: IStation, key) => {
+    const stations: IPlaylist[] = [];
+    await this.stationDb.iterate((values: IPlaylist, key) => {
       if (values.author.id !== userId) {
         stations.push({
           id: key,

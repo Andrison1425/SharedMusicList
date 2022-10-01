@@ -9,6 +9,11 @@ import { IMusic } from './../interfaces/music.interface';
 import { Injectable } from '@angular/core';
 import { ref, uploadString, getStorage, getDownloadURL } from '@angular/fire/storage';
 import * as uniqid from 'uniqid';
+import { LocalDbService } from './local-db.service';
+import { ToastService } from './toast.service';
+import { Colors } from '../enums/color.enum';
+import { DownloadService } from './download.service';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +31,11 @@ export class MusicService {
   private seek$ = new Subject<number>();
 
   constructor(
-    private fileSystemService: FileSystemService
+    private fileSystemService: FileSystemService,
+    private localDbService: LocalDbService,
+    private toastService: ToastService,
+    private downloadService: DownloadService,
+    private loadingService: LoadingService
   ) {/** */ }
 
   async uploadMusic(music: IMusic, stationID: string, stationName: string) {
@@ -157,7 +166,31 @@ export class MusicService {
     });
   }
 
-  download(musicId: string) {
-
+  addTrackInPlaylist(track: IMusic, playlistID: string) {
+    this.localDbService.getStation(playlistID)
+      .then(async resp => {
+        if (resp) {
+          this.loadingService.present('Descargando canción');
+          console.log(track);
+          track.id = uniqid();
+          track.stationId = playlistID;
+          try {
+            const localPath = await this.downloadService.downloadMusic(track, `${track.title + '--' + track.id}.mp3`, `${Folder.Tracks + resp.name}/`)
+            track.localPath = localPath;
+            track.localData = '';       
+            await this.localDbService.setStation(playlistID, {
+              ...resp,
+              musics: [track, ...resp.musics]
+            })
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Canción agregada', Colors.SUCCESS, 1500); 
+          } catch (error) {
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Error de conexión', Colors.DANGER, 1500);
+          }
+        } else {
+          this.toastService.presentToast('Lista de producción no encontrada', Colors.DANGER, 1500);
+        }
+      })
   }
 }

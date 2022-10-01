@@ -4,10 +4,10 @@ import { CameraSource } from '@capacitor/camera';
 import { ImageService } from './../../../services/image.service';
 import { ActionSheetController, AlertController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
-import { StationService } from './../../../services/station.service';
+import { PlaylistService } from '../../../services/playlist.service';
 import { UserService } from './../../../services/user.service';
 import { ActivatedRoute } from '@angular/router';
-import { IStation } from './../../../interfaces/station.interface';
+import { IPlaylist } from '../../../interfaces/playlist.interface';
 import { LocalDbService } from './../../../services/local-db.service';
 import { IUser } from './../../../interfaces/user.interface';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -30,7 +30,7 @@ export class ProfilePage implements OnInit {
     dislikes: 0
   }
   isModalCreateStatioOpen = false;
-  stations: IStation[] = [];
+  stations: IPlaylist[] = [];
   imgPath = '../../../assets/img/person.jpg';
   activeTab = 'LISTS';
   createDate: string = '';
@@ -40,7 +40,7 @@ export class ProfilePage implements OnInit {
     private localDbService: LocalDbService,
     private route: ActivatedRoute,
     private userService: UserService,
-    private stationService: StationService,
+    private playlistService: PlaylistService,
     private actionSheetController: ActionSheetController,
     private imageService: ImageService,
     private fileSystemService: FileSystemService,
@@ -58,7 +58,7 @@ export class ProfilePage implements OnInit {
           if (user.profileImage.compressImage) {
             this.imgPath = user.profileImage.compressImage;
           }
-          this.stationService.getStationsForUser(user.id)
+          this.playlistService.getStationsForUser(user.id)
             .then(stations => {
               this.stations = stations;
             })

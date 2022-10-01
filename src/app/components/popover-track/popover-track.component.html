@@ -1,0 +1,13 @@
+<ion-list>
+  <ion-item button mode="md" color="medium" (click)="download()">Descargar</ion-item>
+  <ion-item button mode="md" color="medium" id="open-add-modal">Agregar a lista de reproducción</ion-item>
+</ion-list>
+
+<ion-modal id="type-modal" trigger="open-add-modal">
+  <ng-template class="" id="loc__modal-container">
+    <app-add-track-playlist-modal 
+      class="loc__modal"
+      [track]="track"  
+    ></app-add-track-playlist-modal>
+  </ng-template>
+</ion-modal>

@@ -1,4 +1,4 @@
-import { IStation } from './../../../interfaces/station.interface';
+import { IPlaylist } from '../../../interfaces/playlist.interface';
 import { LocalDbService } from './../../../services/local-db.service';
 import { IUser } from './../../../interfaces/user.interface';
 import { Component, OnInit } from '@angular/core';
@@ -15,8 +15,9 @@ export class PlaylistsPage implements OnInit {
   Routes = Route;
   user: IUser;
   isModalCreateStatioOpen = false;
-  stations: IStation[] = [];
-
+  playlists: IPlaylist[] = [];
+  PlaylistType = PlaylistType;
+  
   constructor(
     private localDbService: LocalDbService
   ) { /**/ }
@@ -27,7 +28,7 @@ export class PlaylistsPage implements OnInit {
         this.user = resp;
         this.localDbService.getMyStations(this.user.id)
           .then(stations => {
-            this.stations = stations.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
+            this.playlists = stations.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
           });
       });
 
@@ -38,6 +39,6 @@ export class PlaylistsPage implements OnInit {
   }
 
   onDeleteStation(id: string) {
-    this.stations = this.stations.filter(station => station.id !== id);
+    this.playlists = this.playlists.filter(station => station.id !== id);
   }
 }

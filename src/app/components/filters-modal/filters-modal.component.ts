@@ -3,7 +3,7 @@ import { IonInput, ModalController, NavParams } from '@ionic/angular';
 import * as Tagify from '@yaireo/tagify';
 import { StationOrderBy } from 'src/app/enums/station-order-by.enum';
 import { LocalDbService } from 'src/app/services/local-db.service';
-import { StationService } from 'src/app/services/station.service';
+import { PlaylistService } from 'src/app/services/playlist.service';
 
 @Component({
   selector: 'app-filters-modal',
@@ -21,7 +21,7 @@ export class FiltersModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private localDbService: LocalDbService,
-    private stationService: StationService,
+    private playlistService: PlaylistService,
     private navParams: NavParams
   ) { }
 
@@ -45,9 +45,9 @@ export class FiltersModalComponent implements OnInit {
     if (!this.tagify) {
       let tags = await this.localDbService.getTags();
       if (!tags) {
-        tags = await this.stationService.getTags();
+        tags = await this.playlistService.getTags();
       } else {
-        this.stationService.getTags()
+        this.playlistService.getTags()
           .then(resp => tags = resp);
       }
 
