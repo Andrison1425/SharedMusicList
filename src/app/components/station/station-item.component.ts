@@ -239,7 +239,12 @@ export class StationItemComponent implements OnInit {
   }
 
   async edit() {
-    this.router.navigate(['/radio/create-station/' + this.station.id]);
+    this.router.navigate(
+      ['/radio/create-station/' + this.station.id],
+      {
+        queryParams: { type: this.station.type || PlaylistType.PUBLIC }  
+      }
+    );
   }
 
   downloadMusic(music: IMusic) {

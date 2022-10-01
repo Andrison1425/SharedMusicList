@@ -59,4 +59,10 @@ export class FileSystemService {
       }
     }
   }
+
+  async deleteFile(path: string) {
+    await Filesystem.deleteFile({
+      path
+    })
+  }
 }

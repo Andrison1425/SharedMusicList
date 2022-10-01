@@ -34,7 +34,7 @@ export class CreateStationPage implements OnInit {
 
   Routes = Route;
   musicArr: IMusic[] = [];
-  station: IPlaylist;
+  playlist: IPlaylist;
   stationID: string;
   tagify: Tagify;
   artists: string[] = [];
@@ -74,20 +74,41 @@ export class CreateStationPage implements OnInit {
 
   ngOnInit() {
     this.stationID = this.route.snapshot.paramMap.get('id');
-
+    this.route.queryParams
+      .subscribe(params => {
+        if(params.type) {
+          this.playlistType = params.type;
+          this.disabledSelectType = true;
+        }
+      });
     if(this.stationID) {
-      this.playlistService.getStation(this.stationID)
-        .then(resp => {
-          this.station = resp;
-          this.stationName.setValue(this.station.name);
-          this.stationDescription.setValue(this.station.description);
-          this.musicArr = this.station.musics;
-          this.musicArr.forEach(track => {
-            if (this.trackListArtists.indexOf(track.artist) === -1) {
-              this.trackListArtists.push(track.artist)
-            }
-          });
-        });
+      this.loadingService.present("Cargando Lista de reproducción");
+      this.disabledSelectType = true;
+      if (this.playlistType === PlaylistType.PRIVATE) {
+        this.localDbService.getStation(this.stationID)
+          .then(resp => {
+            this.loadingService.dismiss();
+            this.setPlaylistInfo(resp);
+          })
+          .catch(e => {
+            console.log(e);
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Lista de reproducción no encontrada', Colors.DANGER, 2000);
+            this.router.navigate(['radio/'], {replaceUrl: true});
+          })
+      } else {
+        this.playlistService.getStation(this.stationID)
+          .then(resp => {
+            this.loadingService.dismiss();
+            this.setPlaylistInfo(resp);
+          })
+          .catch(e => {
+            console.log(e);
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Lista de reproducción no encontrada', Colors.DANGER, 2000);
+            this.router.navigate(['radio/'], {replaceUrl: true});
+          })
+      }
     }
 
     const interval = setInterval(() => {
@@ -98,14 +119,18 @@ export class CreateStationPage implements OnInit {
     }, 200)
 
     this.getAllArtists();
+  }
 
-    this.route.queryParams
-      .subscribe(params => {
-        if(params.type) {
-          this.playlistType = params.type;
-          this.disabledSelectType = true;
-        }
-      });
+  setPlaylistInfo(playlist: IPlaylist) {
+    this.playlist = playlist;
+    this.stationName.setValue(this.playlist.name);
+    this.stationDescription.setValue(this.playlist.description);
+    this.musicArr = this.playlist.musics;
+    this.musicArr.forEach(track => {
+      if (this.trackListArtists.indexOf(track.artist) === -1) {
+        this.trackListArtists.push(track.artist)
+      }
+    });
   }
 
   doReorder(ev: Event) {
@@ -206,7 +231,6 @@ export class CreateStationPage implements OnInit {
     });
   }
 
-
   changePlaylistType(type: PlaylistType) {
     this.playlistType = type;
     this.playlistTypeModal.dismiss();
@@ -219,7 +243,7 @@ export class CreateStationPage implements OnInit {
   async createStation() {
     if(this.stationFormValidate()) {
       this.loadingService.present('Subiendo canciones 1/' + this.musicArr.length);
-      const stationID = this.station?.id || uniqid();
+      const stationID = this.playlist?.id || uniqid();
 
       for (let index = 0; index < this.musicArr.length; index++) {
         const music = this.musicArr[index];
@@ -243,7 +267,7 @@ export class CreateStationPage implements OnInit {
           break;
         }
       }
-      this.loadingService.setContent(this.station?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
+      this.loadingService.setContent(this.playlist?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
 
       const artistsName = this.musicArr.map(track => track.artist)
 
@@ -252,7 +276,7 @@ export class CreateStationPage implements OnInit {
       const user = await this.localDbService.getLocalUser();
 
       const station: IPlaylist = {
-        id: this.station?.id || stationID,
+        id: this.playlist?.id || stationID,
         name: this.stationName.value,
         description: this.stationDescription.value,
         type: PlaylistType.PUBLIC,
@@ -274,7 +298,7 @@ export class CreateStationPage implements OnInit {
         tags: this.getTags()
       };
 
-      this.playlistService.createOrUpdateStation(station, stationID, (this.station? true: false))
+      this.playlistService.createOrUpdateStation(station, stationID, (this.playlist? true: false))
         .then(() => {
           this.loadingService.dismiss();
           this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
@@ -291,12 +315,14 @@ export class CreateStationPage implements OnInit {
   async createPrivateStation() {
     if(this.stationFormValidate()) {
       this.loadingService.present('Agregando canciones 1/' + this.musicArr.length);
-      const stationID = this.station?.id || uniqid();
+      const stationID = this.playlist?.id || uniqid();
+
+      let continueTask = true;
 
       for (let index = 0; index < this.musicArr.length; index++) {
         const music = this.musicArr[index];
 
-        if (music.downloadUrl) {
+        if (music.localPath) {
           this.loadingService.setContent(`Agregando canciones ${index+2}/${this.musicArr.length}`);
           continue;
         }
@@ -311,49 +337,67 @@ export class CreateStationPage implements OnInit {
         } catch (error) {
           this.loadingService.dismiss();
           this.toastService.presentToast('Error de conexión', Colors.DANGER, 5000);
+          continueTask = false;
           break;
         }
       }
-      this.loadingService.setContent(this.station?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
 
-      const artistsName = this.musicArr.map(track => track.artist)
+      if (continueTask) {
+        this.loadingService.setContent(this.playlist?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
+  
+        const artistsName = this.musicArr.map(track => track.artist);
+        const user = await this.localDbService.getLocalUser();
+  
+        if (this.playlist) {
+          for (let index = 0; index < this.playlist.musics.length; index++) {
+            const track = this.playlist.musics[index];
+            const tracksID = this.musicArr.map(ele => ele.id);
 
-      const user = await this.localDbService.getLocalUser();
+            if (!tracksID.includes(track.id)) {
+              try {
+                await this.fileSystemService.deleteFile(track.localPath);
+              } catch (error) {
+                continue;
+              }
+            }
+          }
+        }
 
-      const station: IPlaylist = {
-        id: this.station?.id || stationID,
-        name: this.stationName.value,
-        description: this.stationDescription.value,
-        type: PlaylistType.PRIVATE,
-        artistsName: artistsName,
-        author: {
-          id: user.id,
-          userName: user.userName
-        },
-        image: await this.uploadImage(this.imageStation, stationID),
-        musics: this.musicArr,
-        views: 0,
-        reactions: {
-          idUsersAndReaction: {},
-          numDislikes: 0,
-          numLikes: 0
-        },
-        timestamp: serverTimestamp() as Timestamp,
-        comments: [],
-        tags: this.getTags()
-      };
-
-      this.localDbService.setStation(stationID, station)
-        .then(() => {
-          this.loadingService.dismiss();
-          this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
-          this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
-        })
-        .catch((e) => {
-          console.log(e)
-          this.loadingService.dismiss();
-          this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
-        })
+        const station: IPlaylist = {
+          id: this.playlist?.id || stationID,
+          name: this.stationName.value,
+          description: this.stationDescription.value,
+          type: PlaylistType.PRIVATE,
+          artistsName: artistsName,
+          author: {
+            id: user.id,
+            userName: user.userName
+          },
+          image: await this.uploadImage(this.imageStation, stationID),
+          musics: this.musicArr,
+          views: 0,
+          reactions: {
+            idUsersAndReaction: {},
+            numDislikes: 0,
+            numLikes: 0
+          },
+          timestamp: serverTimestamp() as Timestamp,
+          comments: [],
+          tags: this.getTags()
+        };
+  
+        this.localDbService.setStation(stationID, station)
+          .then(() => {
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Se ha creado la lista de reproducción', Colors.SUCCESS);
+            this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
+          })
+          .catch((e) => {
+            console.log(e)
+            this.loadingService.dismiss();
+            this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
+          })
+      }
     }
   }
 

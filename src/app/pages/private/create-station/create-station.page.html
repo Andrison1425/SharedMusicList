@@ -6,7 +6,7 @@
       text=""
       mode="md"
     ></ion-back-button>
-    <ion-title slot="start" class="ion-no-padding">{{station? 'Editar': 'Crear'}} lista</ion-title>
+    <ion-title slot="start" class="ion-no-padding">{{playlist? 'Editar': 'Crear'}} lista</ion-title>
     <ion-button 
       slot="end" 
       mode="md" 
@@ -14,7 +14,7 @@
       class="mr-15" 
       (click)="playlistType === playlistTypeEnum.PUBLIC? createStation(): createPrivateStation()"
     >
-      {{station? 'Editar': 'Crear'}}
+      {{playlist? 'Editar': 'Crear'}}
     </ion-button>
   </ion-toolbar>
 </ion-header>
@@ -77,7 +77,7 @@
         type="text" 
         maxlength="40"
         #tagInput
-        [value]="this.station?.tags || ''"
+        [value]="this.playlist?.tags || ''"
         class="loc__tags-input"
         placeholder="Agregar etiqueta"
       ></ion-input>
