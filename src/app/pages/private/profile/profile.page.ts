@@ -14,6 +14,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Route } from 'src/app/enums/route.enum';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode'
 import { PlaylistType } from 'src/app/enums/playlist-type.enum';
+import { ToastService } from 'src/app/services/toast.service';
+import { Colors } from 'src/app/enums/color.enum';
 
 @Component({
   selector: 'app-profile',
@@ -44,7 +46,8 @@ export class ProfilePage implements OnInit {
     private actionSheetController: ActionSheetController,
     private imageService: ImageService,
     private fileSystemService: FileSystemService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastService: ToastService
   ) { /**/}
 
   ngOnInit() {
@@ -71,7 +74,7 @@ export class ProfilePage implements OnInit {
           if (resp.profileImage.imageLocalPath) {
             this.imgPath = Capacitor.convertFileSrc(resp.profileImage.imageLocalPath);
           }
-          this.localDbService.getMyStations(this.user.id)
+          this.localDbService.getMyPlaylists(this.user.id)
             .then(stations => {
               this.stations = stations.filter(playlist => playlist.type !== PlaylistType.PRIVATE)
               let likesCount = 0;
@@ -112,7 +115,7 @@ export class ProfilePage implements OnInit {
       header: 'Editar',
       buttons: [
         {
-          text: 'Apodo',
+          text: 'Nombre de usuario',
           icon: 'reader-sharp',
           handler: () => {
             this.changeUserName();
@@ -173,13 +176,18 @@ export class ProfilePage implements OnInit {
         },
         {
           text: 'Cambiar',
-          handler: () => {
-            const newUserName = document.querySelector('#apodoTxt') as HTMLInputElement;
-            if (this.user.userName !== newUserName.value && newUserName.value.trim() !== '') {
-              this.user.userName = newUserName.value;
-              this.userService.updateUser(this.user.id, {
-                userName: newUserName.value
-              });
+          handler: ({apodoTxt}) => {
+            if (apodoTxt.trim().length < 3) {
+              this.toastService.presentToast('El nombre de usuario debe tener 3 o más caracteres', Colors.DANGER, 3000);
+              return false;
+            } else {
+              if (this.user.userName !== apodoTxt.trim()) {
+                this.user.userName = apodoTxt;
+                this.userService.updateUser(this.user.id, {
+                  userName: apodoTxt
+                });
+              }
+              return true;
             }
           }
         }
@@ -189,7 +197,11 @@ export class ProfilePage implements OnInit {
           name: 'apodoTxt',
           id: 'apodoTxt',
           type: 'text',
-          max: 80,
+          attributes: {
+            maxlength: 20,
+            minlength: 3
+          },
+          max: 20,
           placeholder: 'Ingrea el nuevo nombre de usuario',
           value: this.user.userName
         }

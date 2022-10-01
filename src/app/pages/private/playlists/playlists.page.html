@@ -27,8 +27,8 @@
     </div>
 
     <app-station-item
-      *ngFor="let station of playlists"
-      [station]="station"
+      *ngFor="let playlist of playlists"
+      [playlist]="playlist"
       [playing]="false"
       (deleteStation)="onDeleteStation($event)"
     ></app-station-item>

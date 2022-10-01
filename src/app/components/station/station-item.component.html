@@ -1,16 +1,18 @@
-<ion-card class="loc__station-card">
+<ion-card 
+  [class]="playing? 'loc__station-card active': 'loc__station-card'"
+>
   <ion-item color="primary" lines="none">
-    <ion-thumbnail slot="start" (click)="goStation(station.id)">
-      <img [src]="this.station.image.compress || '../../../assets/img/no-image.png'">
+    <ion-thumbnail slot="start" (click)="goStation(playlist.id)">
+      <img [src]="this.playlist.image.compress || '../../../assets/img/no-image.png'">
     </ion-thumbnail>
     <ion-label>
-      <span (click)="goStation(station.id)">
-        {{station?.name}}
+      <span (click)="goStation(playlist.id)">
+        {{playlist?.name}}
       </span>
       <br/>
-      <h4 class="cont-author" (click)="goUser(station.author.id)">
+      <h4 class="cont-author" (click)="goUser(playlist.author.id)">
         <ion-icon name="person"></ion-icon>
-        {{station?.author.userName}}
+        {{playlist?.author.userName}}
       </h4>
     </ion-label>
     <ion-button 
@@ -29,11 +31,11 @@
       <span>
         <ion-button fill="clear" [color]="reaction === reactionEnum.Like? 'light': 'medium'" (click)="setReaction(reactionEnum.Like)">
           <ion-icon name="thumbs-up" slot="start"></ion-icon>
-          <div>{{station.reactions.numLikes}}</div>
+          <div>{{playlist.reactions.numLikes}}</div>
         </ion-button>
         <ion-button fill="clear" [color]="reaction === reactionEnum.Dislike? 'light': 'medium'" (click)="setReaction(reactionEnum.Dislike)">
           <ion-icon name="thumbs-down" slot="start"></ion-icon>
-          <div>{{station.reactions.numDislikes}}</div>
+          <div>{{playlist.reactions.numDislikes}}</div>
         </ion-button>
         <div class="percentage">
           <div [style]="'width:'+percentageReaction+'%'"></div>
@@ -43,7 +45,7 @@
     <ion-col class="ion-no-padding">
       <ion-button fill="clear" color="medium">
         <ion-icon name="headset" slot="start"></ion-icon>
-        <div>{{station.views}} reproducciones</div>
+        <div>{{playlist.views}} reproducciones</div>
       </ion-button>
     </ion-col>
     <ion-col class="ion-no-padding" size="2" class="loc__chare-col">
@@ -55,16 +57,16 @@
 
   <ion-card-content>
     <span>
-      {{station?.description}}
+      {{playlist?.description}}
     </span>
     <div>
-      <span *ngFor="let tag of station?.tags">
+      <span *ngFor="let tag of playlist?.tags">
         #{{tag}}
       </span>
     </div>
   </ion-card-content>
 
-  <ion-row *ngIf="!playing && adminStation">
+  <ion-row *ngIf="!playing && adminPlaylist">
     <ion-col
       class="ion-no-padding"
       size="3"
@@ -84,12 +86,12 @@
 
   <ion-item *ngIf="playing" color="primary" class="playing-info">
     <div (click)="highlightItem(musicPlaying?.id)">
-      Canción {{musicIndex}}/{{station.musics.length}}
+      Canción {{musicIndex}}/{{playlist.musics.length}}
       <br>
       <ion-label color="tertiary" class="music-info">
-        {{musicPlaying?.title || station.musics[musicIndex - 1].title}} 
+        {{musicPlaying?.title || playlist.musics[musicIndex - 1].title}} 
         <h4>
-          {{' - ' + musicPlaying?.artist || station.musics[musicIndex - 1].artist}}
+          {{' - ' + musicPlaying?.artist || playlist.musics[musicIndex - 1].artist}}
         </h4>
       </ion-label>
     </div>

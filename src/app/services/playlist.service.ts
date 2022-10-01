@@ -15,12 +15,10 @@ import { IMusic } from '../interfaces/music.interface';
 import { LoadingService } from './loading.service';
 import { Colors } from '../enums/color.enum';
 import { ToastService } from './toast.service';
-import { FileSystemService } from './file-system.service';
 import { DownloadService } from './download.service';
 import { Folder } from '../enums/folder.enum';
 import { AlertController } from '@ionic/angular';
 import { PlaylistType } from '../enums/playlist-type.enum';
-import { ImageService } from './image.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +30,8 @@ export class PlaylistService {
     private firestore: Firestore,
     private loadingService: LoadingService,
     private toastService: ToastService,
-    private fileSystemService: FileSystemService,
     private downloadService: DownloadService,
     private alertController: AlertController,
-    // private imageService: ImageService
   ) { }
 
   createOrUpdateStation(station: IPlaylist, stationID: string, update?: boolean) {
@@ -239,7 +235,6 @@ export class PlaylistService {
     return tags.data().tags;
   }
 
-  
   async createPlaylistWithName(track: IMusic) {
     const alert = await this.alertController.create({
       header: 'Crear lista de reproducción privada',

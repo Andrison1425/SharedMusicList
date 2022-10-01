@@ -17,18 +17,22 @@ export class PlaylistsPage implements OnInit {
   isModalCreateStatioOpen = false;
   playlists: IPlaylist[] = [];
   PlaylistType = PlaylistType;
-  
+
   constructor(
     private localDbService: LocalDbService
   ) { /**/ }
 
   ngOnInit() {
     this.localDbService.getLocalUser()
-      .then(resp => {
+      .then(async resp => {
         this.user = resp;
-        this.localDbService.getMyStations(this.user.id)
-          .then(stations => {
-            this.playlists = stations.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
+
+        const myPlaylists = await this.localDbService.getMyPlaylists(this.user.id);
+        this.playlists = myPlaylists.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
+
+        this.localDbService.myPlaylists()
+          .subscribe(resp => {
+            this.playlists = resp.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
           });
       });
 

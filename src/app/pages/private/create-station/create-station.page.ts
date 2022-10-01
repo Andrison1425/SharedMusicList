@@ -180,44 +180,46 @@ export class CreateStationPage implements OnInit {
 
     modal.onDidDismiss()
       .then(async ({data}) => {
-        const musics: FileInfo[] = data.musics;
-        const arrTmp: IMusic[] = [];
-        for (let index = 0; index < musics.length; index++) {
-          const musicTmp = musics[index];
-          const findMusic = this.musicArr.find(ele => ele.localPath === musicTmp.uri);
-          if (findMusic) {
-            arrTmp.push(findMusic);
-            continue;
+        if (!data.cancel) {
+          const musics: FileInfo[] = data.musics;
+          const arrTmp: IMusic[] = [];
+          for (let index = 0; index < musics.length; index++) {
+            const musicTmp = musics[index];
+            const findMusic = this.musicArr.find(ele => ele.localPath === musicTmp.uri);
+            if (findMusic) {
+              arrTmp.push(findMusic);
+              continue;
+            }
+            
+            const fileData = await Filesystem.readFile({
+              path: musicTmp.uri
+            })
+  
+            const base64Length = fileData.data.length - (fileData.data.indexOf(',') + 1);
+            const padding = (fileData.data.charAt(fileData.data.length - 2) === '=') ? 2 : ((fileData.data.charAt(fileData.data.length - 1) === '=') ? 1 : 0);
+            const size = base64Length * 0.75 - padding;
+  
+            const music: IMusic = {
+                title: musicTmp.name,
+                artist: 'Desconocido',
+                unapprovedArtists: false,
+                localData: fileData.data,
+                localPath: musicTmp.uri,
+                local: {
+                  isNew: false
+                },
+                size: size,
+                downloadUrl: '',
+                id: uniqid(),
+                duration: await this.getDuration(Capacitor.convertFileSrc(musicTmp.uri)),
+                stationId: ''
+            }
+  
+            arrTmp.push(music);
           }
-          
-          const fileData = await Filesystem.readFile({
-            path: musicTmp.uri
-          })
-
-          const base64Length = fileData.data.length - (fileData.data.indexOf(',') + 1);
-          const padding = (fileData.data.charAt(fileData.data.length - 2) === '=') ? 2 : ((fileData.data.charAt(fileData.data.length - 1) === '=') ? 1 : 0);
-          const size = base64Length * 0.75 - padding;
-
-          const music: IMusic = {
-              title: musicTmp.name,
-              artist: 'Desconocido',
-              unapprovedArtists: false,
-              localData: fileData.data,
-              localPath: musicTmp.uri,
-              local: {
-                isNew: false
-              },
-              size: size,
-              downloadUrl: '',
-              id: uniqid(),
-              duration: await this.getDuration(Capacitor.convertFileSrc(musicTmp.uri)),
-              stationId: ''
-          }
-
-          arrTmp.push(music);
+  
+          this.musicArr = arrTmp;
         }
-
-        this.musicArr = arrTmp;
       });
   }
 
@@ -321,8 +323,9 @@ export class CreateStationPage implements OnInit {
 
       for (let index = 0; index < this.musicArr.length; index++) {
         const music = this.musicArr[index];
+        console.log(music);
 
-        if (music.localPath) {
+        if (!music.localData) {
           this.loadingService.setContent(`Agregando canciones ${index+2}/${this.musicArr.length}`);
           continue;
         }
@@ -330,6 +333,7 @@ export class CreateStationPage implements OnInit {
         try {
           music.id = uniqid();
           music.stationId = stationID;
+          console.log(music);
           const localPath = await this.fileSystemService.writeFile(music.localData, `${music.title + '--' + music.id}.mp3`, `${Folder.Tracks + this.stationName.value}/`);
           music.localPath = localPath;
           music.localData = '';

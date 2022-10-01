@@ -26,11 +26,11 @@ import { PlaylistType } from 'src/app/enums/playlist-type.enum';
 })
 export class StationItemComponent implements OnInit {
 
-  @Input() station: IPlaylist;
+  @Input() playlist: IPlaylist;
   @Input() playing = false;
-  @Input() adminStation = true;
   @Output() deleteStation = new EventEmitter<string>();
   showFavoriteOption = false;
+  adminPlaylist = false;
   isFavoriteStation = false;
   musicPlaying: IMusic;
   user: IUser;
@@ -57,42 +57,44 @@ export class StationItemComponent implements OnInit {
       this.musicService.musicPlayingInfo()
         .subscribe(resp => {
           if (resp.music) {
-            if (resp.music.stationId === this.station.id) {
+            if (resp.music.stationId === this.playlist.id) {
               this.musicPlaying = resp.music;
             }
           }
         });
 
       if (!this.musicPlaying) {
-        this.musicService.loadMusics(this.station.musics)
+        this.musicService.loadMusics(this.playlist.musics)
       }
 
-      if (this.station.type !== PlaylistType.PRIVATE) {
-        this.playlistService.addView(this.station.id);
+      if (this.playlist.type !== PlaylistType.PRIVATE) {
+        this.playlistService.addView(this.playlist.id);
       }
     }
 
     this.localDbService.getLocalUser()
       .then(user => {
         this.user = user;
-
+        if (this.playlist.author.id === user.id) {
+          this.adminPlaylist = true;
+        }
         //Check if the user reacted on this list
-        for (const key of Object.keys(this.station.reactions.idUsersAndReaction)) {
+        for (const key of Object.keys(this.playlist.reactions.idUsersAndReaction)) {
           if (key === this.user.id) {
-            this.reaction = this.station.reactions.idUsersAndReaction[key];
+            this.reaction = this.playlist.reactions.idUsersAndReaction[key];
           }
         }
 
-        if (user.favoriteStations.includes(this.station.id)) {
+        if (user.favoriteStations.includes(this.playlist.id)) {
           this.isFavoriteStation = true;
-          if (this.station.type !== PlaylistType.PRIVATE) {
+          if (this.playlist.type !== PlaylistType.PRIVATE) {
             this.syncStation();
           }
         }
 
-        if (this.user.id === this.station.author.id) {
-          if (this.adminStation) {
-            if (this.station.type !== PlaylistType.PRIVATE) {
+        if (this.user.id === this.playlist.author.id) {
+          if (this.adminPlaylist) {
+            if (this.playlist.type !== PlaylistType.PRIVATE) {
               this.syncStation();
             }
           }
@@ -103,15 +105,15 @@ export class StationItemComponent implements OnInit {
       });
 
     //Porcentage of like
-    if (this.station.reactions.numLikes) {
+    if (this.playlist.reactions.numLikes) {
       this.percentageReaction =
-        ((this.station.reactions.numDislikes + this.station.reactions.numLikes) * 100) / this.station.reactions.numLikes;
+        ((this.playlist.reactions.numDislikes + this.playlist.reactions.numLikes) * 100) / this.playlist.reactions.numLikes;
     } else {
       this.percentageReaction = 0;
     }
 
-    if (this.station.image.localPath) {
-      this.station.image.localPath = Capacitor.convertFileSrc(this.station.image.localPath);
+    if (this.playlist.image.localPath) {
+      this.playlist.image.localPath = Capacitor.convertFileSrc(this.playlist.image.localPath);
     }
   }
 
@@ -129,10 +131,10 @@ export class StationItemComponent implements OnInit {
           handler: () => {
             this.loadingService.present('Eliminando...');
 
-            this.playlistService.deleteStation(this.station.id)
+            this.playlistService.deleteStation(this.playlist.id)
               .then(() => {
                 this.loadingService.dismiss();
-                this.deleteStation.emit(this.station.id);
+                this.deleteStation.emit(this.playlist.id);
               }).catch(() => {
                 this.loadingService.dismiss();
                 this.toastService.presentToast('Error de conexión', Colors.DANGER);
@@ -160,7 +162,7 @@ export class StationItemComponent implements OnInit {
             handler: () => {
               this.loadingService.present('Eliminando...');
 
-              this.userService.removeFavoriteStation(this.station.id)
+              this.userService.removeFavoriteStation(this.playlist.id)
                 .then(() => {
                   this.loadingService.dismiss();
                   this.isFavoriteStation = false;
@@ -176,7 +178,7 @@ export class StationItemComponent implements OnInit {
       await alert.present();
     } else {
       this.isFavoriteStation = true;
-      this.userService.addFavoriteStation(this.station)
+      this.userService.addFavoriteStation(this.playlist)
         .then(() => {
           this.toastService.presentToast('Agregado a favoritos.', Colors.SUCCESS, 1500);
         })
@@ -201,29 +203,29 @@ export class StationItemComponent implements OnInit {
 
   setReaction(reaction: Reaction) {
     if (!this.reaction) {
-      this.playlistService.setReaction(this.station.id, this.user.id, reaction);
+      this.playlistService.setReaction(this.playlist.id, this.user.id, reaction);
       this.reaction = reaction;
       if (reaction === Reaction.Like) {
-        this.station.reactions.numLikes++;
+        this.playlist.reactions.numLikes++;
       } else {
-        this.station.reactions.numDislikes++;
+        this.playlist.reactions.numDislikes++;
       }
     }
   }
 
   syncStation() {
-    this.playlistService.syncStation(this.station.id)
+    this.playlistService.syncStation(this.playlist.id)
       .then(resp => {
-        this.station = resp;
-        if (this.station.reactions.numLikes) {
+        this.playlist = resp;
+        if (this.playlist.reactions.numLikes) {
           this.percentageReaction =
-            ((this.station.reactions.numDislikes + this.station.reactions.numLikes) * 100) / this.station.reactions.numLikes;
+            ((this.playlist.reactions.numDislikes + this.playlist.reactions.numLikes) * 100) / this.playlist.reactions.numLikes;
         } else {
           this.percentageReaction = 0;
         }
-        for (const key of Object.keys(this.station.reactions.idUsersAndReaction)) {
+        for (const key of Object.keys(this.playlist.reactions.idUsersAndReaction)) {
           if (key === this.user.id) {
-            this.reaction = this.station.reactions.idUsersAndReaction[key];
+            this.reaction = this.playlist.reactions.idUsersAndReaction[key];
           }
         }
       });
@@ -233,16 +235,16 @@ export class StationItemComponent implements OnInit {
     await Share.share({
       title: 'Compartir',
       text: 'Escucha la música disponible en esta lista',
-      url: environment.deeplinkBase + Deeplink.PLAYLIST + this.station.id,
+      url: environment.deeplinkBase + Deeplink.PLAYLIST + this.playlist.id,
       dialogTitle: 'Compartir',
     });
   }
 
   async edit() {
     this.router.navigate(
-      ['/radio/create-station/' + this.station.id],
+      ['/radio/create-station/' + this.playlist.id],
       {
-        queryParams: { type: this.station.type || PlaylistType.PUBLIC }  
+        queryParams: { type: this.playlist.type || PlaylistType.PUBLIC }  
       }
     );
   }
@@ -253,10 +255,10 @@ export class StationItemComponent implements OnInit {
 
   get musicIndex() {
     if (this.musicPlaying) {
-      if (this.musicPlaying.stationId !== this.station.id) {
+      if (this.musicPlaying.stationId !== this.playlist.id) {
         return 1;
       } else {
-        return this.station.musics.findIndex(music => music.id === this.musicPlaying.id) + 1;
+        return this.playlist.musics.findIndex(music => music.id === this.musicPlaying.id) + 1;
       }
     } else {
       return 1;
@@ -264,7 +266,7 @@ export class StationItemComponent implements OnInit {
   }
 
   highlightItem(id: string) {
-    this.router.navigate(['radio/station/' + this.station.id], {
+    this.router.navigate(['radio/station/' + this.playlist.id], {
       queryParams: { trackId: id }
     });
   }

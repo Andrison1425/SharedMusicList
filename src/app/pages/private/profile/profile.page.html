@@ -68,8 +68,8 @@
     </div>
 
     <app-station-item
-      *ngFor="let station of stations"
-      [station]="station"
+      *ngFor="let playlist of stations"
+      [playlist]="playlist"
       [playing]="false"
       (deleteStation)="onDeleteStation($event)"
     ></app-station-item>

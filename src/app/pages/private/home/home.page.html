@@ -29,7 +29,10 @@
       Las listas de reproducción que marques se mostrarán aquí
     </div>
 
-    <app-station-item *ngFor="let station of favoriteStations" [station]="station" [adminStation]="false"></app-station-item>
+    <app-station-item 
+      *ngFor="let playlist of favoriteStations" 
+      [playlist]="playlist"
+    ></app-station-item>
   </ion-list>
 </ion-content>
 
@@ -70,9 +73,8 @@
   </div>
 
   <app-station-item 
-    *ngFor="let station of stations; trackBy: trackByFn" 
-    [station]="station" 
-    [adminStation]="false"
+    *ngFor="let playlist of stations; trackBy: trackByFn" 
+    [playlist]="playlist" 
   ></app-station-item>
 
   <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">

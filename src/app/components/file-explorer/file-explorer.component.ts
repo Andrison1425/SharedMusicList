@@ -151,13 +151,15 @@ export class FileExplorerComponent implements OnInit, OnDestroy {
 
   addMusics() {
     this.modalController.dismiss({
-      musics: this.selectedMusics
+      musics: this.selectedMusics,
+      cancel: false
     });
   }
 
   cancel() {
     this.modalController.dismiss({
-      musics: []
+      musics: [],
+      cancel: true
     });
   }
 

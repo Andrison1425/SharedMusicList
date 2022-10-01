@@ -31,7 +31,7 @@ export class AddTrackPlaylistModalComponent implements OnInit {
     this.localDbService.getLocalUser()
       .then(resp => {
         this.user = resp;
-        this.localDbService.getMyStations(this.user.id)
+        this.localDbService.getMyPlaylists(this.user.id)
           .then(stations => {
             this.playlists = stations.filter(playlist => playlist.type !== PlaylistType.PUBLIC)
           });

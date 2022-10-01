@@ -18,10 +18,11 @@ export class LocalDbService {
   private userData$ = new Subject<IUser>();
   user: IUser;
   private userDb: ILocalForage;
-  private stations$ = new Subject<IPlaylist>();
-  stations: IPlaylist[];
+  private playlists$ = new Subject<IPlaylist>();
+  playlists: IPlaylist[];
   private stationDb: ILocalForage;
   private favoriteStations$ = new ReplaySubject<IPlaylist[]>(1);
+  private myPlaylists$ = new ReplaySubject<IPlaylist[]>(1);
   private tagsDb: ILocalForage;
   private artistsDb: ILocalForage;
   private musicDownloadsDb: ILocalForage;
@@ -85,12 +86,12 @@ export class LocalDbService {
     });
   }
 
-  async setStation(id: string, station: IPlaylist, isFavoriteStation = false): Promise<IPlaylist> {
+  async setStation(id: string, playlist: IPlaylist, isFavoriteStation = false): Promise<IPlaylist> {
     const localStation = await this.getStation(id);
 
     if (localStation) {
       const musicIds = localStation.musics.map(resp => resp.id);
-      station.musics = station.musics.map(music => {
+      playlist.musics = playlist.musics.map(music => {
         return {
           ...music,
           local: {
@@ -100,22 +101,25 @@ export class LocalDbService {
       });
     }
 
-    station = {
-      ...station,
+    playlist = {
+      ...playlist,
       id
     };
 
     if (isFavoriteStation) {
       const favoriteStations = await this.getFavoriteStations(this.user.id);
-      this.favoriteStations$.next([station, ...favoriteStations]);
+      this.favoriteStations$.next([playlist, ...favoriteStations]);
     } else {
-      this.stations$.next(station);
+      this.playlists$.next(playlist);
+      const myPlaylists = await this.getMyPlaylists(this.user.id);
+      this.myPlaylists$.next([playlist, ...myPlaylists]);
     }
-    return this.stationDb.setItem(id, station);
+    
+    return this.stationDb.setItem(id, playlist);
   }
 
-  stationsData() {
-    return this.stations$.asObservable();
+  getPlaylists() {
+    return this.playlists$.asObservable();
   }
 
   favoriteStationsData() {
@@ -127,7 +131,11 @@ export class LocalDbService {
     return station;
   }
 
-  async getMyStations(userId: string) {
+  myPlaylists() {
+    return this.myPlaylists$.asObservable();
+  }
+
+  async getMyPlaylists(userId: string) {
     const stations: IPlaylist[] = [];
     await this.stationDb.iterate((values: IPlaylist, key) => {
       if (values.author.id === userId) {
