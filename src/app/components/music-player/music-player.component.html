@@ -17,7 +17,7 @@
       <span>{{seek * 1000 | date:'mm:ss':'UTC' || '0:00'}}</span>
       <span>{{music?.duration * 1000 | date:'mm:ss':'UTC' || '0:00'}}</span>
     </div>
-    <ion-item class="ion-no-padding" color="secondary">
+    <ion-item class="ion-no-padding" color="secondary" lines="none">
       <ion-label class="music-info" (click)="goStation()">
         {{music.title + ' - ' + music.artist}}
       </ion-label>

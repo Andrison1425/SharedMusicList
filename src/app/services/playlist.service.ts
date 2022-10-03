@@ -4,7 +4,7 @@ import { StationOrderBy } from '../enums/station-order-by.enum';
 import { Reaction } from '../enums/reaction.enum';
 import { Injectable } from '@angular/core';
 import { serverTimestamp, setDoc, Firestore, deleteDoc, doc, collection, orderBy, getDoc, getDocs, query, updateDoc, 
-         CollectionReference, increment, DocumentReference, where, Timestamp, arrayUnion 
+         CollectionReference, increment, DocumentReference, where, Timestamp, arrayUnion, limit, QueryDocumentSnapshot, QueryConstraint, startAfter 
        } from '@angular/fire/firestore';
 import { FirestoreCollection } from '../enums/firestore-collection.enum';
 import { IPlaylist } from '../interfaces/playlist.interface';
@@ -24,6 +24,8 @@ import { PlaylistType } from '../enums/playlist-type.enum';
   providedIn: 'root'
 })
 export class PlaylistService {
+
+  lastDocumentForPagination: QueryDocumentSnapshot<IPlaylist>;
 
   constructor(
     private localDbService: LocalDbService,
@@ -83,7 +85,7 @@ export class PlaylistService {
     });
   }
 
-  async getStations(filters: IFilters) {
+  async getPlaylists(filters: IFilters, start: number) {
     let orderByField = '';
     if (filters.orderBy === StationOrderBy.Likes) {
       orderByField = 'reactions.numLikes';
@@ -93,21 +95,41 @@ export class PlaylistService {
       orderByField = 'views';
     }
     
+    let queries: QueryConstraint[] = [
+      orderBy(orderByField, 'desc'),
+      limit(15)
+    ];
+
+    if (start > 0) {
+      queries.push(startAfter(this.lastDocumentForPagination))
+    }
+    
     let queryRef = query<IPlaylist>(
       collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
-      orderBy(orderByField, 'desc')
+      ...queries
     );
     
     if (filters.tags?.length > 0) {
+      queries = [
+        where('tags', 'array-contains-any', filters.tags),
+        orderBy(orderByField, 'desc'),
+        limit(15)
+      ];
+  
+      if (start > 0) {
+        queries.push(startAfter(this.lastDocumentForPagination))
+      }
+
       queryRef = query<IPlaylist>(
         collection(this.firestore, FirestoreCollection.Stations) as CollectionReference<IPlaylist>,
-        where('tags', 'array-contains-any', filters.tags),
-        orderBy(orderByField, 'desc')
+        ...queries
       );
     }
+    const docResp = await getDocs(queryRef);
+    this.lastDocumentForPagination = docResp.docs[docResp.docs.length-1];
 
-    const docResp = await getDocs(queryRef)
     const stations = docResp.docs.map(resp => resp.data());
+
     return {
       stations,
       connectionError: docResp.metadata.fromCache

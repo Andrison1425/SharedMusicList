@@ -14,7 +14,7 @@ const firebaseUiAuthConfig: ExtendedFirebaseUIAuthConfig = {
   signInOptions: [
     firebase.auth.PhoneAuthProvider.PROVIDER_ID
   ],
-  privacyPolicyUrl: 'https://docs.google.com/document/d/1XHJjxROjaA0F-ZO1wfhMDtM6noHxYip2F9bjKsXfFFc/edit?usp=sharing',
+  privacyPolicyUrl: 'https://docs.google.com/document/d/1W8PzfDPGVovdenuG0Y3wHgYnZv9oe3sYXT-p40wRi_o/edit?usp=sharing',
   language:'it'
 };
 

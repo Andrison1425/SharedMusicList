@@ -33,6 +33,20 @@ ion-card-content {
   }
 }
 
+.loc__cont-secondary-info {
+  >div:nth-child(1) {
+    width: 132px;
+  }
+
+  >div:nth-child(2) {
+    flex: 1;
+  }
+
+  >div:nth-child(3) {
+    padding-right: 5px;
+  }
+}
+
 .cont-info-sec {
   display: flex;
   justify-content: space-between;
@@ -75,13 +89,4 @@ ion-card-content {
 
 rect {
   fill: var(--ion-color-tertiary);
-}
-
-.loc__chare-col {
-  display: flex;
-  justify-content: flex-end;
-
-  ion-button {
-    margin-right: 8px;
-  }
 }

@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { Folder } from './../enums/folder.enum';
 import { FileSystemService } from './file-system.service';
 import { MusicState } from './../enums/music-state.enum';
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { Howl } from 'howler';
 import { FirebaseStorageRoute } from './../enums/firebase-storage-route.enum';
 import { IMusic } from './../interfaces/music.interface';
@@ -27,7 +27,7 @@ export class MusicService {
   musicPlaying: IMusic;
   seek = 0;
   interval: NodeJS.Timeout;
-  private musicPlayingInfo$ = new Subject<{music: IMusic, state: MusicState}>();
+  private musicPlayingInfo$ = new ReplaySubject<{music: IMusic, state: MusicState}>(1);
   private seek$ = new Subject<number>();
 
   constructor(
@@ -38,7 +38,7 @@ export class MusicService {
     private loadingService: LoadingService
   ) {/** */ }
 
-  async uploadMusic(music: IMusic, stationID: string, stationName: string) {
+  async uploadMusic(music: IMusic, stationID: string, stationName: string, saveInLocal: boolean = true) {
     return new Promise<{ downloadUrl: string; localPath: string; }>((resolve, rejeact) => {
       (async () => {
         try {
@@ -47,12 +47,24 @@ export class MusicService {
             `${FirebaseStorageRoute.Musics + stationID}/${uniqid()}.mp3`
           );
 
-          const upload = await uploadString(locationRef, music.localData, 'data_url');
+          const upload = await uploadString(locationRef, music.localData, 'data_url')
+            .catch(e => {
+              console.log('Un error', e); 
+              rejeact(e);
+            })
+
+          if (!upload) {
+            return ;
+          }
+
           const downloadUrl = await getDownloadURL(upload.ref);
-          const localPath = await this.fileSystemService.writeFile(music.localData, `${music.title + music.id}.mp3`, `${Folder.Tracks + stationName}/`)
+          let localPath = '';
+          if (saveInLocal) {
+            localPath = await this.fileSystemService.writeFile(music.localData, `${music.title + music.id}.mp3`, `${Folder.Tracks + stationName}/`)
+          }
           resolve({downloadUrl, localPath});
         } catch (error) {
-          console.log(error)
+          console.log('fallo', error)
           rejeact(error);
         }
       })();

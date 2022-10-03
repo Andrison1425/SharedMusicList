@@ -242,7 +242,7 @@ export class CreateStationPage implements OnInit {
     this.musicArr = this.musicArr.filter((music, i) => i !== index);
   }
 
-  async createStation() {
+  async createStation(savedMusics: boolean) {
     if(this.stationFormValidate()) {
       this.loadingService.present('Subiendo canciones 1/' + this.musicArr.length);
       const stationID = this.playlist?.id || uniqid();
@@ -257,7 +257,7 @@ export class CreateStationPage implements OnInit {
 
         try {
           music.id = uniqid();
-          const {downloadUrl, localPath} = await this.musicService.uploadMusic(music, stationID, this.stationName.value);
+          const {downloadUrl, localPath} = await this.musicService.uploadMusic(music, stationID, this.stationName.value, savedMusics);
           music.downloadUrl = downloadUrl;
           music.localPath = localPath;
           music.stationId = stationID;
@@ -271,9 +271,9 @@ export class CreateStationPage implements OnInit {
       }
       this.loadingService.setContent(this.playlist?.id? 'Actualizando lista de reproducción': 'Creando lista de reproducción...');
 
-      const artistsName = this.musicArr.map(track => track.artist)
+      const artistsName = new Set(this.musicArr.map(track => track.artist))
 
-      await this.usefulListsService.addUnapprovedArtists(artistsName);
+      await this.usefulListsService.addUnapprovedArtists([...artistsName]);
 
       const user = await this.localDbService.getLocalUser();
 
@@ -282,7 +282,7 @@ export class CreateStationPage implements OnInit {
         name: this.stationName.value,
         description: this.stationDescription.value,
         type: PlaylistType.PUBLIC,
-        artistsName: artistsName,
+        artistsName: [...artistsName],
         author: {
           id: user.id,
           userName: user.userName
@@ -307,6 +307,7 @@ export class CreateStationPage implements OnInit {
           this.router.navigate(['radio/station/' + stationID], {replaceUrl: true});
         })
         .catch((e) => {
+          console.log(station)
           console.log(e)
           this.loadingService.dismiss();
           this.toastService.presentToast('Error al tratar de crear la lista de reproducción', Colors.DANGER);
@@ -528,6 +529,43 @@ export class CreateStationPage implements OnInit {
           role: 'confirm',
           handler: () => {
             this.deleteAll()
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    await alert.onDidDismiss();
+  }
+
+  async confirmCreateOrEdit() {
+    const alert = await this.alertController.create({
+      header: this.playlist?.id? 'Editar lista de reproducción': 'Crear lista de reproducción',
+      message: this.playlistType === this.playlistTypeEnum.PUBLIC? 
+        'Si marcas la siguiente casilla podrás reproducir las canciones que agregaste con o sin conexión a internet':
+        ''
+      ,
+      inputs: this.playlistType === this.playlistTypeEnum.PUBLIC? [
+        {
+          label: 'Guardar localmente',
+          type: 'checkbox',
+          name: 'savedMusics',
+          id: 'savedMusics'
+        }
+      ] : [],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Continuar',
+          role: 'confirm',
+          handler: (data) => {
+            this.playlistType === this.playlistTypeEnum.PUBLIC
+              ? this.createStation(data.length>0? true: false)
+              : this.createPrivateStation()
           },
         },
       ],

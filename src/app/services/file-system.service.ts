@@ -17,7 +17,7 @@ export class FileSystemService {
   async writeFile(data: string, fileName: string, dir: string) {
     const dataWrite: WriteFileOptions = {
       data: data,
-      path: 'Chanime/' + dir + fileName,
+      path: 'Musicalia/' + dir + fileName,
       directory: Directory.External,
     };
 
@@ -30,13 +30,13 @@ export class FileSystemService {
         await Filesystem.mkdir({
           directory: Directory.External,
           recursive: true,
-          path: 'Chanime/'
+          path: 'Musicalia/'
         });
 
         await Filesystem.mkdir({
           directory: Directory.External,
           recursive: true,
-          path: 'Chanime/' + dir
+          path: 'Musicalia/' + dir
         });
 
         const fileUrl = await Filesystem.writeFile(dataWrite);
@@ -47,13 +47,14 @@ export class FileSystemService {
           await Filesystem.mkdir({
             directory: Directory.External,
             recursive: true,
-            path: 'Chanime/' + dir
+            path: 'Musicalia/' + dir
           });
 
           const fileUrl = await Filesystem.writeFile(dataWrite);
           console.log(fileUrl)
           return fileUrl.uri;
         } catch (e) {
+          console.log(e);
           this.toastService.presentToast('No se pudo guardar el archivo', Colors.DANGER, 3000);
         }
       }

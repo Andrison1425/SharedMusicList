@@ -65,7 +65,7 @@ export class StationPage implements OnInit {
             this.comments = commentsData.comments;
           }
 
-          this.musicState = MusicState.Pause;
+          //this.musicState = MusicState.Pause;
         } else {
           this.playlistService.getStation(this.stationID)
             .then(station => {

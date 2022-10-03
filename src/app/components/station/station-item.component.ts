@@ -107,7 +107,7 @@ export class StationItemComponent implements OnInit {
     //Porcentage of like
     if (this.playlist.reactions.numLikes) {
       this.percentageReaction =
-        ((this.playlist.reactions.numDislikes + this.playlist.reactions.numLikes) * 100) / this.playlist.reactions.numLikes;
+        (this.playlist.reactions.numLikes * 100) / (this.playlist.reactions.numDislikes + this.playlist.reactions.numLikes);
     } else {
       this.percentageReaction = 0;
     }

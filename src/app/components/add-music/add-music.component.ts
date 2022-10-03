@@ -77,7 +77,7 @@ export class AddMusicComponent implements OnInit {
       music = {
         ...music,
         title: this.title.value,
-        artist: this.artist.value,
+        artist: this.artist.value || 'Desconocido',
         unapprovedArtists: this.unapproved,
         localData: this.musicData,
         local: {
@@ -91,7 +91,7 @@ export class AddMusicComponent implements OnInit {
           downloadUrl: this.music.downloadUrl,
           id: this.music.id,
           localPath: this.music.localPath,
-          duration: this.music.duration,
+          duration: this.music.duration || 0,
           stationId: this.music.stationId
         }
       } else {
@@ -100,7 +100,7 @@ export class AddMusicComponent implements OnInit {
           downloadUrl: '',
           id: '',
           localPath: this.musicData,
-          duration: this.duration,
+          duration: this.duration || 0,
           stationId: ''
         };
       }
@@ -149,13 +149,17 @@ export class AddMusicComponent implements OnInit {
   }
 
   fileChanged(event) {
-    //this.musicData = event.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
       if (this.music) {
         this.music.downloadUrl = '';
       }
+      
       this.musicData = reader.result as string;
+      if (!this.title.value) {
+        const fileName = event.target.files[0].name;
+        this.title.setValue(fileName.substring(0, fileName.lastIndexOf('.')));
+      }
       const base64Length = this.musicData.length - (this.musicData.indexOf(',') + 1);
       const padding = (this.musicData.charAt(this.musicData.length - 2) === '=') ? 2 : ((this.musicData.charAt(this.musicData.length - 1) === '=') ? 1 : 0);
       this.size = base64Length * 0.75 - padding;

@@ -12,7 +12,7 @@
       mode="md" 
       color="tertiary" 
       class="mr-15" 
-      (click)="playlistType === playlistTypeEnum.PUBLIC? createStation(): createPrivateStation()"
+      (click)="confirmCreateOrEdit()"
     >
       {{playlist? 'Editar': 'Crear'}}
     </ion-button>

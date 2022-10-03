@@ -9,12 +9,28 @@
     <ion-list slot="content" color="primary">
       <br>
 
+      <ion-item color="primary" *ngIf="!musicData">
+        <div class="cont-music-file" color="tertiary" (click)="uploadMusic()">
+          Agregar archivo de música
+        </div>
+      </ion-item>
+      
+      <ion-item color="primary" *ngIf="musicData">
+        <app-audio [audioData]="musicData" (duration)="onDuration($event)"></app-audio>
+        <ion-icon name="trash" slot="end" color="tertiary" (click)="musicData = null"></ion-icon>
+      </ion-item>
+
       <ion-item color="primary">
-        <div>
+        <div class="w-100">
           <ion-label>
             Título de la canción:
           </ion-label>
-          <ion-input formControlName="title" type="text" maxlength="60" placeholder="Escribe aquí"></ion-input>
+          <ion-input 
+            formControlName="title" 
+            type="text" 
+            maxlength="60" 
+            placeholder="Escribe aquí"
+          ></ion-input>
         </div>
       </ion-item>
 
@@ -40,17 +56,6 @@
         ></ng-select>
       </div>
 
-      <ion-item color="primary" *ngIf="!musicData">
-        <div class="cont-music-file" color="tertiary" (click)="uploadMusic()">
-          Agregar archivo de música
-        </div>
-      </ion-item>
-      
-      <ion-item color="primary" *ngIf="musicData">
-        <app-audio [audioData]="musicData" (duration)="onDuration($event)"></app-audio>
-        <ion-icon name="trash" slot="end" color="tertiary" (click)="musicData = null"></ion-icon>
-      </ion-item>
-
       <ion-item color="primary">
         <ion-row>
           <ion-col class="ion-no-padding">
@@ -69,6 +74,5 @@
       </ion-item>
     </ion-list>
   </form>
+  <input type="file" (change)="fileChanged($event)" accept="audio/*" #fileInput  />
 </ion-content>
-
-<input type="file" (change)="fileChanged($event)" accept="audio/*" #fileInput  />

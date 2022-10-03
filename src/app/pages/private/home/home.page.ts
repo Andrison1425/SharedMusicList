@@ -17,15 +17,18 @@ export class HomePage implements OnInit {
   srcAudio = '';
   musicCont = 0;
   activeTab = 'FAVORITES';
-  allStations: IPlaylist[] = [];
   stations: IPlaylist[] = [];
   favoriteStations: IPlaylist[] = [];
-  stationOrderByEnum = StationOrderBy;
-  stationOrderBy: StationOrderBy = StationOrderBy.Likes;
-  tags: string[] = [];
   cantFilters = 1;
   connectionError = false;
   searchTxt = '';
+  showPlaylists = 5;
+  disabledInfiniteScroll = false;
+  filters: IFilters = {
+    orderBy: StationOrderBy.Likes,
+    search: '',
+    tags: []
+  };
 
   constructor(
     private menu: MenuController,
@@ -49,7 +52,7 @@ export class HomePage implements OnInit {
           });
       });
 
-    this.getStations();
+    this.getPlaylists();
   }
 
   openMenu() {
@@ -68,8 +71,8 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: FiltersModalComponent,
       componentProps: {
-        orderBy: this.stationOrderBy,
-        tags: this.tags
+        orderBy: this.filters.orderBy,
+        tags: this.filters.tags
       }
     });
 
@@ -79,43 +82,47 @@ export class HomePage implements OnInit {
       .then(({data}) => {
         const filters = data as IFilters;
 
-        this.stationOrderBy = filters.orderBy;
-        this.tags = filters.tags;
+        this.filters.orderBy = filters.orderBy;
+        this.filters.tags = filters.tags;
         if (filters.tags?.length > 0) {
           this.cantFilters = 2;
         } else {
           this.cantFilters = 1;
         }
+        this.showPlaylists = 5;
+        this.stations = [];
 
-        this.getStations();
+        this.getPlaylists();
       });
   }
 
-  getStations() {
-    const filters: IFilters = {
-      orderBy: this.stationOrderBy,
-      search: this.searchTxt,
-      tags: this.tags
-    };
-
-    this.stations = [];
+  async getPlaylists() {
     this.connectionError = false;
-    this.playlistService.getStations(filters)
-      .then(resp => {
-        this.connectionError = resp.connectionError;
-        this.allStations = resp.stations;
-        this.stations = this.allStations.slice(0, 15);
-      })
-      .catch((e) => console.log(e));
+    try {
+      const resp = await this.playlistService.getPlaylists(this.filters, this.showPlaylists - 5);
+  
+      if (resp.stations.length === 0) {
+        this.disabledInfiniteScroll = true;
+      } else {
+        this.disabledInfiniteScroll = false;
+      }
+  
+      this.connectionError = resp.connectionError;
+      this.stations.push(...resp.stations);  
+    } catch (error) {
+      this.connectionError = true;
+    }
   }
 
-  loadData(event) {
-    this.stations = this.allStations.slice(0, this.stations.length + 15);
-    
-    event.target.complete();
-
-    if (this.stations.length >= this.allStations.length) {
-      event.target.disabled = true;
+  async loadData(event) {
+    if (this.disabledInfiniteScroll) {
+      event.target.complete();
+    } else {
+      this.showPlaylists += 5;
+  
+      await this.getPlaylists();
+      
+      event.target.complete();
     }
   }
 

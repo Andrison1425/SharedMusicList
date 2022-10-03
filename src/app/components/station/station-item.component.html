@@ -26,33 +26,56 @@
     
   </ion-item>
 
-  <ion-row>
-    <ion-col class="ion-no-padding" size="4">
+  <ion-row class="loc__cont-secondary-info">
+    <div>
       <span>
-        <ion-button fill="clear" [color]="reaction === reactionEnum.Like? 'light': 'medium'" (click)="setReaction(reactionEnum.Like)">
-          <ion-icon name="thumbs-up" slot="start"></ion-icon>
-          <div>{{playlist.reactions.numLikes}}</div>
+        <ion-button 
+          fill="clear" 
+          [color]="reaction === reactionEnum.Like? 'light': 'medium'" 
+          (click)="setReaction(reactionEnum.Like)"
+        >
+          <ion-icon 
+            name="thumbs-up" 
+            slot="start"
+          ></ion-icon>
+          <div>
+            {{playlist.reactions.numLikes}}
+          </div>
         </ion-button>
-        <ion-button fill="clear" [color]="reaction === reactionEnum.Dislike? 'light': 'medium'" (click)="setReaction(reactionEnum.Dislike)">
-          <ion-icon name="thumbs-down" slot="start"></ion-icon>
+        <ion-button 
+          fill="clear" 
+          [color]="reaction === reactionEnum.Dislike? 'light': 'medium'" 
+          (click)="setReaction(reactionEnum.Dislike)"
+        >
+          <ion-icon 
+            name="thumbs-down" 
+            slot="start"
+          ></ion-icon>
           <div>{{playlist.reactions.numDislikes}}</div>
         </ion-button>
         <div class="percentage">
           <div [style]="'width:'+percentageReaction+'%'"></div>
         </div>
       </span>
-    </ion-col>
-    <ion-col class="ion-no-padding">
+    </div>
+
+    <div>
       <ion-button fill="clear" color="medium">
         <ion-icon name="headset" slot="start"></ion-icon>
-        <div>{{playlist.views}} reproducciones</div>
+        <div>{{playlist.views}} visitas | {{playlist?.musics.length}} canciones</div>
       </ion-button>
-    </ion-col>
-    <ion-col class="ion-no-padding" size="2" class="loc__chare-col">
-      <ion-button fill="clear" color="tertiary" (click)="share()">
+    </div>
+
+    <div>
+      <ion-button 
+        fill="clear" 
+        color="tertiary" 
+        (click)="share()"
+        class="ion-no-padding"  
+      >
         <ion-icon name="share-social" slot="icon-only"></ion-icon>
       </ion-button>
-    </ion-col>
+    </div>
   </ion-row>
 
   <ion-card-content>
